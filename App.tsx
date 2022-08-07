@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import SplashScreen from 'react-native-splash-screen';
 
 import {
   SafeAreaView,
@@ -17,38 +18,62 @@ import axios from 'axios';
 
 import SignUp from './src/pages/SignUp';
 import SignIn from './src/pages/SignIn';
+import Home from './src/pages/Home';
+import Manage from './src/pages/Manage';
+import Chat from './src/pages/Chat';
+import Mypage from './src/pages/Mypage';
 
-import SplashScreen from 'react-native-splash-screen';
-
+export type RootStackParamList = {
+  SignIn: undefined;
+  SignUp: undefined;
+};
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     SplashScreen.hide();
-  },[]);
+  }, []);
 
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <View>
-          <Text>로그인 후 화면</Text>
-        </View>
+        <Tab.Navigator initialRouteName='Home'>
+          <Tab.Screen
+            name="Home"
+            component={Home}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="Manage"
+            component={Manage}
+            options={{ headerShown: false }}
+            />
+          <Tab.Screen
+            name="Chat"
+            component={Chat}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name="Mypage"
+            component={Mypage}
+            options={{ headerShown: false }}
+          />
+        </Tab.Navigator>
       ) : (
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName='SignUp'>
           <Stack.Screen
             name="SignIn"
             component={SignIn}
-            options={{ title: '로그인' }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="SignUp"
             component={SignUp}
-            options={{ title: '회원가입' }}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       )}
