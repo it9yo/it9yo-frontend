@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import {
   SafeAreaView,
   ScrollView,
@@ -17,11 +18,19 @@ import axios from 'axios';
 import SignUp from './src/pages/SignUp';
 import SignIn from './src/pages/SignIn';
 
+import SplashScreen from 'react-native-splash-screen';
+
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
+
+  useEffect(()=>{
+    SplashScreen.hide();
+  },[]);
 
   return (
     <NavigationContainer>
