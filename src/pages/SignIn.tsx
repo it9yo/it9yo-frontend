@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -8,6 +8,9 @@ import {
 } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import {
+  getProfile, KakaoOAuthToken, KakaoProfile, login, logout, unlink,
+} from '@react-native-seoul/kakao-login';
 import { RootStackParamList } from '../../App';
 
 import Logo from '../assets/images/logo.png';
@@ -19,9 +22,37 @@ import GoogleBtn from '../assets/images/googleBtn.png';
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
 function SignIn({ navigation }: SignInScreenProps) {
+  const [result, setResult] = useState();
+
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
   }, [navigation]);
+
+  const signInWithKakao = async (): Promise<void> => {
+    const token: KakaoOAuthToken = await login();
+    console.log(`kakao token ${JSON.stringify(token)}`);
+    const profile: KakaoProfile = await getProfile();
+    console.log(`kakao profile ${JSON.stringify(profile)}`);
+    // setResult(JSON.stringify(token));
+  };
+
+  const signOutWithKakao = async (): Promise<void> => {
+    const message = await logout();
+
+    setResult(message);
+  };
+
+  const getKakaoProfile = async (): Promise<void> => {
+    const profile: KakaoProfile = await getProfile();
+
+    setResult(JSON.stringify(profile));
+  };
+
+  const unlinkKakao = async (): Promise<void> => {
+    const message = await unlink();
+
+    setResult(message);
+  };
 
   return (
     <View style={styles.container}>
@@ -43,7 +74,7 @@ function SignIn({ navigation }: SignInScreenProps) {
         </Pressable>
         <Pressable
           style={styles.loginButton}
-          onPress={toSignUp}
+          onPress={signInWithKakao}
         >
           <Image style={styles.loginButtonLogo}
             source={KakaoBtn}
