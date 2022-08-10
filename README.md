@@ -55,6 +55,9 @@ https://offbyone.tistory.com/425
 
 ### 안드로이드 Execution failed for task ':react-native-seoul-naver-login:generateDebugRFile'. 에러 발생시
 ```
-yarn remove @react-native-seoul/naver-login && yarn add @react-native-seoul/naver-login
+cd android
+./gradlew clean
+cd ..
+
+npx react-native run-android
 ```
-후 빌드
