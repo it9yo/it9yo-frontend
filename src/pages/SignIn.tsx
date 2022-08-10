@@ -64,6 +64,7 @@ function SignIn({ navigation }: SignInScreenProps) {
   }, [navigation]);
 
   const signInWithNaver = useCallback(async () => {
+    console.log('signInWithNaver start', initials);
     const token = await getNaverToken(initials);
     console.log(`naver token ${JSON.stringify(token)}`);
 
