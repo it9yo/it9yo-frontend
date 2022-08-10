@@ -23,8 +23,12 @@ target 'it9yo' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # 전체 추가
+  # naver sdk 추가
+  pod 'naveridlogin-sdk-ios'
+
+  # kakao sdk 전체 추가
   pod 'KakaoSDK'
+  
 
   target 'it9yoTests' do
     inherit! :complete

@@ -3,7 +3,9 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+
 #import <RNKakaoLogins.h>
+#import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
 
 #import <React/RCTAppSetupUtils.h>
 
@@ -31,21 +33,43 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
 
-- (BOOL)application:(UIApplication *)app
-     openURL:(NSURL *)url
-     options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
- if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
+// naver만 사용하는 경우
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
+  if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
     return [RNKakaoLogins handleOpenUrl: url];
  }
-
- return NO;
+   return [[NaverThirdPartyLoginConnection getSharedInstance] application:app openURL:url options:options];
 }
+
+// naver & google 같이 사용하는 경우
+// - (BOOL)application:(UIApplication *)application openURL:(nonnull NSURL *)url options:(nonnull NSDictionary<NSString *,id> *)options {
+//   // naver login code
+//   if ([url.scheme isEqualToString:@"it9yo"]) {
+//     return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
+//   }
+
+//   return [RNGoogleSignin application:application openURL:url options:options];
+// }
+
+// kakao login code
+// - (BOOL)application:(UIApplication *)app
+//      openURL:(NSURL *)url
+//      options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+//  if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
+//     return [RNKakaoLogins handleOpenUrl: url];
+//  }
+
+//  return NO;
+// }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTAppSetupPrepareApp(application);
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  [[NaverThirdPartyLoginConnection getSharedInstance] setIsNaverAppOauthEnable:YES];
+  [[NaverThirdPartyLoginConnection getSharedInstance] setIsInAppOauthEnable:YES];
+
 
 #if RCT_NEW_ARCH_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();

@@ -114,6 +114,7 @@ PODS:
   - KakaoSDKUser (2.9.0):
     - KakaoSDKAuth (= 2.9.0)
   - libevent (2.1.12)
+  - naveridlogin-sdk-ios (4.1.4)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
@@ -404,6 +405,9 @@ PODS:
     - React-jsi (= 0.69.3)
     - React-logger (= 0.69.3)
     - React-perflogger (= 0.69.3)
+  - RNNaverLogin (2.3.0):
+    - naveridlogin-sdk-ios (~> 4.1)
+    - React
   - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
@@ -441,6 +445,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - "kakao-login (from `../node_modules/@react-native-seoul/kakao-login`)"
   - KakaoSDK
+  - naveridlogin-sdk-ios
   - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -474,6 +479,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNNaverLogin (from `../node_modules/@react-native-seoul/naver-login`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -501,6 +507,7 @@ SPEC REPOS:
     - KakaoSDKTemplate
     - KakaoSDKUser
     - libevent
+    - naveridlogin-sdk-ios
     - OpenSSL-Universal
     - SocketRocket
     - YogaKit
@@ -578,6 +585,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNNaverLogin:
+    :path: "../node_modules/@react-native-seoul/naver-login"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   Yoga:
@@ -612,6 +621,7 @@ SPEC CHECKSUMS:
   KakaoSDKTemplate: eaf03ad5e44d374cbfff85588552a5627cd0519c
   KakaoSDKUser: 37e92bfc1d36b339420952080a8d31c217a38a63
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  naveridlogin-sdk-ios: a33c803f2597be964b0109b26d7fbfd1739ff0e4
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: b9d9fe1fc70114b751c076104e52f3b1b5e5a95a
   RCTRequired: 66822c147facf02f7774af99825e0a31e39df42e
@@ -643,11 +653,12 @@ SPEC CHECKSUMS:
   React-RCTVibration: dd8099eb46e9cee4692934bc8cbe5e9a4f5e8d31
   React-runtimeexecutor: 607eb048e22a16388c908ee1f6644200e8d1e19b
   ReactCommon: af7636436b382db7cde4583bbd642f0978e6e3ed
+  RNNaverLogin: d4a1a99535542ef0e5da6082264033dd8dcee611
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 44c64131616253fa83366295acdbce3d14926041
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 5603afef273a4f32a5dd48669d17ec06906a209d
+PODFILE CHECKSUM: 1d44ffd0f4e8b719dc76ad1288f6f21f12db4566
 
 COCOAPODS: 1.11.3
