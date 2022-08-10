@@ -64,7 +64,7 @@ function App() {
           />
         </Tab.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName='SignUp'>
+        <Stack.Navigator initialRouteName='SignIn'>
           <Stack.Screen
             name="SignIn"
             component={SignIn}
