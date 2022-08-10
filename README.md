@@ -51,3 +51,10 @@ https://dev-donghwan.tistory.com/3
 
 ### 안드로이드 코틀린 버전 확인
 https://offbyone.tistory.com/425
+
+
+### 안드로이드 Execution failed for task ':react-native-seoul-naver-login:generateDebugRFile'. 에러 발생시
+```
+yarn remove @react-native-seoul/naver-login && yarn add @react-native-seoul/naver-login
+```
+후 빌드

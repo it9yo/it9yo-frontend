@@ -13,6 +13,7 @@ import com.it9yo.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
+import com.dooboolab.naverlogin.RNNaverLoginPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
