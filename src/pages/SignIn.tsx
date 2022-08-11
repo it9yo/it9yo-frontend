@@ -14,10 +14,10 @@ import axios, { AxiosError } from 'axios';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile, login,
+  getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile, KakaoProfileNoneAgreement, login, logout,
 } from '@react-native-seoul/kakao-login';
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { RootStackParamList } from '../../App';
 
@@ -115,18 +115,22 @@ function SignIn({ navigation }: SignInScreenProps) {
   }, []);
 
   const signInWithKakao = useCallback(async () => {
+    let profile: KakaoProfile | KakaoProfileNoneAgreement;
     try {
-      const token: KakaoOAuthToken = await login();
-      const profile: KakaoProfile = await getKakaoProfile();
+      profile = await getKakaoProfile();
+    } catch (error) {
+      try {
+        const token: KakaoOAuthToken = await login();
+        profile = await getKakaoProfile();
+      } catch (error) {
+        console.error(error);
+      }
+    } finally {
       const { id } = profile;
-      console.log(id);
       const userProps: userAuthenticationProps = {
         id,
         ProviderType: 'KAKAO',
       };
-      // TODO:
-    } catch (error) {
-      console.error(error);
     }
   }, []);
 
