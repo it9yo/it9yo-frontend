@@ -4,8 +4,10 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
+// social login 관련
 #import <RNKakaoLogins.h>
 #import <NaverThirdPartyLogin/NaverThirdPartyLoginConnection.h>
+#import "RNGoogleSignin.h"
 
 #import <React/RCTAppSetupUtils.h>
 
@@ -33,34 +35,18 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
 @implementation AppDelegate
 
-// naver만 사용하는 경우
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
+// kakao, naver, google login
+- (BOOL)application:(UIApplication *)application openURL:(nonnull NSURL *)url options:(nonnull NSDictionary<NSString *,id> *)options {
   if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
     return [RNKakaoLogins handleOpenUrl: url];
- }
-   return [[NaverThirdPartyLoginConnection getSharedInstance] application:app openURL:url options:options];
+  }   
+  if ([url.scheme isEqualToString:@"it9yo"]) {
+    return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
+  }
+
+  return [RNGoogleSignin application:application openURL:url options:options];
 }
 
-// naver & google 같이 사용하는 경우
-// - (BOOL)application:(UIApplication *)application openURL:(nonnull NSURL *)url options:(nonnull NSDictionary<NSString *,id> *)options {
-//   // naver login code
-//   if ([url.scheme isEqualToString:@"it9yo"]) {
-//     return [[NaverThirdPartyLoginConnection getSharedInstance] application:application openURL:url options:options];
-//   }
-
-//   return [RNGoogleSignin application:application openURL:url options:options];
-// }
-
-// kakao login code
-// - (BOOL)application:(UIApplication *)app
-//      openURL:(NSURL *)url
-//      options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-//  if([RNKakaoLogins isKakaoTalkLoginUrl:url]) {
-//     return [RNKakaoLogins handleOpenUrl: url];
-//  }
-
-//  return NO;
-// }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

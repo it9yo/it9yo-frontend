@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -17,6 +17,7 @@ import {
   getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile, login,
 } from '@react-native-seoul/kakao-login';
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 
 import { RootStackParamList } from '../../App';
 
@@ -58,42 +59,107 @@ const getNaverToken = (props) => new Promise((resolve, reject) => {
   });
 });
 
+const newGoogleSignIn = async () => {
+  try {
+    const userInfo = await GoogleSignin.signIn();
+    const { id } = userInfo.user;
+    return id;
+  } catch (error) {
+    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+      // user cancelled the login flow
+      Alert.alert('오류', 'SIGN_IN_CANCELLED');
+    } else if (error.code === statusCodes.IN_PROGRESS) {
+      // operation (e.g. sign in) is in progress already
+      Alert.alert('오류', 'IN_PROGRESS');
+    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+      // play services not available or outdated
+      Alert.alert('오류', 'PLAY_SERVICES_NOT_AVAILABLE');
+    } else {
+      Alert.alert('오류', error);
+    }
+    return null;
+  }
+};
+
+const getGoogleUserId = async () => {
+  try {
+    const userInfo = await GoogleSignin.signInSilently();
+    const { id } = userInfo.user;
+    return id;
+  } catch (error) {
+    if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+      const id = await newGoogleSignIn();
+      if (id) {
+        return id;
+      }
+    }
+    Alert.alert('오류', '로그인 에러');
+    return null;
+  }
+};
+
 function SignIn({ navigation }: SignInScreenProps) {
-  const toSignUp = useCallback(() => {
-    navigation.navigate('SignUp');
-  }, [navigation]);
+  useEffect(() => {
+    GoogleSignin.configure({
+      offlineAccess: false,
+      iosClientId: Config.GOOGLE_CLIENT_ID_IOS,
+    });
+  }, []);
+
+  // const toSignUp = useCallback(() => {
+  //   navigation.navigate('SignUp');
+  // }, [navigation]);
+
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const id = await getGoogleUserId();
+      if (!id) {
+        return null;
+      }
+      console.log('Google id', id);
+      const userProps: userAuthenticationProps = {
+        id,
+        ProviderType: 'GOOGLE',
+      };
+    } catch (error) {
+      Alert.alert('오류', '로그인 에러');
+    }
+  }, []);
 
   const signInWithNaver = useCallback(async () => {
-    console.log('signInWithNaver start', initials);
-    const token = await getNaverToken(initials);
-    console.log(`naver token ${JSON.stringify(token)}`);
-
-    const profile = await getNaverProfile(token.accessToken);
-    if (profile.resultcode === '024') {
-      Alert.alert('로그인 실패', profile.message);
-      return;
-    }
-    const { id } = profile.response;
-    console.log(id);
-    const userProps: userAuthenticationProps = {
-      id,
-      ProviderType: 'NAVER',
-    };
+    try {
+      const token = await getNaverToken(initials);
+      const profile = await getNaverProfile(token.accessToken);
+      if (profile.resultcode === '024') {
+        Alert.alert('로그인 실패', profile.message);
+        return;
+      }
+      const { id } = profile.response;
+      const userProps: userAuthenticationProps = {
+        id,
+        ProviderType: 'NAVER',
+      };
     // TODO:
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
 
   const signInWithKakao = useCallback(async () => {
-    const token: KakaoOAuthToken = await login();
-    // console.log(`kakao token ${JSON.stringify(token)}`);
-    const profile: KakaoProfile = await getKakaoProfile();
-    // console.log(`kakao profile ${JSON.stringify(profile)}`);
-    const { id } = profile;
-    console.log(id);
-    const userProps: userAuthenticationProps = {
-      id,
-      ProviderType: 'KAKAO',
-    };
-    // TODO:
+    try {
+      const token: KakaoOAuthToken = await login();
+      const profile: KakaoProfile = await getKakaoProfile();
+      const { id } = profile;
+      console.log(id);
+      const userProps: userAuthenticationProps = {
+        id,
+        ProviderType: 'KAKAO',
+      };
+      // TODO:
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
 
   const authenticateUser = useCallback(async ({ id, ProviderType }: userAuthenticationProps) => {
@@ -146,7 +212,7 @@ function SignIn({ navigation }: SignInScreenProps) {
         </Pressable>
         <Pressable
           style={styles.loginButton}
-          onPress={toSignUp}
+          onPress={signInWithGoogle}
         >
           <Image style={styles.loginButtonLogo}
             source={GoogleBtn}

@@ -11,6 +11,7 @@
     "lint:fix": "eslint --fix src/**/*.ts"
   },
   "dependencies": {
+    "@react-native-google-signin/google-signin": "^8.0.0",
     "@react-native-seoul/kakao-login": "^4.2.3",
     "@react-native-seoul/naver-login": "^2.3.0",
     "@react-navigation/bottom-tabs": "^6.3.2",
