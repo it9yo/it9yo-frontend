@@ -28,6 +28,9 @@ target 'it9yo' do
 
   # kakao sdk 전체 추가
   pod 'KakaoSDK'
+
+  # google sdk 추가
+  pod 'GoogleSignIn'
   
 
   target 'it9yoTests' do
