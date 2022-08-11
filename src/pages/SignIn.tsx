@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -14,8 +14,11 @@ import axios, { AxiosError } from 'axios';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  getProfile, KakaoOAuthToken, KakaoProfile, login,
+  getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile, KakaoProfileNoneAgreement, login, logout,
 } from '@react-native-seoul/kakao-login';
+import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 import { RootStackParamList } from '../../App';
 
 import Logo from '../assets/images/logo.png';
@@ -31,25 +34,107 @@ interface userAuthenticationProps {
   ProviderType: string;
 }
 
+const iosKeys = {
+  kConsumerKey: Config.NAVER_CLIENT_ID,
+  kConsumerSecret: Config.NAVER_SECRET_ID,
+  kServiceAppName: 'it9yo',
+  kServiceAppUrlScheme: 'it9yo',
+};
+
+const androidKeys = {
+  kConsumerKey: Config.NAVER_CLIENT_ID,
+  kConsumerSecret: Config.NAVER_SECRET_ID,
+  kServiceAppName: 'it9yo',
+};
+
+const initials = Platform.OS === 'ios' ? iosKeys : androidKeys;
+
+const getNaverToken = (props) => new Promise((resolve, reject) => {
+  NaverLogin.login(props, (err, token) => {
+    if (err) {
+      reject(err);
+      return;
+    }
+    resolve(token);
+  });
+});
+
 function SignIn({ navigation }: SignInScreenProps) {
-  const toSignUp = useCallback(() => {
-    navigation.navigate('SignUp');
-  }, [navigation]);
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+      offlineAccess: false,
+      iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
+    });
+  }, []);
 
-  const signInWithKakao = async (): Promise<void> => {
-    const token: KakaoOAuthToken = await login();
-    // console.log(`kakao token ${JSON.stringify(token)}`);
-    const profile: KakaoProfile = await getProfile();
-    // console.log(`kakao profile ${JSON.stringify(profile)}`);
-    const { id } = profile;
-    console.log(id);
-    const userProps: userAuthenticationProps = {
-      id,
-      ProviderType: 'KAKAO',
-    };
-  };
+  // const toSignUp = useCallback(() => {
+  //   navigation.navigate('SignUp');
+  // }, [navigation]);
 
-  const authenticateUser = useCallback(({ id, ProviderType }: userAuthenticationProps) => {
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const isSignedIn = await GoogleSignin.isSignedIn();
+
+      let userInfo;
+      if (isSignedIn) {
+        userInfo = await GoogleSignin.signInSilently();
+      } else {
+        userInfo = await GoogleSignin.signIn();
+      }
+      const { id } = userInfo.user;
+      console.log(id);
+      const userProps: userAuthenticationProps = {
+        id,
+        ProviderType: 'GOOGLE',
+      };
+      // TODO:
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const signInWithNaver = useCallback(async () => {
+    try {
+      const token = await getNaverToken(initials);
+      const profile = await getNaverProfile(token.accessToken);
+      if (profile.resultcode === '024') {
+        Alert.alert('로그인 실패', profile.message);
+        return;
+      }
+      const { id } = profile.response;
+      const userProps: userAuthenticationProps = {
+        id,
+        ProviderType: 'NAVER',
+      };
+    // TODO:
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const signInWithKakao = useCallback(async () => {
+    let profile: KakaoProfile | KakaoProfileNoneAgreement;
+    try {
+      profile = await getKakaoProfile();
+    } catch (error) {
+      try {
+        const token: KakaoOAuthToken = await login();
+        profile = await getKakaoProfile();
+      } catch (error) {
+        console.error(error);
+      }
+    } finally {
+      const { id } = profile;
+      const userProps: userAuthenticationProps = {
+        id,
+        ProviderType: 'KAKAO',
+      };
+    }
+  }, []);
+
+  const authenticateUser = useCallback(async ({ id, ProviderType }: userAuthenticationProps) => {
     try {
       const response = await axios.post(
         `${
@@ -81,7 +166,7 @@ function SignIn({ navigation }: SignInScreenProps) {
       <View style={styles.buttonZone}>
         <Pressable
           style={styles.loginButton}
-          onPress={toSignUp}
+          onPress={signInWithNaver}
         >
           <Image style={styles.loginButtonLogo}
             source={NaverBtn}
@@ -99,7 +184,7 @@ function SignIn({ navigation }: SignInScreenProps) {
         </Pressable>
         <Pressable
           style={styles.loginButton}
-          onPress={toSignUp}
+          onPress={signInWithGoogle}
         >
           <Image style={styles.loginButtonLogo}
             source={GoogleBtn}

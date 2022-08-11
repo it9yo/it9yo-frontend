@@ -51,3 +51,16 @@ https://dev-donghwan.tistory.com/3
 
 ### 안드로이드 코틀린 버전 확인
 https://offbyone.tistory.com/425
+
+
+### 안드로이드 Execution failed for task ':react-native-seoul-naver-login:generateDebugRFile'. 에러 발생시
+```
+cd android
+./gradlew clean
+cd ..
+
+npx react-native run-android
+```
+
+### React Native Tutorial: Google SignIn without Firebase | Google oAuth in React Native 2022
+https://www.youtube.com/watch?v=EmtPTgE2_JY
