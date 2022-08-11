@@ -59,45 +59,6 @@ const getNaverToken = (props) => new Promise((resolve, reject) => {
   });
 });
 
-const newGoogleSignIn = async () => {
-  try {
-    const userInfo = await GoogleSignin.signIn();
-    const { id } = userInfo.user;
-    return id;
-  } catch (error) {
-    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-      // user cancelled the login flow
-      Alert.alert('오류', 'SIGN_IN_CANCELLED');
-    } else if (error.code === statusCodes.IN_PROGRESS) {
-      // operation (e.g. sign in) is in progress already
-      Alert.alert('오류', 'IN_PROGRESS');
-    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-      // play services not available or outdated
-      Alert.alert('오류', 'PLAY_SERVICES_NOT_AVAILABLE');
-    } else {
-      Alert.alert('오류', error);
-    }
-    return null;
-  }
-};
-
-const getGoogleUserId = async () => {
-  try {
-    const userInfo = await GoogleSignin.signInSilently();
-    const { id } = userInfo.user;
-    return id;
-  } catch (error) {
-    if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-      const id = await newGoogleSignIn();
-      if (id) {
-        return id;
-      }
-    }
-    Alert.alert('오류', '로그인 에러');
-    return null;
-  }
-};
-
 function SignIn({ navigation }: SignInScreenProps) {
   useEffect(() => {
     GoogleSignin.configure({
@@ -113,17 +74,22 @@ function SignIn({ navigation }: SignInScreenProps) {
   const signInWithGoogle = useCallback(async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const id = await getGoogleUserId();
-      if (!id) {
-        return null;
+      const isSignedIn = await GoogleSignin.isSignedIn();
+
+      let userInfo;
+      if (isSignedIn) {
+        userInfo = await GoogleSignin.signInSilently();
+      } else {
+        userInfo = await GoogleSignin.signIn();
       }
-      console.log('Google id', id);
+      const { id } = userInfo.user;
       const userProps: userAuthenticationProps = {
         id,
         ProviderType: 'GOOGLE',
       };
+      // TODO:
     } catch (error) {
-      Alert.alert('오류', '로그인 에러');
+      console.error(error);
     }
   }, []);
 
