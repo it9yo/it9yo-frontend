@@ -62,8 +62,9 @@ const getNaverToken = (props) => new Promise((resolve, reject) => {
 function SignIn({ navigation }: SignInScreenProps) {
   useEffect(() => {
     GoogleSignin.configure({
+      webClientId: Config.GOOGLE_WEB_CLIENT_ID,
       offlineAccess: false,
-      iosClientId: Config.GOOGLE_CLIENT_ID_IOS,
+      iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
     });
   }, []);
 
@@ -83,6 +84,7 @@ function SignIn({ navigation }: SignInScreenProps) {
         userInfo = await GoogleSignin.signIn();
       }
       const { id } = userInfo.user;
+      console.log(id);
       const userProps: userAuthenticationProps = {
         id,
         ProviderType: 'GOOGLE',
