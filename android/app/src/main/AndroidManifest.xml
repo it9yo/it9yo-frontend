@@ -35,5 +35,15 @@
                 android:scheme="kakao598a26909a4deaf88a65eec21abdd3b1" />
         </intent-filter>
       </activity>
+      <activity
+        android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"
+        android:screenOrientation="portrait"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar"
+        android:exported="true" />
+      <activity
+        android:name="com.nhn.android.naverlogin.ui.OAuthLoginInAppBrowserActivity"
+        android:label="OAuth2.0 In-app"
+        android:screenOrientation="portrait"
+        android:exported="true" />
     </application>
 </manifest>
