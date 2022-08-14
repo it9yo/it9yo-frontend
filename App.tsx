@@ -16,16 +16,41 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import axios from 'axios';
 
+import Config from 'react-native-config';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import type { IMPData } from 'iamport-react-native';
+
 import SignUp from './src/pages/SignUp';
 import SignIn from './src/pages/SignIn';
 import Home from './src/pages/Home';
 import Manage from './src/pages/Manage';
 import Chat from './src/pages/Chat';
 import Mypage from './src/pages/Mypage';
+import Certification from './src/pages/Certification';
+import CertificationResult from './src/pages/CertificationResult';
+
+export interface CertificationParams {
+  params: IMPData.CertificationData;
+  tierCode?: string;
+}
+
+export interface PaymentParams {
+  params: IMPData.PaymentData;
+  tierCode?: string;
+}
+
+export type LoggedInParamList = {
+  Home: undefined;
+  Manage: undefined;
+  Chat: undefined;
+  Mypage: undefined;
+};
 
 export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
+  Certification: CertificationParams | undefined;
+  CertificationResult: any;
 };
 
 const Tab = createBottomTabNavigator();
@@ -36,6 +61,35 @@ function App() {
 
   useEffect(() => {
     SplashScreen.hide();
+  }, []);
+
+  useEffect(() => {
+    // accessToken 만료 시 refreshToken으로 accessToken을 재발급 하는 code
+    axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const {
+          config,
+          response: { status },
+        } = error;
+        if (status === 406) {
+          if (error.response.data.code === 'expired') {
+            const originalRequest = config;
+            const refreshToken = await EncryptedStorage.getItem('refreshToken');
+            // token refresh 요청
+            const { data } = await axios.post(
+              `${Config.API_URL}/user/auth/refresh`,
+              { refreshToken },
+            );
+            // TODO: accessToken recoil 에 저장
+            // data.accessToken
+            originalRequest.headers.authorization = `Bearer ${data.accessToken}`;
+            return axios(originalRequest);
+          }
+        }
+        return Promise.reject(error);
+      },
+    );
   }, []);
 
   return (
@@ -73,6 +127,16 @@ function App() {
           <Stack.Screen
             name="SignUp"
             component={SignUp}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Certification"
+            component={Certification}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CertificationResult"
+            component={CertificationResult}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
