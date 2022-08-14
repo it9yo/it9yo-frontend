@@ -14,12 +14,14 @@ import axios, { AxiosError } from 'axios';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile, KakaoProfileNoneAgreement, login, logout,
+  getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile,
+  KakaoProfileNoneAgreement, login, logout,
 } from '@react-native-seoul/kakao-login';
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-import { RootStackParamList } from '../../App';
+import { IMPConst } from 'iamport-react-native';
+import { CertificationParams, RootStackParamList } from '../../App';
 
 import Logo from '../assets/images/logo.png';
 import LogoTitle from '../assets/images/logoTitle.png';
@@ -27,11 +29,33 @@ import NaverBtn from '../assets/images/naverBtn.png';
 import KakaoBtn from '../assets/images/kakaoBtn.png';
 import GoogleBtn from '../assets/images/googleBtn.png';
 
-type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
+type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 interface userAuthenticationProps {
   id: string;
-  ProviderType: string;
+  providerType: string;
+}
+
+interface userResponseProps {
+  data:{
+    data: {
+      accessToken: string;
+      refreshToken: string;
+      user: {
+        userId: number;
+        nickName: string;
+        phoneNumber: string | null;
+        homeAddress: string | null;
+        profileImageUrl: string | null;
+        providerType: string;
+        roleType: string;
+        introduction: string;
+        badgeType: string;
+        point: number;
+        accountNumber: string | null;
+      }
+    }
+  }
 }
 
 const iosKeys = {
@@ -68,30 +92,41 @@ function SignIn({ navigation }: SignInScreenProps) {
     });
   }, []);
 
-  // const toSignUp = useCallback(() => {
-  //   navigation.navigate('SignUp');
-  // }, [navigation]);
-
-  const signInWithGoogle = useCallback(async () => {
+  const authenticateUser = useCallback(async ({ id, providerType }: userAuthenticationProps) => {
     try {
-      await GoogleSignin.hasPlayServices();
-      const isSignedIn = await GoogleSignin.isSignedIn();
-
-      let userInfo;
-      if (isSignedIn) {
-        userInfo = await GoogleSignin.signInSilently();
+      const response: userResponseProps = await axios.post(
+        `${Config.API_URL}/user/auth/login`,
+        {
+          id,
+          providerType,
+        },
+      );
+      if (response.data.data.user.phoneNumber === null) {
+        Alert.alert('알림', '회원가입을 위해 본인인증이 필요합니다');
+        // TODO: params setting
+        const data: CertificationParams = {
+          params: {
+            merchant_uid: `mid_${new Date().getTime()}`,
+            company: '아임포트',
+            carrier: '',
+            name: '',
+            phone: '',
+            min_age: '',
+            m_redirect_url: IMPConst.M_REDIRECT_URL,
+          },
+          tierCode: '',
+        };
+        navigation.navigate('Certification', data);
       } else {
-        userInfo = await GoogleSignin.signIn();
+        navigation.navigate('Home');
       }
-      const { id } = userInfo.user;
-      console.log(id);
-      const userProps: userAuthenticationProps = {
-        id,
-        ProviderType: 'GOOGLE',
-      };
-      // TODO:
     } catch (error) {
       console.error(error);
+
+      // const errorResponse = (error as AxiosError).response;
+      // if (errorResponse) {
+      //   Alert.alert('알림', errorResponse.data.message);
+      // }
     }
   }, []);
 
@@ -106,9 +141,9 @@ function SignIn({ navigation }: SignInScreenProps) {
       const { id } = profile.response;
       const userProps: userAuthenticationProps = {
         id,
-        ProviderType: 'NAVER',
+        providerType: 'NAVER',
       };
-    // TODO:
+      authenticateUser(userProps);
     } catch (error) {
       console.error(error);
     }
@@ -129,29 +164,32 @@ function SignIn({ navigation }: SignInScreenProps) {
       const { id } = profile;
       const userProps: userAuthenticationProps = {
         id,
-        ProviderType: 'KAKAO',
+        providerType: 'KAKAO',
       };
+      authenticateUser(userProps);
     }
   }, []);
 
-  const authenticateUser = useCallback(async ({ id, ProviderType }: userAuthenticationProps) => {
+  const signInWithGoogle = useCallback(async () => {
     try {
-      const response = await axios.post(
-        `${
-          Platform.OS === 'ios' ? Config.API_URL_IOS : Config.API_URL_ANDROID
-        }/user/auth/login`,
-        {
-          id,
-          ProviderType,
-        },
-      );
-      console.log(response.data);
-      // TODO: 회원가입 여부 체크
-    } catch (error) {
-      const errorResponse = (error as AxiosError).response;
-      if (errorResponse) {
-        Alert.alert('알림', errorResponse.data.message);
+      await GoogleSignin.hasPlayServices();
+      const isSignedIn = await GoogleSignin.isSignedIn();
+
+      let userInfo;
+      if (isSignedIn) {
+        userInfo = await GoogleSignin.signInSilently();
+      } else {
+        userInfo = await GoogleSignin.signIn();
       }
+      const { id } = userInfo.user;
+      console.log(id);
+      const userProps: userAuthenticationProps = {
+        id,
+        providerType: 'GOOGLE',
+      };
+      authenticateUser(userProps);
+    } catch (error) {
+      console.error(error);
     }
   }, []);
 
