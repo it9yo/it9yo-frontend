@@ -21,7 +21,7 @@ import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/n
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { IMPConst } from 'iamport-react-native';
-import { CertificationParams, RootStackParamList } from '../../AppInner';
+import { CertificationParams, RootStackParamList } from '../@types';
 
 import Logo from '../assets/images/logo.png';
 import LogoTitle from '../assets/images/logoTitle.png';
@@ -31,12 +31,12 @@ import GoogleBtn from '../assets/images/googleBtn.png';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
-interface userAuthenticationProps {
+interface UserAuthenticationProps {
   id: string;
   providerType: string;
 }
 
-interface userResponseProps {
+interface UserResponseProps {
   data:{
     data: {
       accessToken: string;
@@ -58,22 +58,29 @@ interface userResponseProps {
   }
 }
 
-const iosKeys = {
+interface NaverKeyProps {
+  kConsumerKey: string;
+  kConsumerSecret: string;
+  kServiceAppName: string;
+  kServiceAppUrlScheme?: string;
+}
+
+const iosKeys: NaverKeyProps = {
   kConsumerKey: Config.NAVER_CLIENT_ID,
   kConsumerSecret: Config.NAVER_SECRET_ID,
   kServiceAppName: 'it9yo',
   kServiceAppUrlScheme: 'it9yo',
 };
 
-const androidKeys = {
+const androidKeys: NaverKeyProps = {
   kConsumerKey: Config.NAVER_CLIENT_ID,
   kConsumerSecret: Config.NAVER_SECRET_ID,
   kServiceAppName: 'it9yo',
 };
 
-const initials = Platform.OS === 'ios' ? iosKeys : androidKeys;
+const naverKeys = Platform.OS === 'ios' ? iosKeys : androidKeys;
 
-const getNaverToken = (props) => new Promise((resolve, reject) => {
+const getNaverToken = (props: NaverKeyProps) => new Promise((resolve, reject) => {
   NaverLogin.login(props, (err, token) => {
     if (err) {
       reject(err);
@@ -92,9 +99,9 @@ function SignIn({ navigation }: SignInScreenProps) {
     });
   }, []);
 
-  const authenticateUser = useCallback(async ({ id, providerType }: userAuthenticationProps) => {
+  const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
-      const response: userResponseProps = await axios.post(
+      const response: UserResponseProps = await axios.post(
         `${Config.API_URL}/user/auth/login`,
         {
           id,
@@ -132,14 +139,14 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const signInWithNaver = useCallback(async () => {
     try {
-      const token = await getNaverToken(initials);
+      const token = await getNaverToken(naverKeys);
       const profile = await getNaverProfile(token.accessToken);
       if (profile.resultcode === '024') {
         Alert.alert('로그인 실패', profile.message);
         return;
       }
       const { id } = profile.response;
-      const userProps: userAuthenticationProps = {
+      const userProps: UserAuthenticationProps = {
         id,
         providerType: 'NAVER',
       };
@@ -162,7 +169,7 @@ function SignIn({ navigation }: SignInScreenProps) {
       }
     } finally {
       const { id } = profile;
-      const userProps: userAuthenticationProps = {
+      const userProps: UserAuthenticationProps = {
         id,
         providerType: 'KAKAO',
       };
@@ -183,7 +190,7 @@ function SignIn({ navigation }: SignInScreenProps) {
       }
       const { id } = userInfo.user;
       console.log(id);
-      const userProps: userAuthenticationProps = {
+      const userProps: UserAuthenticationProps = {
         id,
         providerType: 'GOOGLE',
       };
