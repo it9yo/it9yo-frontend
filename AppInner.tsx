@@ -95,7 +95,7 @@ function AppInner() {
           />
         </Tab.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName='SignIn'>
+        <Stack.Navigator initialRouteName='LocationCertification'>
           <Stack.Screen
             name="SignIn"
             component={SignIn}
