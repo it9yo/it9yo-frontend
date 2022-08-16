@@ -2,7 +2,7 @@ import React from 'react';
 import IMP from 'iamport-react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList } from '../../AppInner';
 import { getUserCode } from '../constants/utils';
 
 import Loading from './Loading';

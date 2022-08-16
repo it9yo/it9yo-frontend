@@ -6,7 +6,7 @@ import {
 } from 'native-base';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList } from '../../AppInner';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CertificationResult'>;
 

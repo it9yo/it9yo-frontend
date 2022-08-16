@@ -21,7 +21,7 @@ import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/n
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { IMPConst } from 'iamport-react-native';
-import { CertificationParams, RootStackParamList } from '../../App';
+import { CertificationParams, RootStackParamList } from '../../AppInner';
 
 import Logo from '../assets/images/logo.png';
 import LogoTitle from '../assets/images/logoTitle.png';
