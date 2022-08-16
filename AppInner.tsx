@@ -18,7 +18,6 @@ import axios from 'axios';
 
 import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import type { IMPData } from 'iamport-react-native';
 
 import SignUp from './src/pages/SignUp';
 import SignIn from './src/pages/SignIn';
@@ -30,36 +29,6 @@ import Certification from './src/pages/Certification';
 // import CertificationResult from './src/pages/CertificationResult';
 import Location from './src/pages/Location';
 import LocationCertification from './src/pages/LocationCertification';
-
-export interface CertificationParams {
-  params: IMPData.CertificationData;
-  tierCode?: string;
-}
-
-export interface PaymentParams {
-  params: IMPData.PaymentData;
-  tierCode?: string;
-}
-
-export interface LocationParams {
-  address: string;
-}
-
-export type LoggedInParamList = {
-  Home: undefined;
-  Manage: undefined;
-  Chat: undefined;
-  Mypage: undefined;
-};
-
-export type RootStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
-  Certification: CertificationParams | undefined;
-  // CertificationResult: any;
-  Location: any;
-  LocationCertification: LocationParams;
-};
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
