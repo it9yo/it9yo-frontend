@@ -27,7 +27,7 @@ import Manage from './src/pages/Manage';
 import Chat from './src/pages/Chat';
 import Mypage from './src/pages/Mypage';
 import Certification from './src/pages/Certification';
-import CertificationResult from './src/pages/CertificationResult';
+// import CertificationResult from './src/pages/CertificationResult';
 import Location from './src/pages/Location';
 import LocationCertification from './src/pages/LocationCertification';
 
@@ -56,7 +56,7 @@ export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
   Certification: CertificationParams | undefined;
-  CertificationResult: any;
+  // CertificationResult: any;
   Location: any;
   LocationCertification: LocationParams;
 };
@@ -142,11 +142,11 @@ function AppInner() {
             component={Certification}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="CertificationResult"
             component={CertificationResult}
             options={{ headerShown: false }}
-          />
+          /> */}
           <Stack.Screen
             name="Location"
             component={Location}

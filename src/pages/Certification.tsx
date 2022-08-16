@@ -21,7 +21,7 @@ function Certification({ route, navigation }: Props) {
         tierCode={tierCode}
         data={params!}
         loading={<Loading />}
-        callback={(response) => navigation.replace('CertificationResult', response)
+        callback={(response) => navigation.replace('Location', response)
         }
       />
     </SafeAreaView>
