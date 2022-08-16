@@ -193,6 +193,10 @@ function SignIn({ navigation }: SignInScreenProps) {
     }
   }, []);
 
+  const goCampaingRegisterPage = () =>{
+    navigation.navigate('CampaignRegister');
+  }
+
   return (
     <View style={styles.container}>
       <Image style={styles.logo}
@@ -228,6 +232,12 @@ function SignIn({ navigation }: SignInScreenProps) {
             source={GoogleBtn}
           />
           <Text style={styles.loginButtonText}>구글로 계속하기</Text>
+        </Pressable>
+        <Pressable
+          style={styles.loginButton}
+          onPress={goCampaingRegisterPage}
+        >
+          <Text style={styles.loginButtonText}>캠페인 등록하기</Text>
         </Pressable>
       </View>
     </View>

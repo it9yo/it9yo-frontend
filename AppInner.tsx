@@ -27,6 +27,7 @@ import Manage from './src/pages/Manage';
 import Chat from './src/pages/Chat';
 import Mypage from './src/pages/Mypage';
 import Certification from './src/pages/Certification';
+import CampaignRegister from './src/pages/CampaignRegister';
 // import CertificationResult from './src/pages/CertificationResult';
 import Location from './src/pages/Location';
 import LocationCertification from './src/pages/LocationCertification';
@@ -155,6 +156,11 @@ function AppInner() {
           <Stack.Screen
             name="LocationCertification"
             component={LocationCertification}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CampaignRegister"
+            component={CampaignRegister}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
