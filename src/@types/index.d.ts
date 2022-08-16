@@ -10,16 +10,12 @@ export declare type PaymentParams = {
   tierCode?: string;
 };
 
-export declare type LocationParams = {
-  address: string;
-};
-
 export declare type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
   Certification: CertificationParams | undefined;
   Location: any;
-  LocationCertification: LocationParams;
+  LocationCertification: { address: string };
 };
 
 export declare type LoggedInParamList = {
