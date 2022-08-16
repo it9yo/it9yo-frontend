@@ -6,9 +6,8 @@ import {
   View,
   Image,
 } from 'react-native';
-
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../AppInner';
+import { RootStackParamList } from '../@types';
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
