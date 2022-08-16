@@ -8,15 +8,9 @@ import {
 } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList } from '../../AppInner';
 
-import Logo from '../assets/images/logo.png';
-import LogoTitle from '../assets/images/logoTitle.png';
-import NaverBtn from '../assets/images/naverBtn.png';
-import KakaoBtn from '../assets/images/kakaoBtn.png';
-import GoogleBtn from '../assets/images/googleBtn.png';
-
-type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
+type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
 function SignUp({ navigation }: SignUpScreenProps) {
   const toSignIn = useCallback(() => {
@@ -25,49 +19,7 @@ function SignUp({ navigation }: SignUpScreenProps) {
 
   return (
     <View style={styles.container}>
-      <Image style={styles.logo}
-        source={Logo}
-      />
-      <Image style={styles.logoTitle}
-        source={LogoTitle}
-      />
-      <View style={styles.buttonZone}>
-        <Pressable
-          style={styles.loginButton}
-          onPress={toSignIn}
-        >
-          <Image style={styles.loginButtonLogo}
-            source={NaverBtn}
-          />
-          <Text style={styles.loginButtonText}>네이버로 로그인</Text>
-        </Pressable>
-        <Pressable
-          style={styles.loginButton}
-          onPress={toSignIn}
-        >
-          <Image style={styles.loginButtonLogo}
-            source={KakaoBtn}
-          />
-          <Text style={styles.loginButtonText}>카카오로 로그인</Text>
-        </Pressable>
-        <Pressable
-          style={styles.loginButton}
-          onPress={toSignIn}
-        >
-          <Image style={styles.loginButtonLogo}
-            source={GoogleBtn}
-          />
-          <Text style={styles.loginButtonText}>구글로 로그인</Text>
-        </Pressable>
-      </View>
-      <View style={styles.buttonZone}>
-        <Pressable
-          style={styles.loginButton}
-          onPress={toSignIn}
-        >
-          <Text style={styles.loginButtonText}>회원가입</Text>
-        </Pressable>
-      </View>
+      <Text>회원가입 화면</Text>
     </View>
   );
 }
