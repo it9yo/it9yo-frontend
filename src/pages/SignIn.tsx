@@ -129,11 +129,6 @@ function SignIn({ navigation }: SignInScreenProps) {
       }
     } catch (error) {
       console.error(error);
-
-      // const errorResponse = (error as AxiosError).response;
-      // if (errorResponse) {
-      //   Alert.alert('알림', errorResponse.data.message);
-      // }
     }
   }, []);
 
