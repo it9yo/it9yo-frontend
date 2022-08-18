@@ -95,7 +95,7 @@ function AppInner() {
           />
         </Tab.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName='LocationCertification'>
+        <Stack.Navigator initialRouteName='Location'>
           <Stack.Screen
             name="SignIn"
             component={SignIn}
@@ -119,7 +119,7 @@ function AppInner() {
           <Stack.Screen
             name="Location"
             component={Location}
-            options={{ headerShown: false }}
+            // options={{ headerShown: false }}
           />
           <Stack.Screen
             name="LocationCertification"
