@@ -18,7 +18,6 @@ function Location({ navigation }: Props) {
 
   const handleSido = (item) => {
     setSido(item);
-    console.log(typeof item);
     if (item === '세종특별자치시') {
       setSigungu('');
     } else {
