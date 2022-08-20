@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import {
   Button,
   Pressable,
+  SafeAreaView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { RootStackParamList } from '../@types';
@@ -16,7 +17,7 @@ function Location({ navigation }: Props) {
 
   const sidoList = Object.keys(address);
 
-  const handleSido = (item) => {
+  const handleSido = (item: string) => {
     setSido(item);
     if (item === '세종특별자치시') {
       setSigungu('');
@@ -28,7 +29,7 @@ function Location({ navigation }: Props) {
   const canGoNext = sido && sigungu !== null;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.textList}>
       {sidoList.map((item, idx) => (
         <TouchableOpacity
@@ -57,7 +58,9 @@ function Location({ navigation }: Props) {
       </View>
 
       <View style={styles.buttonZone}>
-        <TouchableOpacity style={StyleSheet.compose(styles.button, styles.buttonActive)}>
+        <TouchableOpacity
+          style={StyleSheet.compose(styles.button, styles.buttonActive)}
+          onPress={() => navigation.pop()}>
           <Text style={styles.buttonText}>이  전</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -66,11 +69,12 @@ function Location({ navigation }: Props) {
               ? StyleSheet.compose(styles.button, styles.buttonActive)
               : styles.button
           }
-          disabled={!canGoNext}>
-          <Text style={styles.buttonText}>지역 인증 하기</Text>
+          disabled={!canGoNext}
+          onPress={() => navigation.push('LocationCertification', { sido, sigungu })}>
+          <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

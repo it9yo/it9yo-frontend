@@ -1,7 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
-  Dimensions, StyleSheet, Text, View,
+  Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import NaverMapView, { Marker, Path } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
@@ -16,7 +16,6 @@ function LocationCertification({ navigation, route }: Props) {
   } | null>(null);
 
   useEffect(() => {
-    // Geolocation.watchPosition
     Geolocation.getCurrentPosition(
       (info) => {
         setMyPosition({
@@ -28,13 +27,14 @@ function LocationCertification({ navigation, route }: Props) {
       {
         enableHighAccuracy: true,
         timeout: 20000,
-        distanceFilter: 100, // 일정 거리 이상 되었을때 watchPosition
       },
     );
   }, []);
 
+  const canGoNext = true;
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View
         style={{
           width: Dimensions.get('window').width - 20,
@@ -46,7 +46,7 @@ function LocationCertification({ navigation, route }: Props) {
             zoomControl={false}
             center={{
               zoom: 10,
-              latitude: myPosition.latitude,
+              latitude: myPosition?.latitude,
               longitude: myPosition.longitude,
             }}>
             <Marker
@@ -63,14 +63,56 @@ function LocationCertification({ navigation, route }: Props) {
           </NaverMapView>
           ) : (<Text>위치 정보 받아오기 실패</Text>)}
       </View>
-    </View>
+
+      <View style={styles.buttonZone}>
+        <TouchableOpacity
+          style={StyleSheet.compose(styles.button, styles.buttonActive)}
+          onPress={() => navigation.pop()}>
+          <Text style={styles.buttonText}>이  전</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={
+            canGoNext
+              ? StyleSheet.compose(styles.button, styles.buttonActive)
+              : styles.button
+          }
+          disabled={!canGoNext}>
+          <Text style={styles.buttonText}>다음으로</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  buttonZone: {
+    position: 'absolute',
+    width: '90%',
+    bottom: 30,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginHorizontal: 5,
+  },
+  button: {
+    width: '45%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'gray',
+    paddingVertical: 10,
+    borderRadius: 5,
+  },
+  buttonActive: {
+    backgroundColor: 'black',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
