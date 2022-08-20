@@ -12,10 +12,14 @@ export declare type PaymentParams = {
 
 export declare type RootStackParamList = {
   SignIn: undefined;
-  SignUp: undefined;
-  Certification: CertificationParams | undefined;
-  Location: any;
-  LocationCertification: { address: string };
+  Terms: undefined;
+  AdditionalInfo: undefined;
+  PhoneCertification: undefined;
+  Location: undefined;
+  LocationCertification: {
+    sido: string | null;
+    sigungu: string | null;
+  };
 };
 
 export declare type LoggedInParamList = {
@@ -24,3 +28,49 @@ export declare type LoggedInParamList = {
   Chat: undefined;
   Mypage: undefined;
 };
+
+export interface UserAuthenticationProps {
+  id: string;
+  providerType: string;
+}
+
+export interface UserInfo {
+  userId: number;
+  username: string | null;
+  nickName: string;
+  phoneNumber: string | null;
+  sido: string | null;
+  sigungu: string | null;
+  profileImageUrl: string | null;
+  providerType: string;
+  roleType: string;
+  introduction: string;
+  badgeType: string;
+  point: number;
+  accountNumber: string | null;
+}
+
+export interface UserInfoProps {
+  data:{
+    data: {
+      user: UserInfo;
+    }
+  }
+}
+
+export interface UserSignUpProps {
+  data:{
+    data: {
+      accessToken: string;
+      refreshToken: string;
+      user: UserInfo;
+    }
+  }
+}
+
+export interface NaverKeyProps {
+  kConsumerKey: string;
+  kConsumerSecret: string;
+  kServiceAppName: string;
+  kServiceAppUrlScheme?: string;
+}
