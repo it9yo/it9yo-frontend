@@ -1,19 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   SafeAreaView,
   StyleSheet,
-  Text, TouchableOpacity, View,
+  Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { RootStackParamList } from '../@types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AdditionalInfo'>;
 
 function AdditionalInfo({ navigation }: Props) {
-  const canGoNext = true;
+  const [nickname, setNickname] = useState('');
+  const [introduction, setIntroduction] = useState('');
+
+  const canGoNext = !!nickname;
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text>추가 정보 입력 화면</Text>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>닉네임</Text>
+        <TextInput
+          style={styles.textInput}
+          onChangeText={(text) => setNickname(text.trim())}
+          placeholder="닉네임을 입력해주세요"
+          placeholderTextColor="#666"
+          // textContentType="telephoneNumber"
+          value={nickname}
+          clearButtonMode="while-editing"
+          blurOnSubmit={false}
+        />
+      </View>
+      <View style={styles.inputWrapper}>
+        <Text style={styles.label}>자기소개</Text>
+        <TextInput
+          style={StyleSheet.compose(styles.textInput, styles.introduceInput)}
+          onChangeText={setIntroduction}
+          placeholder="자기소개를 입력해주세요(선택)"
+          placeholderTextColor="#666"
+          value={introduction}
+          clearButtonMode="while-editing"
+          blurOnSubmit={false}
+        />
+      </View>
+
       <View style={styles.buttonZone}>
         <TouchableOpacity
           style={StyleSheet.compose(styles.button, styles.buttonActive)}
@@ -38,8 +67,25 @@ function AdditionalInfo({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+  },
+  inputWrapper: {
+    padding: 20,
+  },
+  label: {
+    marginVertical: 5,
+  },
+  introduceInput: {
+    height: 100,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  textInput: {
+    width: 300,
+    padding: 5,
+    marginRight: 10,
+    borderRadius: 5,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   buttonZone: {
     position: 'absolute',

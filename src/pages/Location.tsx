@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingLeft: 12,
     color: 'gray',
-    fontSize: 20,
+    fontSize: 16,
   },
   selectedText: {
     color: 'black',
