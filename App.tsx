@@ -1,10 +1,13 @@
 import React from 'react';
+import { RecoilRoot } from 'recoil';
 
 import AppInner from './AppInner';
 
 function App() {
   return (
-    <AppInner />
+    <RecoilRoot>
+      <AppInner />
+    </RecoilRoot>
   );
 }
 
