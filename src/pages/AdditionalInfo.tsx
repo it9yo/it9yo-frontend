@@ -33,7 +33,7 @@ function AdditionalInfo({ navigation }: Props) {
       <View style={styles.inputWrapper}>
         <Text style={styles.label}>자기소개</Text>
         <TextInput
-          style={StyleSheet.compose(styles.textInput, styles.introduceInput)}
+          style={styles.textInput}
           onChangeText={setIntroduction}
           placeholder="자기소개를 입력해주세요(선택)"
           placeholderTextColor="#666"
@@ -74,18 +74,18 @@ const styles = StyleSheet.create({
   },
   label: {
     marginVertical: 5,
+    fontSize: 16,
   },
   introduceInput: {
-    height: 100,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    // lineHeight: 100,
+    // borderWidth: StyleSheet.hairlineWidth,
   },
   textInput: {
     width: 300,
     padding: 5,
+    marginTop: 5,
     marginRight: 10,
-    borderRadius: 5,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   buttonZone: {
     position: 'absolute',
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '45%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'gray',

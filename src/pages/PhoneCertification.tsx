@@ -111,11 +111,13 @@ function PhoneCertification({ navigation }: Props) {
       )}
 
       <View style={styles.buttonZone}>
+
         <TouchableOpacity
           style={StyleSheet.compose(styles.button, styles.buttonActive)}
           onPress={() => navigation.pop()}>
           <Text style={styles.buttonText}>이  전</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={
             authenticated
@@ -126,6 +128,7 @@ function PhoneCertification({ navigation }: Props) {
           onPress={() => navigation.push('AdditionalInfo')}>
           <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   );
@@ -166,6 +169,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '45%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'gray',
