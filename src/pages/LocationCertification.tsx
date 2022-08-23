@@ -37,8 +37,8 @@ function LocationCertification({ navigation, route }: Props) {
     <SafeAreaView style={styles.container}>
       <View
         style={{
-          width: Dimensions.get('window').width - 20,
-          height: Dimensions.get('window').height - 20,
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').height - 180,
         }}>
           {myPosition ? (
           <NaverMapView
@@ -68,7 +68,7 @@ function LocationCertification({ navigation, route }: Props) {
         <TouchableOpacity
           style={StyleSheet.compose(styles.button, styles.buttonActive)}
           onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>이  전</Text>
+          <Text style={styles.buttonText}>나중에 하기</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={
@@ -77,7 +77,7 @@ function LocationCertification({ navigation, route }: Props) {
               : styles.button
           }
           disabled={!canGoNext}>
-          <Text style={styles.buttonText}>다음으로</Text>
+          <Text style={styles.buttonText}>회원 가입 완료</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -87,7 +87,7 @@ function LocationCertification({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     alignItems: 'center',
   },
   buttonZone: {

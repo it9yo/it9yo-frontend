@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import SplashScreen from 'react-native-splash-screen';
 
-import { Alert } from 'react-native';
+import { Alert, Button } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -139,32 +139,60 @@ function AppInner() {
           <Stack.Screen
             name="SignIn"
             component={SignIn}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              title: '로그인',
+            }}
           />
           <Stack.Screen
             name="Terms"
             component={Terms}
-            options={{ headerShown: false }}
+            options={{
+              title: '약관 동의',
+              headerLeft: () => (
+                <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="AdditionalInfo"
             component={AdditionalInfo}
-            options={{ headerShown: false }}
+            options={{
+              title: '추가 정보 입력',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="PhoneCertification"
             component={PhoneCertification}
-            options={{ headerShown: false }}
+            options={{
+              title: '전화 번호 인증',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="Location"
             component={Location}
-            options={{ headerShown: false }}
+            options={{
+              title: '지역 설정',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="LocationCertification"
             component={LocationCertification}
-            options={{ headerShown: false }}
+            options={{
+              title: '지역 인증',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
         </Stack.Navigator>
       )}
