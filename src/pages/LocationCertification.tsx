@@ -61,7 +61,7 @@ function LocationCertification({ navigation, route }: Props) {
               image={require('../assets/images/red-dot.png')}
             />
           </NaverMapView>
-          ) : (<Text>위치 정보 받아오기 실패</Text>)}
+          ) : <Text>Loading...</Text>}
       </View>
 
       <View style={styles.buttonZone}>

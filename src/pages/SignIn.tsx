@@ -20,7 +20,6 @@ import {
 } from '@react-native-seoul/kakao-login';
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { IMPConst } from 'iamport-react-native';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -77,7 +76,6 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
-      console.log('Authentication start');
       const response: UserSignUpProps = await axios.post(
         `${Config.API_URL}/auth/login`,
         {

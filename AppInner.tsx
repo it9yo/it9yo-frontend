@@ -31,7 +31,7 @@ function AppInner() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
 
-  const isLoggedIn = userInfo.phoneNumber;
+  const isLoggedIn = !!userInfo.phoneNumber;
 
   useEffect(() => {
     SplashScreen.hide();
