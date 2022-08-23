@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   Image,
   Platform,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 
 import Config from 'react-native-config';
@@ -20,50 +21,21 @@ import {
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-import { IMPConst } from 'iamport-react-native';
-import { CertificationParams, RootStackParamList } from '../@types';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {
+  NaverKeyProps, RootStackParamList,
+  UserAuthenticationProps, UserSignUpProps,
+} from '../@types';
 
 import Logo from '../assets/images/logo.png';
 import LogoTitle from '../assets/images/logoTitle.png';
 import NaverBtn from '../assets/images/naverBtn.png';
 import KakaoBtn from '../assets/images/kakaoBtn.png';
 import GoogleBtn from '../assets/images/googleBtn.png';
+import { userAccessToken, userState } from '../recoil';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
-
-interface UserAuthenticationProps {
-  id: string;
-  providerType: string;
-}
-
-interface UserResponseProps {
-  data:{
-    data: {
-      accessToken: string;
-      refreshToken: string;
-      user: {
-        userId: number;
-        nickName: string;
-        phoneNumber: string | null;
-        homeAddress: string | null;
-        profileImageUrl: string | null;
-        providerType: string;
-        roleType: string;
-        introduction: string;
-        badgeType: string;
-        point: number;
-        accountNumber: string | null;
-      }
-    }
-  }
-}
-
-interface NaverKeyProps {
-  kConsumerKey: string;
-  kConsumerSecret: string;
-  kServiceAppName: string;
-  kServiceAppUrlScheme?: string;
-}
 
 const iosKeys: NaverKeyProps = {
   kConsumerKey: Config.NAVER_CLIENT_ID,
@@ -91,6 +63,9 @@ const getNaverToken = (props: NaverKeyProps) => new Promise((resolve, reject) =>
 });
 
 function SignIn({ navigation }: SignInScreenProps) {
+  const setUserInfo = useSetRecoilState(userState);
+  const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+
   useEffect(() => {
     GoogleSignin.configure({
       webClientId: Config.GOOGLE_WEB_CLIENT_ID,
@@ -101,39 +76,33 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
-      const response: UserResponseProps = await axios.post(
-        `${Config.API_URL}/user/auth/login`,
+      const response: UserSignUpProps = await axios.post(
+        `${Config.API_URL}/auth/login`,
         {
           id,
           providerType,
         },
       );
-      if (response.data.data.user.phoneNumber === null) {
-        Alert.alert('알림', '회원가입을 위해 본인인증이 필요합니다');
-        // TODO: params setting
-        const data: CertificationParams = {
-          params: {
-            merchant_uid: `mid_${new Date().getTime()}`,
-            company: '아임포트',
-            carrier: '',
-            name: '',
-            phone: '',
-            min_age: '',
-            m_redirect_url: IMPConst.M_REDIRECT_URL,
-          },
-          tierCode: '',
-        };
-        navigation.navigate('Certification', data);
-      } else {
-        navigation.navigate('Home');
-      }
-    } catch (error) {
-      console.error(error);
+      setAccessToken(response.data.data.accessToken);
+      await EncryptedStorage.setItem(
+        'refreshToken',
+        response.data.data.refreshToken,
+      );
 
-      // const errorResponse = (error as AxiosError).response;
-      // if (errorResponse) {
-      //   Alert.alert('알림', errorResponse.data.message);
-      // }
+      const userResponseData = await axios.get(
+        `${Config.API_URL}/user/info`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      setUserInfo(userResponseData.data.data);
+    }
+    // 회원가입이 되어있지 않은 경우
+    catch (error) {
+      console.log(error);
+      navigation.push('Terms');
     }
   }, []);
 
@@ -182,13 +151,13 @@ function SignIn({ navigation }: SignInScreenProps) {
       await GoogleSignin.hasPlayServices();
       const isSignedIn = await GoogleSignin.isSignedIn();
 
-      let userInfo;
+      let userInfoFromGoogle;
       if (isSignedIn) {
-        userInfo = await GoogleSignin.signInSilently();
+        userInfoFromGoogle = await GoogleSignin.signInSilently();
       } else {
-        userInfo = await GoogleSignin.signIn();
+        userInfoFromGoogle = await GoogleSignin.signIn();
       }
-      const { id } = userInfo.user;
+      const { id } = userInfoFromGoogle.user;
       console.log(id);
       const userProps: UserAuthenticationProps = {
         id,
@@ -201,7 +170,7 @@ function SignIn({ navigation }: SignInScreenProps) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image style={styles.logo}
         source={Logo}
       />
@@ -237,7 +206,7 @@ function SignIn({ navigation }: SignInScreenProps) {
           <Text style={styles.loginButtonText}>구글로 계속하기</Text>
         </Pressable>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

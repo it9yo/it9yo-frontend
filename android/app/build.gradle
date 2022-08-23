@@ -267,6 +267,8 @@ dependencies {
     implementation project(':react-native-seoul-naver-login')
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
+    // naver map
+    implementation 'com.naver.maps:map-sdk:3.15.0'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
