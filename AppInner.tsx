@@ -1,75 +1,79 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import SplashScreen from 'react-native-splash-screen';
 
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { Alert } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import type { IMPData } from 'iamport-react-native';
 
-import SignUp from './src/pages/SignUp';
+import { useRecoilState } from 'recoil';
 import SignIn from './src/pages/SignIn';
 import Home from './src/pages/Home';
 import Manage from './src/pages/Manage';
 import Chat from './src/pages/Chat';
 import Mypage from './src/pages/Mypage';
-import Certification from './src/pages/Certification';
-import CampaignRegister from './src/pages/CampaignRegister';
-// import CertificationResult from './src/pages/CertificationResult';
 import Location from './src/pages/Location';
 import LocationCertification from './src/pages/LocationCertification';
-
-export interface CertificationParams {
-  params: IMPData.CertificationData;
-  tierCode?: string;
-}
-
-export interface PaymentParams {
-  params: IMPData.PaymentData;
-  tierCode?: string;
-}
-
-export interface LocationParams {
-  address: string;
-}
-
-export type LoggedInParamList = {
-  Home: undefined;
-  Manage: undefined;
-  Chat: undefined;
-  Mypage: undefined;
-};
-
-export type RootStackParamList = {
-  SignIn: undefined;
-  SignUp: undefined;
-  Certification: CertificationParams | undefined;
-  // CertificationResult: any;
-  Location: any;
-  LocationCertification: LocationParams;
-};
+import { userState, userAccessToken } from './src/recoil';
+import Terms from './src/pages/Terms';
+import AdditionalInfo from './src/pages/AdditionalInfo';
+import PhoneCertification from './src/pages/PhoneCertification';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function AppInner() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+  const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+
+  const isLoggedIn = !!userInfo.phoneNumber;
 
   useEffect(() => {
     SplashScreen.hide();
+  }, []);
+
+  useEffect(() => {
+    // 로그인 시 refresh token으로 accessToken을 발급하는 코드
+    const getTokenAndRefresh = async () => {
+      try {
+        const refreshToken = await EncryptedStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          return;
+        }
+        const response = await axios.post(`${Config.API_URL}/auth/refresh`, {
+          refreshToken,
+        });
+        setAccessToken(response.data.data.accessToken);
+        await EncryptedStorage.setItem(
+          'refreshToken',
+          response.data.data.refreshToken
+        );
+
+        const userResponseData = await axios.get(
+          `${Config.API_URL}/user/info`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setUserInfo(userResponseData.data.data);
+      } catch (error) {
+        console.error(error);
+        if ((error as AxiosError).response?.data.code === 'expired') {
+          Alert.alert('알림', '다시 로그인 해주세요.');
+        }
+      } finally {
+        // TODO: 스플래시 스크린 없애기
+      }
+    };
+
+    getTokenAndRefresh();
   }, []);
 
   useEffect(() => {
@@ -86,25 +90,28 @@ function AppInner() {
             const originalRequest = config;
             const refreshToken = await EncryptedStorage.getItem('refreshToken');
             // token refresh 요청
-            const { data } = await axios.post(
-              `${Config.API_URL}/user/auth/refresh`,
-              { refreshToken },
+            const response = await axios.post(
+              `${Config.API_URL}/auth/refresh`,
+              { refreshToken }
             );
-            // TODO: accessToken recoil 에 저장
-            // data.accessToken
-            originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+            setAccessToken(response.data.data.accessToken);
+            await EncryptedStorage.setItem(
+              'refreshToken',
+              response.data.data.refreshToken
+            );
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             return axios(originalRequest);
           }
         }
         return Promise.reject(error);
-      },
+      }
     );
   }, []);
 
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <Tab.Navigator initialRouteName='Home'>
+        <Tab.Navigator initialRouteName="Home">
           <Tab.Screen
             name="Home"
             component={Home}
@@ -114,7 +121,7 @@ function AppInner() {
             name="Manage"
             component={Manage}
             options={{ headerShown: false }}
-            />
+          />
           <Tab.Screen
             name="Chat"
             component={Chat}
@@ -127,27 +134,27 @@ function AppInner() {
           />
         </Tab.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName='SignIn'>
+        <Stack.Navigator initialRouteName="SignIn">
           <Stack.Screen
             name="SignIn"
             component={SignIn}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="SignUp"
-            component={SignUp}
+            name="Terms"
+            component={Terms}
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="Certification"
-            component={Certification}
+            name="AdditionalInfo"
+            component={AdditionalInfo}
             options={{ headerShown: false }}
           />
-          {/* <Stack.Screen
-            name="CertificationResult"
-            component={CertificationResult}
+          <Stack.Screen
+            name="PhoneCertification"
+            component={PhoneCertification}
             options={{ headerShown: false }}
-          /> */}
+          />
           <Stack.Screen
             name="Location"
             component={Location}

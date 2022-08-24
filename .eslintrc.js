@@ -17,6 +17,8 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       rules: {
         '@typescript-eslint/no-shadow': ['error'],
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": ["error", {"functions": false, "classes": false, "variables": false}],
         'no-shadow': 'off',
         'no-undef': 'off',
       },

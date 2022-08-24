@@ -1,11 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  SafeAreaView, StyleSheet, Text,
+} from 'react-native';
 
 function Loading() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={{ fontSize: 20 }}>잠시만 기다려주세요...</Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
