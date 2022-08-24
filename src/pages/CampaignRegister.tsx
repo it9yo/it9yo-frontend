@@ -27,7 +27,6 @@ function CampaignRegister() {
           // You can also display the image using data:
           // const source = { uri: 'data:image/jpeg;base64,' + response.data };
           setImageSource(response.assets[0].uri); // 저는 여기서 uri 값을 저장 시킵니다 !
-          console.log(response.assets[0].uri)
         }
     });
   }  
