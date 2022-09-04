@@ -218,12 +218,6 @@ function SignIn({ navigation }: SignInScreenProps) {
         >
           <Text style={styles.loginButtonText}>캠페인 등록하기</Text>
         </Pressable>
-        <Pressable
-          style={styles.loginButton}
-          onPress={goToAdditionalInfo}
-        >
-          <Text style={styles.loginButtonText}>추가 정보 입력</Text>
-        </Pressable>
       </View>
     </SafeAreaView>
   );
