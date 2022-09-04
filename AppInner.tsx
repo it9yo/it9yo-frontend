@@ -23,6 +23,7 @@ import { userState, userAccessToken } from './src/recoil';
 import Terms from './src/pages/Terms';
 import AdditionalInfo from './src/pages/AdditionalInfo';
 import PhoneCertification from './src/pages/PhoneCertification';
+import CreateCampaign from './src/pages/CreateCampaign';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -164,6 +165,11 @@ function AppInner() {
           <Stack.Screen
             name="LocationCertification"
             component={LocationCertification}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CreateCampaign"
+            component={CreateCampaign}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

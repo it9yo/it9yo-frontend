@@ -169,6 +169,13 @@ function SignIn({ navigation }: SignInScreenProps) {
     }
   }, []);
 
+  const goToCreateCampaign = function () {
+    navigation.push('CreateCampaign');
+  }
+  const goToAdditionalInfo = function() {
+    navigation.push('AdditionalInfo');
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Image style={styles.logo}
@@ -204,6 +211,18 @@ function SignIn({ navigation }: SignInScreenProps) {
             source={GoogleBtn}
           />
           <Text style={styles.loginButtonText}>구글로 계속하기</Text>
+        </Pressable>
+        <Pressable
+          style={styles.loginButton}
+          onPress={goToCreateCampaign}
+        >
+          <Text style={styles.loginButtonText}>캠페인 등록하기</Text>
+        </Pressable>
+        <Pressable
+          style={styles.loginButton}
+          onPress={goToAdditionalInfo}
+        >
+          <Text style={styles.loginButtonText}>추가 정보 입력</Text>
         </Pressable>
       </View>
     </SafeAreaView>
