@@ -9,17 +9,21 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Config from 'react-native-config';
+import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
+import { signupState } from '../recoil';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PhoneCertification'>;
 
 function PhoneCertification({ navigation }: Props) {
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
   const [loading, setLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [certNumber, setCertNumber] = useState('');
   const [userCertNumber, setUserCertNumber] = useState('');
-  // const [authenticated, setAuthenticated] = useState(false);
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+  // const [authenticated, setAuthenticated] = useState(true);
 
   const onChangePhoneNumber = useCallback((text: string) => {
     setPhoneNumber(text.trim());
@@ -125,7 +129,13 @@ function PhoneCertification({ navigation }: Props) {
               : styles.button
           }
           disabled={!authenticated}
-          onPress={() => navigation.push('AdditionalInfo')}>
+          onPress={() => {
+            setSignupInfo({
+              ...signupInfo,
+              phoneNumber,
+            });
+            navigation.push('AdditionalInfo');
+          }}>
           <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
 
