@@ -16,10 +16,7 @@ export declare type RootStackParamList = {
   AdditionalInfo: undefined;
   PhoneCertification: undefined;
   Location: undefined;
-  LocationCertification: {
-    sido: string | null;
-    sigungu: string | null;
-  };
+  LocationCertification: undefined;
 };
 
 export declare type LoggedInParamList = {
@@ -58,14 +55,27 @@ export interface UserInfoProps {
   }
 }
 
+// export interface UserSignUpProps {
+//   data:{
+//     data: {
+//       accessToken: string;
+//       refreshToken: string;
+//       user: UserInfo;
+//     }
+//   }
+// }
+
 export interface UserSignUpProps {
-  data:{
-    data: {
-      accessToken: string;
-      refreshToken: string;
-      user: UserInfo;
-    }
-  }
+  providerUserId: string;
+  providerType: string;
+  nickName: string;
+  introduction: string;
+  phoneNumber: string; // '-' 를 붙여줘야 하는지
+  sido: string;
+  sigungu: string;
+  locationAuth: boolean;
+  mobileToken: string;
+  agree: boolean;
 }
 
 export interface NaverKeyProps {

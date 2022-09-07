@@ -33,7 +33,7 @@ import LogoTitle from '../assets/images/logoTitle.png';
 import NaverBtn from '../assets/images/naverBtn.png';
 import KakaoBtn from '../assets/images/kakaoBtn.png';
 import GoogleBtn from '../assets/images/googleBtn.png';
-import { userAccessToken, userState } from '../recoil';
+import { signupState, userAccessToken, userState } from '../recoil';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -63,6 +63,8 @@ const getNaverToken = (props: NaverKeyProps) => new Promise((resolve, reject) =>
 });
 
 function SignIn({ navigation }: SignInScreenProps) {
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
   const setUserInfo = useSetRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
 
@@ -76,33 +78,42 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
-      const response: UserSignUpProps = await axios.post(
+      const response = await axios.post(
         `${Config.API_URL}/auth/login`,
         {
           id,
           providerType,
         },
       );
-      setAccessToken(response.data.data.accessToken);
-      await EncryptedStorage.setItem(
-        'refreshToken',
-        response.data.data.refreshToken,
-      );
 
-      const userResponseData = await axios.get(
-        `${Config.API_URL}/user/info`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
+      if (response.status === 200) {
+        setAccessToken(response.data.data.accessToken);
+        await EncryptedStorage.setItem(
+          'refreshToken',
+          response.data.data.refreshToken,
+        );
+
+        const userResponseData = await axios.get(
+          `${Config.API_URL}/user/info`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
           },
-        },
-      );
-      setUserInfo(userResponseData.data.data);
-    }
-    // 회원가입이 되어있지 않은 경우
-    catch (error) {
-      console.log(error);
-      navigation.push('Terms');
+        );
+        setUserInfo(userResponseData.data.data);
+      }
+    } catch (error) {
+      // 회원가입이 되어있지 않은 경우
+      console.error(error);
+      if ((error as AxiosError).response?.status === 404) {
+        setSignupInfo({
+          ...signupInfo,
+          providerUserId: id,
+          providerType,
+        });
+        navigation.push('Terms');
+      }
     }
   }, []);
 

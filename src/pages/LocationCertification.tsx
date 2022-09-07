@@ -5,17 +5,22 @@ import {
 } from 'react-native';
 import NaverMapView, { Marker, Path } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
+import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
+import { signupState } from '../recoil';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationCertification'>;
 
-function LocationCertification({ navigation, route }: Props) {
+function LocationCertification({ navigation }: Props) {
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
   const [myPosition, setMyPosition] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
 
   useEffect(() => {
+    console.log('signupInfo', signupInfo);
     Geolocation.getCurrentPosition(
       (info) => {
         setMyPosition({

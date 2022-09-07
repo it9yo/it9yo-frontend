@@ -5,15 +5,19 @@ import {
   StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
+import { signupState } from '../recoil';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AdditionalInfo'>;
 
 function AdditionalInfo({ navigation }: Props) {
-  const [nickname, setNickname] = useState('');
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
+  const [nickName, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
 
-  const canGoNext = !!nickname;
+  const canGoNext = !!nickName;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -21,11 +25,11 @@ function AdditionalInfo({ navigation }: Props) {
         <Text style={styles.label}>닉네임</Text>
         <TextInput
           style={styles.textInput}
-          onChangeText={(text) => setNickname(text.trim())}
+          onChangeText={(text) => setNickName(text.trim())}
           placeholder="닉네임을 입력해주세요"
           placeholderTextColor="#666"
           // textContentType="telephoneNumber"
-          value={nickname}
+          value={nickName}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
@@ -56,7 +60,14 @@ function AdditionalInfo({ navigation }: Props) {
               : styles.button
           }
           disabled={!canGoNext}
-          onPress={() => navigation.push('Location')}>
+          onPress={() => {
+            setSignupInfo({
+              ...signupInfo,
+              nickName,
+              introduction,
+            });
+            navigation.push('Location');
+          }}>
           <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
       </View>

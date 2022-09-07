@@ -6,27 +6,22 @@ import {
   SafeAreaView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
+import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
 import address from '../constants/address';
+import { signupState } from '../recoil';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Location'>;
 
 function Location({ navigation }: Props) {
-  const [sido, setSido] = useState<string | null>(null);
-  const [sigungu, setSigungu] = useState<string | null>(null);
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
+  const [sido, setSido] = useState<string>('');
+  const [sigungu, setSigungu] = useState<string>('');
 
   const sidoList = Object.keys(address);
 
-  const handleSido = (item: string) => {
-    setSido(item);
-    if (item === '세종특별자치시') {
-      setSigungu('');
-    } else {
-      setSigungu(null);
-    }
-  };
-
-  const canGoNext = sido && sigungu !== null;
+  const canGoNext = !!sigungu || sido === '세종특별자치시';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,7 +29,10 @@ function Location({ navigation }: Props) {
       {sidoList.map((item, idx) => (
         <TouchableOpacity
           key={idx}
-          onPress={() => { handleSido(item); }}>
+          onPress={() => {
+            setSido(item);
+            setSigungu('');
+          }}>
           <Text style={item === sido
             ? StyleSheet.compose(styles.commonText, styles.selectedText)
             : styles.commonText}>
@@ -44,7 +42,7 @@ function Location({ navigation }: Props) {
       ))}
       </View>
       <View style={styles.textList}>
-        {sido !== null && address[sido].map((item, idx) => (
+        {!!sido && address[sido].map((item, idx) => (
           <TouchableOpacity
           key={idx}
           onPress={() => setSigungu(item)}>
@@ -70,7 +68,14 @@ function Location({ navigation }: Props) {
               : styles.button
           }
           disabled={!canGoNext}
-          onPress={() => navigation.push('LocationCertification', { sido, sigungu })}>
+          onPress={() => {
+            setSignupInfo({
+              ...signupInfo,
+              sido,
+              sigungu,
+            });
+            navigation.push('LocationCertification');
+          }}>
           <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
       </View>
