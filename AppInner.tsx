@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import SplashScreen from 'react-native-splash-screen';
 
-import { Alert } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -24,6 +24,7 @@ import Terms from './src/pages/Terms';
 import AdditionalInfo from './src/pages/AdditionalInfo';
 import PhoneCertification from './src/pages/PhoneCertification';
 import CreateCampaign from './src/pages/CreateCampaign';
+import CreateCampaignLocation from './src/pages/CreateCampaignLocation';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -170,6 +171,19 @@ function AppInner() {
           <Stack.Screen
             name="CreateCampaign"
             component={CreateCampaign}
+            options={{
+              // title: '캠페인 등록하기',
+              // headerRight: () => (
+              //   <Pressable>
+              //     <Text>완료</Text>
+              //   </Pressable>
+              // ),
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="CreateCampaignLocation"
+            component={CreateCampaignLocation}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

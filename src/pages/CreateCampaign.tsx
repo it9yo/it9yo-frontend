@@ -80,50 +80,7 @@ function CreateCampaign({navigation}) {
             />
           </View>
 
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>지역</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={(text) => setLocation(text.trim())}
-              // textContentType="telephoneNumber"
-              value={location}
-              clearButtonMode="while-editing"
-              blurOnSubmit={false}
-            />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>인원</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={(text) => setTotalAmount(text.trim())}
-              // textContentType="telephoneNumber"
-              value={totalAmount}
-              clearButtonMode="while-editing"
-              blurOnSubmit={false}
-            />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>가격</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={(text) => setPrice(text.trim())}
-              // textContentType="telephoneNumber"
-              value={price}
-              clearButtonMode="while-editing"
-              blurOnSubmit={false}
-            />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>배송 예정일</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={(text) => setExpectedDevDate(text.trim())}
-              // textContentType="telephoneNumber"
-              value={expectedDevDate}
-              clearButtonMode="while-editing"
-              blurOnSubmit={false}
-            />
-          </View>
+          
     
           <View style={styles.buttonZone}>
             <TouchableOpacity
@@ -138,7 +95,7 @@ function CreateCampaign({navigation}) {
                   : styles.button
               }
               disabled={!canGoNext}
-              onPress={() => navigation.push('Location')}>
+              onPress={() => navigation.push('CreateCampaignLocation')}>
               <Text style={styles.buttonText}>다음으로</Text>
             </TouchableOpacity>
           </View>
