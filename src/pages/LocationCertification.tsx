@@ -6,6 +6,8 @@ import {
 import NaverMapView, { Marker, Path } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
 import { useRecoilState } from 'recoil';
+import axios, { AxiosResponse } from 'axios';
+import Config from 'react-native-config';
 import { RootStackParamList } from '../@types';
 import { signupState } from '../recoil';
 
@@ -35,6 +37,34 @@ function LocationCertification({ navigation }: Props) {
       },
     );
   }, []);
+
+  useEffect(() => {
+    console.log(Config.NAVER_MAP_CLIENT_ID);
+    console.log(Config.NAVER_MAP_CLIENT_SECRET);
+    console.log(myPosition);
+    const getAddressByLocation = async (lat: number, lng: number) => {
+      const url = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&orders=addr&output=json`;
+      const response: AxiosResponse<any, any> = await axios.get(
+        url,
+        {
+          headers: {
+            'X-NCP-APIGW-API-KEY-ID': Config.NAVER_MAP_CLIENT_ID,
+            'X-NCP-APIGW-API-KEY': Config.NAVER_MAP_CLIENT_SECRET,
+          },
+        },
+      );
+      const result = {
+        sido: response.data.results[0].region.area1.name,
+        sidoAlias: response.data.results[0].region.area1.alias,
+        sigungu: response.data.results[0].region.area2.name,
+      };
+      return result;
+    };
+
+    if (myPosition) {
+      getAddressByLocation(myPosition.latitude, myPosition.longitude);
+    }
+  }, [myPosition]);
 
   const canGoNext = true;
 
