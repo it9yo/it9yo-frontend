@@ -1,6 +1,7 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import NaverMapView, { Marker, Path } from 'react-native-nmap';
@@ -20,9 +21,9 @@ function LocationCertification({ navigation }: Props) {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [locationAuth, setLocationAuth] = useState(false);
 
   useEffect(() => {
-    console.log('signupInfo', signupInfo);
     Geolocation.getCurrentPosition(
       (info) => {
         setMyPosition({
@@ -39,10 +40,7 @@ function LocationCertification({ navigation }: Props) {
   }, []);
 
   useEffect(() => {
-    console.log(Config.NAVER_MAP_CLIENT_ID);
-    console.log(Config.NAVER_MAP_CLIENT_SECRET);
-    console.log(myPosition);
-    const getAddressByLocation = async (lat: number, lng: number) => {
+    const isLocationOk = async (lat: number, lng: number) => {
       const url = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&orders=addr&output=json`;
       const response: AxiosResponse<any, any> = await axios.get(
         url,
@@ -53,20 +51,22 @@ function LocationCertification({ navigation }: Props) {
           },
         },
       );
-      const result = {
-        sido: response.data.results[0].region.area1.name,
-        sidoAlias: response.data.results[0].region.area1.alias,
-        sigungu: response.data.results[0].region.area2.name,
-      };
-      return result;
+
+      const sido = response.data.results[0].region.area1.name;
+      const sigungu = response.data.results[0].region.area2.name;
+
+      if (signupInfo.sido === sido && signupInfo.sigungu === sigungu) {
+        setLocationAuth(true);
+        Alert.alert('알림', '지역 인증이 완료되었습니다.');
+      } else {
+        Alert.alert('알림', '지역이 일치하지 않습니다.');
+      }
     };
 
     if (myPosition) {
-      getAddressByLocation(myPosition.latitude, myPosition.longitude);
+      isLocationOk(myPosition.latitude, myPosition.longitude);
     }
   }, [myPosition]);
-
-  const canGoNext = true;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -103,15 +103,10 @@ function LocationCertification({ navigation }: Props) {
         <TouchableOpacity
           style={StyleSheet.compose(styles.button, styles.buttonActive)}
           onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>나중에 하기</Text>
+          <Text style={styles.buttonText}>이전으로</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={
-            canGoNext
-              ? StyleSheet.compose(styles.button, styles.buttonActive)
-              : styles.button
-          }
-          disabled={!canGoNext}>
+          style={StyleSheet.compose(styles.button, styles.buttonActive)}>
           <Text style={styles.buttonText}>회원 가입 완료</Text>
         </TouchableOpacity>
       </View>
