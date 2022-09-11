@@ -5,15 +5,19 @@ import {
   StyleSheet,
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
+import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
+import { signupState } from '../recoil';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AdditionalInfo'>;
 
 function AdditionalInfo({ navigation }: Props) {
-  const [nickname, setNickname] = useState('');
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
+  const [nickName, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
 
-  const canGoNext = !!nickname;
+  const canGoNext = !!nickName;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -21,11 +25,11 @@ function AdditionalInfo({ navigation }: Props) {
         <Text style={styles.label}>닉네임</Text>
         <TextInput
           style={styles.textInput}
-          onChangeText={(text) => setNickname(text.trim())}
+          onChangeText={(text) => setNickName(text.trim())}
           placeholder="닉네임을 입력해주세요"
           placeholderTextColor="#666"
           // textContentType="telephoneNumber"
-          value={nickname}
+          value={nickName}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
@@ -33,7 +37,7 @@ function AdditionalInfo({ navigation }: Props) {
       <View style={styles.inputWrapper}>
         <Text style={styles.label}>자기소개</Text>
         <TextInput
-          style={StyleSheet.compose(styles.textInput, styles.introduceInput)}
+          style={styles.textInput}
           onChangeText={setIntroduction}
           placeholder="자기소개를 입력해주세요(선택)"
           placeholderTextColor="#666"
@@ -56,7 +60,14 @@ function AdditionalInfo({ navigation }: Props) {
               : styles.button
           }
           disabled={!canGoNext}
-          onPress={() => navigation.push('Location')}>
+          onPress={() => {
+            setSignupInfo({
+              ...signupInfo,
+              nickName,
+              introduction,
+            });
+            navigation.push('Location');
+          }}>
           <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
       </View>
@@ -74,18 +85,18 @@ const styles = StyleSheet.create({
   },
   label: {
     marginVertical: 5,
+    fontSize: 16,
   },
   introduceInput: {
-    height: 100,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    // lineHeight: 100,
+    // borderWidth: StyleSheet.hairlineWidth,
   },
   textInput: {
     width: 300,
     padding: 5,
+    marginTop: 5,
     marginRight: 10,
-    borderRadius: 5,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   buttonZone: {
     position: 'absolute',
@@ -98,6 +109,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '45%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'gray',

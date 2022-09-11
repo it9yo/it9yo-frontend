@@ -21,6 +21,7 @@ module.exports = {
         "@typescript-eslint/no-use-before-define": ["error", {"functions": false, "classes": false, "variables": false}],
         'no-shadow': 'off',
         'no-undef': 'off',
+        'no-console': 'off',
       },
     },
   ],

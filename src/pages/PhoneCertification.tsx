@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Alert,
@@ -9,17 +9,20 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Config from 'react-native-config';
+import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
+import { signupState } from '../recoil';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PhoneCertification'>;
 
 function PhoneCertification({ navigation }: Props) {
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
   const [loading, setLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [certNumber, setCertNumber] = useState('');
   const [userCertNumber, setUserCertNumber] = useState('');
-  // const [authenticated, setAuthenticated] = useState(false);
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
   const onChangePhoneNumber = useCallback((text: string) => {
     setPhoneNumber(text.trim());
@@ -111,11 +114,13 @@ function PhoneCertification({ navigation }: Props) {
       )}
 
       <View style={styles.buttonZone}>
+
         <TouchableOpacity
           style={StyleSheet.compose(styles.button, styles.buttonActive)}
           onPress={() => navigation.pop()}>
           <Text style={styles.buttonText}>이  전</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={
             authenticated
@@ -123,9 +128,16 @@ function PhoneCertification({ navigation }: Props) {
               : styles.button
           }
           disabled={!authenticated}
-          onPress={() => navigation.push('AdditionalInfo')}>
+          onPress={() => {
+            setSignupInfo({
+              ...signupInfo,
+              phoneNumber,
+            });
+            navigation.push('AdditionalInfo');
+          }}>
           <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   );
@@ -166,6 +178,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '45%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'gray',

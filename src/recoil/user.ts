@@ -1,8 +1,13 @@
 import { atom } from 'recoil';
-import { UserInfo } from '../@types';
+import { UserInfo, UserSignUpProps } from '../@types';
 
 export const userAccessToken = atom<string>({
   key: 'userAccessToken',
+  default: '',
+});
+
+export const userFcmToken = atom<string>({
+  key: 'userFcmToken',
   default: '',
 });
 
@@ -11,16 +16,33 @@ export const userState = atom<UserInfo>({
   default: {
     userId: 0,
     username: '',
+    providerType: '',
     nickName: '',
     phoneNumber: '',
-    sido: '',
-    sigungu: '',
+    siDo: '',
+    siGunGu: '',
+    locationAuth: false,
     profileImageUrl: '',
-    providerType: '',
     roleType: '',
     introduction: '',
     badgeType: '',
     point: 0,
     accountNumber: '',
+    mobileToken: '',
+  },
+});
+
+export const signupState = atom<UserSignUpProps>({
+  key: 'signupState',
+  default: {
+    providerUserId: '',
+    providerType: '',
+    nickName: '',
+    introduction: '',
+    phoneNumber: '',
+    siDo: '',
+    siGunGu: '',
+    locationAuth: false,
+    agree: false,
   },
 });

@@ -1,19 +1,34 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import {
+  Alert,
   Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
-import NaverMapView, { Marker, Path } from 'react-native-nmap';
+import NaverMapView, { Marker } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
+import Config from 'react-native-config';
+import axios, { AxiosResponse } from 'axios';
+
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
+import { signupState } from '../recoil';
+import { userState } from '../recoil/user';
+
+import RedDot from '../assets/images/red-dot.png';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationCertification'>;
 
-function LocationCertification({ navigation, route }: Props) {
+function LocationCertification({ navigation }: Props) {
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+  const setUserInfo = useSetRecoilState(userState);
+
   const [myPosition, setMyPosition] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
+
+  const [locationAuth, setLocationAuth] = useState(false);
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -31,14 +46,66 @@ function LocationCertification({ navigation, route }: Props) {
     );
   }, []);
 
-  const canGoNext = true;
+  useEffect(() => {
+    const isLocationOk = async (lat: number, lng: number) => {
+      const url = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&orders=addr&output=json`;
+      const response: AxiosResponse<any, any> = await axios.get(
+        url,
+        {
+          headers: {
+            'X-NCP-APIGW-API-KEY-ID': Config.NAVER_MAP_CLIENT_ID,
+            'X-NCP-APIGW-API-KEY': Config.NAVER_MAP_CLIENT_SECRET,
+          },
+        },
+      );
+
+      const sido = response.data.results[0].region.area1.name;
+      const sigungu = response.data.results[0].region.area2.name;
+
+      if (signupInfo.siDo === sido && signupInfo.siGunGu === sigungu) {
+        setLocationAuth(true);
+        Alert.alert('알림', '지역 인증이 완료되었습니다.');
+      } else {
+        Alert.alert('알림', '지역이 일치하지 않습니다.');
+      }
+    };
+
+    if (myPosition) {
+      isLocationOk(myPosition.latitude, myPosition.longitude);
+    }
+  }, [myPosition]);
+
+  const onSignup = async () => {
+    try {
+      setSignupInfo({
+        ...signupInfo,
+        locationAuth,
+      });
+      console.log('signupInfo', signupInfo);
+      const response = await axios.post(
+        `${Config.API_URL}/auth/signUp`,
+        {
+          ...signupInfo,
+        },
+      );
+
+      if (response.status === 200) {
+        console.log(response.data.data);
+        const { data } = response.data;
+        setUserInfo({ ...data });
+        navigation.push('SignupComplete');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View
         style={{
-          width: Dimensions.get('window').width - 20,
-          height: Dimensions.get('window').height - 20,
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').height - 180,
         }}>
           {myPosition ? (
           <NaverMapView
@@ -58,7 +125,7 @@ function LocationCertification({ navigation, route }: Props) {
               height={15}
               anchor={{ x: 0.5, y: 0.5 }}
               caption={{ text: '현 위치' }}
-              image={require('../assets/images/red-dot.png')}
+              image={RedDot}
             />
           </NaverMapView>
           ) : <Text>Loading...</Text>}
@@ -68,16 +135,13 @@ function LocationCertification({ navigation, route }: Props) {
         <TouchableOpacity
           style={StyleSheet.compose(styles.button, styles.buttonActive)}
           onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>이  전</Text>
+          <Text style={styles.buttonText}>이전으로</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={
-            canGoNext
-              ? StyleSheet.compose(styles.button, styles.buttonActive)
-              : styles.button
-          }
-          disabled={!canGoNext}>
-          <Text style={styles.buttonText}>다음으로</Text>
+          style={StyleSheet.compose(styles.button, styles.buttonActive)}
+          onPress={onSignup}
+          >
+          <Text style={styles.buttonText}>회원 가입 완료</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -87,7 +151,7 @@ function LocationCertification({ navigation, route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     alignItems: 'center',
   },
   buttonZone: {

@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import SplashScreen from 'react-native-splash-screen';
 
-import { Alert } from 'react-native';
+import { Alert, Button } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import messaging from '@react-native-firebase/messaging';
 import axios, { AxiosError } from 'axios';
 
 import Config from 'react-native-config';
@@ -19,10 +20,11 @@ import Chat from './src/pages/Chat';
 import Mypage from './src/pages/Mypage';
 import Location from './src/pages/Location';
 import LocationCertification from './src/pages/LocationCertification';
-import { userState, userAccessToken } from './src/recoil';
+import { userState, userAccessToken, userFcmToken } from './src/recoil';
 import Terms from './src/pages/Terms';
 import AdditionalInfo from './src/pages/AdditionalInfo';
 import PhoneCertification from './src/pages/PhoneCertification';
+import SignupComplete from './src/pages/SignupComplete';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -30,11 +32,30 @@ const Stack = createNativeStackNavigator();
 function AppInner() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+  const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
 
   const isLoggedIn = !!userInfo.phoneNumber;
 
   useEffect(() => {
     SplashScreen.hide();
+  }, []);
+
+  useEffect(() => {
+    const getPushPermissions = async () => {
+      let authorized;
+      const enabled = await messaging().hasPermission();
+
+      if (!enabled) {
+        authorized = await messaging().requestPermission();
+      }
+
+      if (enabled || authorized) {
+        const token = await messaging().getToken();
+        setFcmToken(token);
+      }
+    };
+
+    getPushPermissions();
   }, []);
 
   useEffect(() => {
@@ -139,32 +160,70 @@ function AppInner() {
           <Stack.Screen
             name="SignIn"
             component={SignIn}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              title: '로그인',
+            }}
           />
           <Stack.Screen
             name="Terms"
             component={Terms}
-            options={{ headerShown: false }}
+            options={{
+              title: '약관 동의',
+              headerLeft: () => (
+                <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="AdditionalInfo"
             component={AdditionalInfo}
-            options={{ headerShown: false }}
+            options={{
+              title: '추가 정보 입력',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="PhoneCertification"
             component={PhoneCertification}
-            options={{ headerShown: false }}
+            options={{
+              title: '전화 번호 인증',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="Location"
             component={Location}
-            options={{ headerShown: false }}
+            options={{
+              title: '지역 설정',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
           <Stack.Screen
             name="LocationCertification"
             component={LocationCertification}
-            options={{ headerShown: false }}
+            options={{
+              title: '지역 인증',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="SignupComplete"
+            component={SignupComplete}
+            options={{
+              title: '회원가입 완료',
+              headerLeft: () => (
+              <></>
+              ),
+            }}
           />
         </Stack.Navigator>
       )}

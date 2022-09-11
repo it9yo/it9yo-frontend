@@ -5,11 +5,15 @@ import {
   StyleSheet,
   Text, TouchableOpacity, View,
 } from 'react-native';
+import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
+import { signupState } from '../recoil/user';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Terms'>;
 
 function Terms({ navigation }: Props) {
+  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+
   const canGoNext = true;
   return (
     <SafeAreaView style={styles.container}>
@@ -27,7 +31,13 @@ function Terms({ navigation }: Props) {
               : styles.button
           }
           disabled={!canGoNext}
-          onPress={() => navigation.push('PhoneCertification')}>
+          onPress={() => {
+            setSignupInfo({
+              ...signupInfo,
+              agree: true,
+            });
+            navigation.push('PhoneCertification');
+          }}>
           <Text style={styles.buttonText}>다음으로</Text>
         </TouchableOpacity>
       </View>
@@ -52,6 +62,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '45%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'gray',
