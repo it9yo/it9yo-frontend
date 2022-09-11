@@ -64,3 +64,9 @@ npx react-native run-android
 
 ### React Native Tutorial: Google SignIn without Firebase | Google oAuth in React Native 2022
 https://www.youtube.com/watch?v=EmtPTgE2_JY
+
+### 9.9 추가
+https://rnfirebase.io/
+
+/android/app/google-services.json
+GoogleService-Info.plist

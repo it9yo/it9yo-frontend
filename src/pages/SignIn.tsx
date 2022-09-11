@@ -20,12 +20,13 @@ import {
 } from '@react-native-seoul/kakao-login';
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import messaging from '@react-native-firebase/messaging';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {
   NaverKeyProps, RootStackParamList,
-  UserAuthenticationProps, UserSignUpProps,
+  UserAuthenticationProps,
 } from '../@types';
 
 import Logo from '../assets/images/logo.png';
@@ -33,7 +34,9 @@ import LogoTitle from '../assets/images/logoTitle.png';
 import NaverBtn from '../assets/images/naverBtn.png';
 import KakaoBtn from '../assets/images/kakaoBtn.png';
 import GoogleBtn from '../assets/images/googleBtn.png';
-import { signupState, userAccessToken, userState } from '../recoil';
+import {
+  signupState, userAccessToken, userFcmToken, userState,
+} from '../recoil';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -67,6 +70,7 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const setUserInfo = useSetRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+  const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -83,6 +87,7 @@ function SignIn({ navigation }: SignInScreenProps) {
         {
           id,
           providerType,
+          mobileToken: fcmToken,
         },
       );
 

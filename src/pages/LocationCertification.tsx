@@ -1,26 +1,32 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import {
   Alert,
   Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import NaverMapView, { Marker, Path } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
-import { useRecoilState } from 'recoil';
-import axios, { AxiosResponse } from 'axios';
 import Config from 'react-native-config';
+import axios, { AxiosResponse } from 'axios';
+
+import { useRecoilState } from 'recoil';
+import { createIconSetFromFontello } from 'react-native-vector-icons';
 import { RootStackParamList } from '../@types';
 import { signupState } from '../recoil';
+import { userState } from '../recoil/user';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationCertification'>;
 
 function LocationCertification({ navigation }: Props) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
 
   const [myPosition, setMyPosition] = useState<{
     latitude: number;
     longitude: number;
   } | null>(null);
+
   const [locationAuth, setLocationAuth] = useState(false);
 
   useEffect(() => {
@@ -55,7 +61,7 @@ function LocationCertification({ navigation }: Props) {
       const sido = response.data.results[0].region.area1.name;
       const sigungu = response.data.results[0].region.area2.name;
 
-      if (signupInfo.sido === sido && signupInfo.sigungu === sigungu) {
+      if (signupInfo.siDo === sido && signupInfo.siGunGu === sigungu) {
         setLocationAuth(true);
         Alert.alert('알림', '지역 인증이 완료되었습니다.');
       } else {
@@ -67,6 +73,31 @@ function LocationCertification({ navigation }: Props) {
       isLocationOk(myPosition.latitude, myPosition.longitude);
     }
   }, [myPosition]);
+
+  const onSignup = async () => {
+    try {
+      setSignupInfo({
+        ...signupInfo,
+        locationAuth,
+      });
+      console.log('signupInfo', signupInfo);
+      const response = await axios.post(
+        `${Config.API_URL}/auth/signUp`,
+        {
+          ...signupInfo,
+        },
+      );
+
+      if (response.status === 200) {
+        console.log(response.data.data);
+        const { data } = response.data;
+        setUserInfo({ ...data });
+        navigation.push('SignupComplete');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -106,7 +137,9 @@ function LocationCertification({ navigation }: Props) {
           <Text style={styles.buttonText}>이전으로</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={StyleSheet.compose(styles.button, styles.buttonActive)}>
+          style={StyleSheet.compose(styles.button, styles.buttonActive)}
+          onPress={onSignup}
+          >
           <Text style={styles.buttonText}>회원 가입 완료</Text>
         </TouchableOpacity>
       </View>

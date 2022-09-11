@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@react-native-community/geolocation": "^2.1.0",
+    "@react-native-firebase/app": "^15.4.0",
+    "@react-native-firebase/messaging": "^15.4.0",
     "@react-native-google-signin/google-signin": "^8.0.0",
     "@react-native-seoul/kakao-login": "^4.2.3",
     "@react-native-seoul/naver-login": "^2.3.0",

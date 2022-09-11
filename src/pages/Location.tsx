@@ -71,8 +71,8 @@ function Location({ navigation }: Props) {
           onPress={() => {
             setSignupInfo({
               ...signupInfo,
-              sido,
-              sigungu,
+              siDo: sido,
+              siGunGu: sigungu,
             });
             navigation.push('LocationCertification');
           }}>

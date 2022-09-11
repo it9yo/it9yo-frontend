@@ -6,22 +6,29 @@ export const userAccessToken = atom<string>({
   default: '',
 });
 
+export const userFcmToken = atom<string>({
+  key: 'userFcmToken',
+  default: '',
+});
+
 export const userState = atom<UserInfo>({
   key: 'userState',
   default: {
     userId: 0,
     username: '',
+    providerType: '',
     nickName: '',
     phoneNumber: '',
-    sido: '',
-    sigungu: '',
+    siDo: '',
+    siGunGu: '',
+    locationAuth: false,
     profileImageUrl: '',
-    providerType: '',
     roleType: '',
     introduction: '',
     badgeType: '',
     point: 0,
     accountNumber: '',
+    mobileToken: '',
   },
 });
 
@@ -33,10 +40,9 @@ export const signupState = atom<UserSignUpProps>({
     nickName: '',
     introduction: '',
     phoneNumber: '',
-    sido: '',
-    sigungu: '',
+    siDo: '',
+    siGunGu: '',
     locationAuth: false,
-    mobileToken: '',
     agree: false,
   },
 });
