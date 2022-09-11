@@ -16,11 +16,10 @@ import axios, { AxiosError } from 'axios';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile,
-  KakaoProfileNoneAgreement, login, logout,
+  KakaoProfileNoneAgreement, login,
 } from '@react-native-seoul/kakao-login';
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import messaging from '@react-native-firebase/messaging';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -70,7 +69,7 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const setUserInfo = useSetRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
-  const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
+  const fcmToken = useRecoilState(userFcmToken);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -82,12 +81,13 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
+      const mobileToken = fcmToken[0];
       const response = await axios.post(
         `${Config.API_URL}/auth/login`,
         {
           id,
           providerType,
-          mobileToken: fcmToken,
+          mobileToken,
         },
       );
 
@@ -142,23 +142,25 @@ function SignIn({ navigation }: SignInScreenProps) {
   }, []);
 
   const signInWithKakao = useCallback(async () => {
-    let profile: KakaoProfile | KakaoProfileNoneAgreement;
+    let profile: KakaoProfile | KakaoProfileNoneAgreement | null = null;
     try {
       profile = await getKakaoProfile();
-    } catch (error) {
+    } catch (profileError) {
       try {
-        const token: KakaoOAuthToken = await login();
+        await login();
         profile = await getKakaoProfile();
-      } catch (error) {
-        console.error(error);
+      } catch (authProfileError) {
+        console.error(authProfileError);
       }
     } finally {
-      const { id } = profile;
-      const userProps: UserAuthenticationProps = {
-        id,
-        providerType: 'KAKAO',
-      };
-      authenticateUser(userProps);
+      if (profile) {
+        const { id } = profile;
+        const userProps: UserAuthenticationProps = {
+          id,
+          providerType: 'KAKAO',
+        };
+        authenticateUser(userProps);
+      }
     }
   }, []);
 

@@ -5,22 +5,23 @@ import {
   Alert,
   Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
-import NaverMapView, { Marker, Path } from 'react-native-nmap';
+import NaverMapView, { Marker } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
 import Config from 'react-native-config';
 import axios, { AxiosResponse } from 'axios';
 
-import { useRecoilState } from 'recoil';
-import { createIconSetFromFontello } from 'react-native-vector-icons';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
 import { signupState } from '../recoil';
 import { userState } from '../recoil/user';
+
+import RedDot from '../assets/images/red-dot.png';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationCertification'>;
 
 function LocationCertification({ navigation }: Props) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);
-  const [userInfo, setUserInfo] = useRecoilState(userState);
+  const setUserInfo = useSetRecoilState(userState);
 
   const [myPosition, setMyPosition] = useState<{
     latitude: number;
@@ -124,7 +125,7 @@ function LocationCertification({ navigation }: Props) {
               height={15}
               anchor={{ x: 0.5, y: 0.5 }}
               caption={{ text: '현 위치' }}
-              image={require('../assets/images/red-dot.png')}
+              image={RedDot}
             />
           </NaverMapView>
           ) : <Text>Loading...</Text>}

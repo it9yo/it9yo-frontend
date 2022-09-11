@@ -1,8 +1,6 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-  Button,
-  Pressable,
   SafeAreaView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
