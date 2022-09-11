@@ -65,4 +65,4 @@ buck-out/
 .env
 
 google-services.json
-GoogleService-Info.plist
+ios/GoogleService-Info.plist
