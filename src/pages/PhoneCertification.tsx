@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Alert,
@@ -23,7 +23,6 @@ function PhoneCertification({ navigation }: Props) {
   const [certNumber, setCertNumber] = useState('');
   const [userCertNumber, setUserCertNumber] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
-  // const [authenticated, setAuthenticated] = useState(true);
 
   const onChangePhoneNumber = useCallback((text: string) => {
     setPhoneNumber(text.trim());
