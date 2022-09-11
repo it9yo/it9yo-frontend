@@ -17,6 +17,7 @@ export declare type RootStackParamList = {
   PhoneCertification: undefined;
   Location: undefined;
   LocationCertification: undefined;
+  SignupComplete: undefined;
 };
 
 export declare type LoggedInParamList = {
@@ -34,17 +35,19 @@ export interface UserAuthenticationProps {
 export interface UserInfo {
   userId: number;
   username: string | null;
+  providerType: string;
   nickName: string;
   phoneNumber: string | null;
-  sido: string | null;
-  sigungu: string | null;
+  siDo: string | null;
+  siGunGu: string | null;
+  locationAuth: boolean;
   profileImageUrl: string | null;
-  providerType: string;
   roleType: string;
   introduction: string;
   badgeType: string;
   point: number;
   accountNumber: string | null;
+  mobileToken: string | null;
 }
 
 export interface UserInfoProps {
@@ -55,26 +58,15 @@ export interface UserInfoProps {
   }
 }
 
-// export interface UserSignUpProps {
-//   data:{
-//     data: {
-//       accessToken: string;
-//       refreshToken: string;
-//       user: UserInfo;
-//     }
-//   }
-// }
-
 export interface UserSignUpProps {
   providerUserId: string;
   providerType: string;
   nickName: string;
   introduction: string;
   phoneNumber: string; // '-' 를 붙여줘야 하는지
-  sido: string;
-  sigungu: string;
+  siDo: string;
+  siGunGu: string;
   locationAuth: boolean;
-  mobileToken: string;
   agree: boolean;
 }
 

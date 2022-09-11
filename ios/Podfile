@@ -1,3 +1,5 @@
+$RNFirebaseAsStaticFramework = true
+
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
@@ -18,10 +20,12 @@ target 'it9yo' do
     :production => production,
     :hermes_enabled => flags[:hermes_enabled],
     :fabric_enabled => flags[:fabric_enabled],
-    :flipper_configuration => FlipperConfiguration.enabled,
+    # :flipper_configuration => FlipperConfiguration.enabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  
+  use_frameworks! :linkage => :static
 
   # naver sdk 추가
   pod 'naveridlogin-sdk-ios'
