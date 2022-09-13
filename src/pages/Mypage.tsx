@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, SafeAreaView, Text } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useSetRecoilState } from 'recoil';
-import { userAccessToken, userState } from '../recoil';
+import { userAccessToken, userState } from '@src/states';
 
 function Mypage() {
   const setUserInfo = useSetRecoilState(userState);

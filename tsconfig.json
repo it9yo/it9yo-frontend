@@ -16,6 +16,7 @@
       "@hooks/*": ["src/hooks/*"],
       "@modules/*": ["src/modules/*"],
       "@pages/*": ["src/pages/*"],
+      "@states/*": ["src/states/*"],
     }
   },
   "exclude": [

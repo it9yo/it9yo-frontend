@@ -11,11 +11,10 @@ import Config from 'react-native-config';
 import axios, { AxiosResponse } from 'axios';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { RootStackParamList } from '../@types';
-import { signupState } from '../recoil';
-import { userState } from '../recoil/user';
+import { RootStackParamList } from '@src/@types';
+import { signupState, userState } from '@src/states';
 
-import RedDot from '../assets/images/red-dot.png';
+import RedDot from '@assets/images/red-dot.png';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationCertification'>;
 

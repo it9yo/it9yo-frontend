@@ -20,7 +20,7 @@ function Chat() {
       name="ChatRoom"
       component={ChatRoom}
     />
-    </Stack.Navigator>;
+  </Stack.Navigator>;
 }
 
 export default Chat;
