@@ -22,7 +22,8 @@ function PhoneCertification({ navigation }: Props) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [certNumber, setCertNumber] = useState('');
   const [userCertNumber, setUserCertNumber] = useState('');
-  const [authenticated, setAuthenticated] = useState(false);
+  // const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(true);
 
   const onChangePhoneNumber = useCallback((text: string) => {
     setPhoneNumber(text.trim());

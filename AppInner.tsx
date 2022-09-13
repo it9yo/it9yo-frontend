@@ -34,7 +34,7 @@ function AppInner() {
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
   const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
 
-  const isLoggedIn = !!userInfo.phoneNumber;
+  const isLoggedIn = !!userInfo.userId;
 
   useEffect(() => {
     SplashScreen.hide();
@@ -80,7 +80,7 @@ function AppInner() {
           `${Config.API_URL}/user/info`,
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${response.data.data.accessToken}`,
             },
           },
         );
@@ -90,8 +90,6 @@ function AppInner() {
         if ((error as AxiosError).response?.data.code === 'expired') {
           Alert.alert('알림', '다시 로그인 해주세요.');
         }
-      } finally {
-        // TODO: 스플래시 스크린 없애기
       }
     };
 

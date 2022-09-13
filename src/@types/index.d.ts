@@ -30,6 +30,7 @@ export declare type LoggedInParamList = {
 export interface UserAuthenticationProps {
   id: string;
   providerType: string;
+  mobilToken?: string;
 }
 
 export interface UserInfo {
