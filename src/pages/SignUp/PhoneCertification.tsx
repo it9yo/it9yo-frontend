@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
-import { signupState } from '@states';
+import { signupState } from '@src/states';
 import { RootStackParamList } from '@src/@types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PhoneCertification'>;
