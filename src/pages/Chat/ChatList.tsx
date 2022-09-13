@@ -57,15 +57,15 @@ const chatList = [
 ];
 
 function ChatList({ navigation }) {
-  const onChatRoom = (campaignId) => {
-    navigation.navigate('ChatRoom');
+  const onChatRoom = (campaignId: number, campaignTitle: string) => {
+    navigation.navigate('ChatRoom', { campaignId, campaignTitle });
   };
 
   return <ScrollView>
     {chatList.map(({
       campaignId, campaignTitle, chatContent, chatTime, chatThumbnailUrl,
     }) => <Pressable
-      onPress={() => onChatRoom(campaignId)}
+      onPress={() => onChatRoom(campaignId, campaignTitle)}
     >
       <View style={styles.chatListView}>
         <Image style={styles.chatThumbnail}
