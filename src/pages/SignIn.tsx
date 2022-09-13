@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import Config from 'react-native-config';
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -82,7 +82,12 @@ function SignIn({ navigation }: SignInScreenProps) {
   const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
       const mobileToken = fcmToken[0];
-      const response = await axios.post(
+      console.log({
+        id,
+        providerType,
+        mobileToken,
+      });
+      const response: AxiosResponse<any, any> = await axios.post(
         `${Config.API_URL}/auth/login`,
         {
           id,
@@ -91,6 +96,7 @@ function SignIn({ navigation }: SignInScreenProps) {
         },
       );
 
+      console.log(response);
       if (response.status === 200) {
         setAccessToken(response.data.data.accessToken);
         await EncryptedStorage.setItem(
@@ -102,7 +108,7 @@ function SignIn({ navigation }: SignInScreenProps) {
           `${Config.API_URL}/user/info`,
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${response.data.data.accessToken}`,
             },
           },
         );

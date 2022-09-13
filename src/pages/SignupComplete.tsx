@@ -1,20 +1,61 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import axios from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Image, Pressable, SafeAreaView, StyleSheet, Text, View,
 } from 'react-native';
 import Config from 'react-native-config';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState } from 'recoil';
 import { RootStackParamList } from '../@types';
 
 import Congraturation from '../assets/images/congraturation.png';
-import { signupState } from '../recoil';
+import {
+  signupState, userAccessToken, userFcmToken, userState,
+} from '../recoil';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 function SignupComplete({ navigation }: SignInScreenProps) {
-  const [signupInfo, setSignupInfo] = useRecoilState(signupState);
+  const signupInfo = useRecoilState(signupState)[0];
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+  const fcmToken = useRecoilState(userFcmToken)[0];
+  const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+
+  const onLogin = async () => {
+    const { providerUserId, providerType } = signupInfo;
+    const mobileToken = fcmToken;
+
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/auth/login`,
+        {
+          id: providerUserId,
+          providerType,
+          mobileToken,
+        },
+      );
+      if (response.status === 200) {
+        setAccessToken(response.data.data.accessToken);
+        await EncryptedStorage.setItem(
+          'refreshToken',
+          response.data.data.refreshToken,
+        );
+
+        const userResponseData = await axios.get(
+          `${Config.API_URL}/user/info`,
+          {
+            headers: {
+              Authorization: `Bearer ${response.data.data.accessToken}`,
+            },
+          },
+        );
+        setUserInfo(userResponseData.data.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,8 +65,9 @@ function SignupComplete({ navigation }: SignInScreenProps) {
       <View style={styles.buttonZone}>
         <Pressable
           style={styles.loginButton}
+          onPress={onLogin}
         >
-          <Text style={styles.loginButtonText}>회원가입 완료</Text>
+          <Text style={styles.loginButtonText}>홈으로 이동</Text>
         </Pressable>
 
       </View>
