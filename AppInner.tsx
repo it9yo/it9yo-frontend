@@ -1,30 +1,25 @@
 import React, { useEffect } from 'react';
 import SplashScreen from 'react-native-splash-screen';
 
-import { Alert, Button } from 'react-native';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import messaging from '@react-native-firebase/messaging';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 
 import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-import { useRecoilState } from 'recoil';
-import SignIn from './src/pages/SignIn';
-import Home from './src/pages/Home';
-import Manage from './src/pages/Manage';
-import Chat from './src/pages/Chat';
-import Mypage from './src/pages/Mypage';
-import Location from './src/pages/Location';
-import LocationCertification from './src/pages/LocationCertification';
-import { userState, userAccessToken, userFcmToken } from './src/recoil';
-import Terms from './src/pages/Terms';
-import AdditionalInfo from './src/pages/AdditionalInfo';
-import PhoneCertification from './src/pages/PhoneCertification';
-import SignupComplete from './src/pages/SignupComplete';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+
+import SignIn from '@pages/SignIn';
+import SignUp from '@pages/SignUp';
+import Chat from '@pages/Chat';
+import Home from '@pages/Home';
+import Manage from '@pages/Manage';
+import Mypage from '@pages/Mypage';
+
+import { userState, userAccessToken, userFcmToken } from '@src/states';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -32,7 +27,7 @@ const Stack = createNativeStackNavigator();
 function AppInner() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
-  const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
+  const setFcmToken = useSetRecoilState(userFcmToken);
 
   const isLoggedIn = !!userInfo.userId;
 
@@ -87,9 +82,9 @@ function AppInner() {
         setUserInfo(userResponseData.data.data);
       } catch (error) {
         console.error(error);
-        if ((error as AxiosError).response?.data.code === 'expired') {
-          Alert.alert('알림', '다시 로그인 해주세요.');
-        }
+        // if (error.response?.data.code === 'expired') {
+        //   Alert.alert('알림', '다시 로그인 해주세요.');
+        // }
       }
     };
 
@@ -164,64 +159,9 @@ function AppInner() {
             }}
           />
           <Stack.Screen
-            name="Terms"
-            component={Terms}
-            options={{
-              title: '약관 동의',
-              headerLeft: () => (
-                <></>
-              ),
-            }}
-          />
-          <Stack.Screen
-            name="AdditionalInfo"
-            component={AdditionalInfo}
-            options={{
-              title: '추가 정보 입력',
-              headerLeft: () => (
-              <></>
-              ),
-            }}
-          />
-          <Stack.Screen
-            name="PhoneCertification"
-            component={PhoneCertification}
-            options={{
-              title: '전화 번호 인증',
-              headerLeft: () => (
-              <></>
-              ),
-            }}
-          />
-          <Stack.Screen
-            name="Location"
-            component={Location}
-            options={{
-              title: '지역 설정',
-              headerLeft: () => (
-              <></>
-              ),
-            }}
-          />
-          <Stack.Screen
-            name="LocationCertification"
-            component={LocationCertification}
-            options={{
-              title: '지역 인증',
-              headerLeft: () => (
-              <></>
-              ),
-            }}
-          />
-          <Stack.Screen
-            name="SignupComplete"
-            component={SignupComplete}
-            options={{
-              title: '회원가입 완료',
-              headerLeft: () => (
-              <></>
-              ),
-            }}
+            name="SignUp"
+            component={SignUp}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       )}

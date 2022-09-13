@@ -6,8 +6,8 @@ import {
   Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { useRecoilState } from 'recoil';
-import { RootStackParamList } from '../@types';
-import { signupState } from '../recoil';
+import { RootStackParamList } from '@src/@types';
+import { signupState } from '@src/states';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AdditionalInfo'>;
 

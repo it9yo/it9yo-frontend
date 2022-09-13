@@ -1,26 +1,27 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import axios from 'axios';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Image, Pressable, SafeAreaView, StyleSheet, Text, View,
 } from 'react-native';
+
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import axios from 'axios';
 import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useRecoilState } from 'recoil';
-import { RootStackParamList } from '../@types';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import Congraturation from '../assets/images/congraturation.png';
+import { RootStackParamList } from '@src/@types';
 import {
   signupState, userAccessToken, userFcmToken, userState,
-} from '../recoil';
+} from '@src/states';
+import Congraturation from '@assets/images/congraturation.png';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 function SignupComplete({ navigation }: SignInScreenProps) {
   const signupInfo = useRecoilState(signupState)[0];
-  const [userInfo, setUserInfo] = useRecoilState(userState);
+  const setUserInfo = useSetRecoilState(userState);
   const fcmToken = useRecoilState(userFcmToken)[0];
-  const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+  const setAccessToken = useSetRecoilState(userAccessToken);
 
   const onLogin = async () => {
     const { providerUserId, providerType } = signupInfo;

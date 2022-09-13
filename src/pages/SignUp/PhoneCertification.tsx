@@ -10,8 +10,8 @@ import {
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
-import { RootStackParamList } from '../@types';
-import { signupState } from '../recoil';
+import { signupState } from '@src/states';
+import { RootStackParamList } from '@src/@types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PhoneCertification'>;
 
@@ -22,8 +22,7 @@ function PhoneCertification({ navigation }: Props) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [certNumber, setCertNumber] = useState('');
   const [userCertNumber, setUserCertNumber] = useState('');
-  // const [authenticated, setAuthenticated] = useState(false);
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
   const onChangePhoneNumber = useCallback((text: string) => {
     setPhoneNumber(text.trim());

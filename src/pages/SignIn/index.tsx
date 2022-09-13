@@ -15,7 +15,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  getProfile as getKakaoProfile, KakaoOAuthToken, KakaoProfile,
+  getProfile as getKakaoProfile, KakaoProfile,
   KakaoProfileNoneAgreement, login,
 } from '@react-native-seoul/kakao-login';
 import { NaverLogin, getProfile as getNaverProfile } from '@react-native-seoul/naver-login';
@@ -23,19 +23,19 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import EncryptedStorage from 'react-native-encrypted-storage';
+
+import Logo from '@assets/images/logo.png';
+import LogoTitle from '@assets/images/logoTitle.png';
+import NaverBtn from '@assets/images/naverBtn.png';
+import KakaoBtn from '@assets/images/kakaoBtn.png';
+import GoogleBtn from '@assets/images/googleBtn.png';
+import {
+  signupState, userAccessToken, userFcmToken, userState,
+} from '@src/states';
 import {
   NaverKeyProps, RootStackParamList,
   UserAuthenticationProps,
-} from '../@types';
-
-import Logo from '../assets/images/logo.png';
-import LogoTitle from '../assets/images/logoTitle.png';
-import NaverBtn from '../assets/images/naverBtn.png';
-import KakaoBtn from '../assets/images/kakaoBtn.png';
-import GoogleBtn from '../assets/images/googleBtn.png';
-import {
-  signupState, userAccessToken, userFcmToken, userState,
-} from '../recoil';
+} from '@src/@types';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
@@ -68,7 +68,7 @@ function SignIn({ navigation }: SignInScreenProps) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);
 
   const setUserInfo = useSetRecoilState(userState);
-  const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+  const setAccessToken = useSetRecoilState(userAccessToken);
   const fcmToken = useRecoilState(userFcmToken);
 
   useEffect(() => {

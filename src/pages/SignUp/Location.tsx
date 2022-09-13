@@ -5,9 +5,9 @@ import {
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { useRecoilState } from 'recoil';
-import { RootStackParamList } from '../@types';
-import address from '../constants/address';
-import { signupState } from '../recoil';
+import { RootStackParamList } from '@src/@types';
+import { signupState } from '@src/states';
+import address from '@constants/address';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Location'>;
 
