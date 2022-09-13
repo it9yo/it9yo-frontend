@@ -13,18 +13,18 @@ import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import { useRecoilState } from 'recoil';
-import SignIn from './src/pages/SignIn';
-import Home from './src/pages/Home';
-import Manage from './src/pages/Manage';
-import Chat from './src/pages/Chat';
-import Mypage from './src/pages/Mypage';
-import Location from './src/pages/Location';
-import LocationCertification from './src/pages/LocationCertification';
-import { userState, userAccessToken, userFcmToken } from './src/recoil';
-import Terms from './src/pages/Terms';
-import AdditionalInfo from './src/pages/AdditionalInfo';
-import PhoneCertification from './src/pages/PhoneCertification';
-import SignupComplete from './src/pages/SignupComplete';
+import Chat from '@pages/Chat';
+import Home from '@pages/Home';
+import Manage from '@pages/Manage';
+import Mypage from '@pages/Mypage';
+import Location from '@pages/Location';
+import LocationCertification from '@pages/LocationCertification';
+import Terms from '@pages/Terms';
+import AdditionalInfo from '@pages/AdditionalInfo';
+import PhoneCertification from '@pages/PhoneCertification';
+import SignupComplete from '@pages/SignupComplete';
+
+import { userState, userAccessToken, userFcmToken } from '@src/recoil';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();

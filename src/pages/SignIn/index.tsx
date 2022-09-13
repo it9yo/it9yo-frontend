@@ -26,7 +26,7 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import {
   NaverKeyProps, RootStackParamList,
   UserAuthenticationProps,
-} from '../@types';
+} from '../../@types';
 
 import Logo from '../assets/images/logo.png';
 import LogoTitle from '../assets/images/logoTitle.png';
@@ -35,7 +35,7 @@ import KakaoBtn from '../assets/images/kakaoBtn.png';
 import GoogleBtn from '../assets/images/googleBtn.png';
 import {
   signupState, userAccessToken, userFcmToken, userState,
-} from '../recoil';
+} from '../../recoil';
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
