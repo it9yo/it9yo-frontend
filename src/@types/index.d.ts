@@ -71,6 +71,11 @@ export interface UserSignUpProps {
   agree: boolean;
 }
 
+export interface Location {
+  siDo: string;
+  siGunGu: string;
+}
+
 export interface NaverKeyProps {
   kConsumerKey: string;
   kConsumerSecret: string;

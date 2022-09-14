@@ -21,7 +21,9 @@ import Home from '@pages/Home';
 import Manage from '@pages/Manage';
 import Mypage from '@pages/Mypage';
 
-import { userState, userAccessToken, userFcmToken } from '@src/states';
+import {
+  userState, userAccessToken, userFcmToken, location,
+} from '@src/states';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -30,6 +32,7 @@ function AppInner() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
   const setFcmToken = useSetRecoilState(userFcmToken);
+  const setLocation = useSetRecoilState(location);
 
   const isLoggedIn = !!userInfo.userId;
 
@@ -82,6 +85,10 @@ function AppInner() {
           },
         );
         setUserInfo(userResponseData.data.data);
+        setLocation({
+          siDo: userResponseData.data.data.siDo,
+          siGunGu: userResponseData.data.data.siGunGu,
+        });
       } catch (error) {
         console.error(error);
         // if (error.response?.data.code === 'expired') {
