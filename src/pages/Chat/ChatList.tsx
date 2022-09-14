@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Image,
   Pressable,
-  SafeAreaView, ScrollView, StyleSheet, Text, View,
+  ScrollView, StyleSheet, Text, View,
 } from 'react-native';
 
 import STATUS_NAME from '@constants/statusname';
