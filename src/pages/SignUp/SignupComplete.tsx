@@ -3,21 +3,17 @@ import {
   Image, Pressable, SafeAreaView, StyleSheet, Text, View,
 } from 'react-native';
 
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import axios from 'axios';
 import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { SignUpParamList } from '@src/@types';
 import {
   signupState, userAccessToken, userFcmToken, userState,
 } from '@src/states';
 import Congraturation from '@assets/images/congraturation.png';
 
-type Props = NativeStackScreenProps<SignUpParamList, 'SignupComplete'>;
-
-function SignupComplete({ navigation }: Props) {
+function SignupComplete() {
   const signupInfo = useRecoilState(signupState)[0];
   const setUserInfo = useSetRecoilState(userState);
   const fcmToken = useRecoilState(userFcmToken)[0];

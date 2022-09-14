@@ -130,7 +130,7 @@ function SignIn({ navigation }: SignInScreenProps) {
 
   const signInWithNaver = useCallback(async () => {
     try {
-      const token = await getNaverToken(naverKeys);
+      const token: any = await getNaverToken(naverKeys);
       const profile = await getNaverProfile(token.accessToken);
       if (profile.resultcode === '024') {
         Alert.alert('로그인 실패', profile.message);
