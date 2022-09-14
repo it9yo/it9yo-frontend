@@ -9,15 +9,15 @@ import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { RootStackParamList } from '@src/@types';
+import { SignUpParamList } from '@src/@types';
 import {
   signupState, userAccessToken, userFcmToken, userState,
 } from '@src/states';
 import Congraturation from '@assets/images/congraturation.png';
 
-type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
+type Props = NativeStackScreenProps<SignUpParamList, 'SignupComplete'>;
 
-function SignupComplete({ navigation }: SignInScreenProps) {
+function SignupComplete({ navigation }: Props) {
   const signupInfo = useRecoilState(signupState)[0];
   const setUserInfo = useSetRecoilState(userState);
   const fcmToken = useRecoilState(userFcmToken)[0];

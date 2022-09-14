@@ -123,7 +123,7 @@ function SignIn({ navigation }: SignInScreenProps) {
           providerUserId: id,
           providerType,
         });
-        navigation.push('Terms');
+        navigation.push('SignUp');
       }
     }
   }, []);

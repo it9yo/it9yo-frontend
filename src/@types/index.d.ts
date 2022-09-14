@@ -12,6 +12,10 @@ export declare type PaymentParams = {
 
 export declare type RootStackParamList = {
   SignIn: undefined;
+  SignUp: undefined;
+};
+
+export declare type SignUpParamList = {
   Terms: undefined;
   AdditionalInfo: undefined;
   PhoneCertification: undefined;
@@ -69,6 +73,11 @@ export interface UserSignUpProps {
   siGunGu: string;
   locationAuth: boolean;
   agree: boolean;
+}
+
+export interface Location {
+  siDo: string;
+  siGunGu: string;
 }
 
 export interface NaverKeyProps {

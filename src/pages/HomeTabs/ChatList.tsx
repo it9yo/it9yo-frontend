@@ -138,14 +138,12 @@ const styles = StyleSheet.create({
   chatTitle: {
     fontSize: 18,
     marginBottom: 10,
-    fontFamily: 'Abel',
-    fontWeight: 400,
+    fontWeight: '400',
   },
   chatContent: {
     fontSize: 16,
     marginBottom: 5,
-    fontFamily: 'Abel',
-    fontWeight: 400,
+    fontWeight: '400',
     color: 'gray',
   },
 });

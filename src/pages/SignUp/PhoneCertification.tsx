@@ -11,9 +11,9 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { signupState } from '@src/states';
-import { RootStackParamList } from '@src/@types';
+import { SignUpParamList } from '@src/@types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'PhoneCertification'>;
+type Props = NativeStackScreenProps<SignUpParamList, 'PhoneCertification'>;
 
 function PhoneCertification({ navigation }: Props) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);
