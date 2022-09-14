@@ -2,8 +2,10 @@ import React from 'react';
 import {
   Image,
   Pressable,
-  SafeAreaView, ScrollView, StyleSheet, Text, View,
+  ScrollView, StyleSheet, Text, View,
 } from 'react-native';
+
+import STATUS_NAME from '@constants/statusname';
 
 const chatList = [
   {
@@ -12,6 +14,8 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'DELIVERED',
+    participatedPersonCnt: 5,
   },
   {
     campaignId: 2,
@@ -19,6 +23,8 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'COMPLETED',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -27,6 +33,8 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'DISTRIBUTING',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -35,6 +43,8 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'DELIVERING',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -43,6 +53,8 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'CANCELED',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -51,21 +63,24 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'CONFIRM',
+    participatedPersonCnt: 5,
 
   },
 
 ];
 
 function ChatList({ navigation }) {
-  const onChatRoom = (campaignId) => {
-    navigation.navigate('ChatRoom');
+  const onChatRoom = (campaignId: number, campaignTitle: string) => {
+    navigation.navigate('ChatRoom', { campaignId, campaignTitle });
   };
 
-  return <ScrollView>
+  return <ScrollView style={styles.container}>
     {chatList.map(({
-      campaignId, campaignTitle, chatContent, chatTime, chatThumbnailUrl,
+      campaignId, campaignTitle, chatContent, chatTime,
+      chatThumbnailUrl, campaignStatus, participatedPersonCnt,
     }) => <Pressable
-      onPress={() => onChatRoom(campaignId)}
+      onPress={() => onChatRoom(campaignId, campaignTitle)}
     >
       <View style={styles.chatListView}>
         <Image style={styles.chatThumbnail}
@@ -73,12 +88,14 @@ function ChatList({ navigation }) {
             uri: chatThumbnailUrl,
           }}
         />
-        <View style={styles.chatListTextView}>
+        <View>
           <Text style={styles.chatTitle}>{campaignTitle}</Text>
           <Text style={styles.chatContent}>{chatContent}</Text>
         </View>
         <View style={styles.chatStateView}>
           <Text>{chatTime}</Text>
+          <Text style={styles.statusText}>{STATUS_NAME[campaignStatus]}</Text>
+          <Text style={styles.statusText}>{`${participatedPersonCnt}명 참여중`}</Text>
         </View>
       </View>
       </Pressable>)}
@@ -86,19 +103,26 @@ function ChatList({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginTop: StyleSheet.hairlineWidth,
+
+  },
   chatListView: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     paddingHorizontal: 10,
     paddingVertical: 15,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: 'orange',
+    // borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
+    borderColor: 'white',
   },
-  chatListTextView: {
-
+  statusText: {
+    color: 'gray',
+    // paddingHorizontal: 5,
+    paddingTop: 5,
   },
   chatStateView: {
+    alignItems: 'flex-end',
     fontFamily: 'Proxima Nova',
     position: 'absolute',
     top: 15,
@@ -118,10 +142,11 @@ const styles = StyleSheet.create({
     fontWeight: 400,
   },
   chatContent: {
-    fontSize: 14,
+    fontSize: 16,
     marginBottom: 5,
     fontFamily: 'Abel',
     fontWeight: 400,
+    color: 'gray',
   },
 });
 

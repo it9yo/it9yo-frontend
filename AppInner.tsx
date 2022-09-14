@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
+
 import SplashScreen from 'react-native-splash-screen';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -126,26 +128,73 @@ function AppInner() {
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <Tab.Navigator initialRouteName='Home'>
+        <Tab.Navigator initialRouteName='Home'
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName = '';
+            const iconSize = route.name === 'Manage' ? 32 : size;
+            if (route.name === 'Home') {
+              iconName = focused
+                ? 'home'
+                : 'home-outline';
+            } else if (route.name === 'Manage') {
+              iconName = focused ? 'cart' : 'cart-outline';
+            } else if (route.name === 'Chat') {
+              iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
+            } else if (route.name === 'Mypage') {
+              iconName = focused ? 'person' : 'person-outline';
+            }
+
+            // You can return any component that you like here!
+            return <Icon name={iconName} size={iconSize} color={color} />;
+          },
+          tabBarActiveTintColor: 'black',
+          tabBarInactiveTintColor: 'gray',
+        })}>
           <Tab.Screen
             name="Home"
             component={Home}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              tabBarLabel: '홈',
+              tabBarLabelStyle: {
+                fontSize: 14,
+              },
+            }}
           />
           <Tab.Screen
             name="Manage"
             component={Manage}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              tabBarLabel: '캠페인관리',
+              tabBarLabelStyle: {
+                fontSize: 14,
+
+              },
+            }}
             />
           <Tab.Screen
             name="Chat"
             component={Chat}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              tabBarLabel: '채팅',
+              tabBarLabelStyle: {
+                fontSize: 14,
+              },
+            }}
           />
           <Tab.Screen
             name="Mypage"
             component={Mypage}
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              tabBarLabel: '내정보',
+              tabBarLabelStyle: {
+                fontSize: 14,
+              },
+            }}
           />
         </Tab.Navigator>
       ) : (

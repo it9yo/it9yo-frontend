@@ -1,71 +1,59 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { SafeAreaView } from 'react-native';
+import React, {
+  useState, useCallback, useEffect, useLayoutEffect,
+} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { GiftedChat, type IMessage } from 'react-native-gifted-chat';
+import { useRecoilState } from 'recoil';
+import { userAccessToken, userState } from '@src/states';
 
-function ChatRoom() {
+function ChatRoom({ navigation, route }) {
+  const userInfo = useRecoilState(userState)[0];
+  const accessToken = useRecoilState(userAccessToken)[0];
+
+  const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[] | undefined>();
 
+  useLayoutEffect(() => {
+    navigation.setOptions({ headerTitle: route.params.campaignTitle });
+  }, [navigation, route]);
+
   useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: 'This is a quick reply. Do you love Gifted Chat? (radio) KEEP IT',
-        createdAt: new Date(),
-        quickReplies: {
-          type: 'checkbox', // or 'checkbox',
-          keepIt: true,
-          values: [
-            {
-              title: '😋 Yes',
-              value: 'yes',
-            },
-            {
-              title: '📷 Yes, let me show you with a picture!',
-              value: 'yes_picture',
-            },
-            {
-              title: '😞 Nope. What?',
-              value: 'no',
-            },
-          ],
-        },
-        user: {
-          _id: 2,
-          name: 'React Native',
-        },
-      },
-      {
-        _id: 2,
-        text: 'This is a quick reply. Do you love Gifted Chat? (checkbox)',
-        createdAt: new Date(),
-        quickReplies: {
-          type: 'checkbox', // or 'radio',
-          values: [
-            {
-              title: 'Yes',
-              value: 'yes',
-            },
-            {
-              title: 'Yes, let me show you with a picture!',
-              value: 'yes_picture',
-            },
-            {
-              title: 'Nope. What?',
-              value: 'no',
-            },
-          ],
-        },
-        user: {
-          _id: 2,
-          name: 'React Native',
-        },
-      },
-    ]);
+    initData();
+    console.log(userInfo);
   }, []);
 
-  const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, messages));
+  const initData = async () => {
+    try {
+      const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+      if (list !== null) {
+        setMessages(JSON.parse(list));
+      } else {
+        const initMsg: IMessage[] = [{
+          _id: 1,
+          text: `${userInfo.nickName}님이 입장하셨습니다.`,
+          createdAt: new Date(),
+          user: {
+            _id: 0,
+            name: 'React Native',
+            // avatar: 'https://placeimg.com/140/140/any',
+          },
+          system: true,
+        }];
+        AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(initMsg));
+        setMessages(initMsg);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onSend = useCallback((message: IMessage[]) => {
+    setMessages((previousMessages) => {
+      const msgs = GiftedChat.append(previousMessages, message);
+      AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(msgs));
+      return msgs;
+    });
   }, []);
 
   return (
@@ -73,7 +61,7 @@ function ChatRoom() {
       messages={messages}
       onSend={(message) => onSend(message)}
       user={{
-        _id: 1,
+        _id: 7,
       }}
     />
   );
