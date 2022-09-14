@@ -15,6 +15,7 @@ const chatList = [
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'DELIVERED',
+    participatedPersonCnt: 5,
   },
   {
     campaignId: 2,
@@ -23,6 +24,7 @@ const chatList = [
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'COMPLETED',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -32,6 +34,7 @@ const chatList = [
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'DISTRIBUTING',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -41,6 +44,7 @@ const chatList = [
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'DELIVERING',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -50,6 +54,7 @@ const chatList = [
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'CANCELED',
+    participatedPersonCnt: 5,
 
   },
   {
@@ -59,6 +64,7 @@ const chatList = [
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'CONFIRM',
+    participatedPersonCnt: 5,
 
   },
 
@@ -69,9 +75,10 @@ function ChatList({ navigation }) {
     navigation.navigate('ChatRoom', { campaignId, campaignTitle });
   };
 
-  return <ScrollView>
+  return <ScrollView style={styles.container}>
     {chatList.map(({
-      campaignId, campaignTitle, chatContent, chatTime, chatThumbnailUrl, campaignStatus,
+      campaignId, campaignTitle, chatContent, chatTime,
+      chatThumbnailUrl, campaignStatus, participatedPersonCnt,
     }) => <Pressable
       onPress={() => onChatRoom(campaignId, campaignTitle)}
     >
@@ -81,13 +88,14 @@ function ChatList({ navigation }) {
             uri: chatThumbnailUrl,
           }}
         />
-        <View style={styles.chatListTextView}>
+        <View>
           <Text style={styles.chatTitle}>{campaignTitle}</Text>
           <Text style={styles.chatContent}>{chatContent}</Text>
         </View>
         <View style={styles.chatStateView}>
           <Text>{chatTime}</Text>
           <Text style={styles.statusText}>{STATUS_NAME[campaignStatus]}</Text>
+          <Text style={styles.statusText}>{`${participatedPersonCnt}명 참여중`}</Text>
         </View>
       </View>
       </Pressable>)}
@@ -95,21 +103,23 @@ function ChatList({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginTop: StyleSheet.hairlineWidth,
+
+  },
   chatListView: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     paddingHorizontal: 10,
     paddingVertical: 15,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: 'orange',
-  },
-  chatListTextView: {
-
+    // borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
+    borderColor: 'white',
   },
   statusText: {
     color: 'gray',
-    marginTop: 8,
+    // paddingHorizontal: 5,
+    paddingTop: 5,
   },
   chatStateView: {
     alignItems: 'flex-end',
@@ -132,10 +142,11 @@ const styles = StyleSheet.create({
     fontWeight: 400,
   },
   chatContent: {
-    fontSize: 14,
+    fontSize: 16,
     marginBottom: 5,
     fontFamily: 'Abel',
     fontWeight: 400,
+    color: 'gray',
   },
 });
 
