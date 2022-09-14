@@ -4,8 +4,13 @@ import React, {
 import AsyncStorage from '@react-native-community/async-storage';
 
 import { GiftedChat, type IMessage } from 'react-native-gifted-chat';
+import { useRecoilState } from 'recoil';
+import { userAccessToken, userState } from '@src/states';
 
 function ChatRoom({ navigation, route }) {
+  const userInfo = useRecoilState(userState)[0];
+  const accessToken = useRecoilState(userAccessToken)[0];
+
   const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[] | undefined>();
 
@@ -15,6 +20,7 @@ function ChatRoom({ navigation, route }) {
 
   useEffect(() => {
     initData();
+    console.log(userInfo);
   }, []);
 
   const initData = async () => {
@@ -22,6 +28,20 @@ function ChatRoom({ navigation, route }) {
       const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
       if (list !== null) {
         setMessages(JSON.parse(list));
+      } else {
+        const initMsg: IMessage[] = [{
+          _id: 1,
+          text: `${userInfo.nickName}님이 입장하셨습니다.`,
+          createdAt: new Date(),
+          user: {
+            _id: 0,
+            name: 'React Native',
+            // avatar: 'https://placeimg.com/140/140/any',
+          },
+          system: true,
+        }];
+        AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(initMsg));
+        setMessages(initMsg);
       }
     } catch (err) {
       console.log(err);
@@ -41,7 +61,7 @@ function ChatRoom({ navigation, route }) {
       messages={messages}
       onSend={(message) => onSend(message)}
       user={{
-        _id: 1,
+        _id: 7,
       }}
     />
   );
