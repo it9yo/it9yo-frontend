@@ -114,7 +114,7 @@ function CampaignList({ navigation }) {
       <Pressable>
         <Icon name="filter" size={28} color="#000" />
       </Pressable>
-      <Pressable style={{ marginLeft: 5 }}>
+      <Pressable style={{ marginLeft: 5 }} onPress={() => navigation.navigate('Search')}>
         <Icon name="search" size={24} color="#000" />
       </Pressable>
      </View>
