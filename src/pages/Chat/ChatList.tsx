@@ -5,6 +5,8 @@ import {
   SafeAreaView, ScrollView, StyleSheet, Text, View,
 } from 'react-native';
 
+import STATUS_NAME from '@constants/statusname';
+
 const chatList = [
   {
     campaignId: 1,
@@ -12,6 +14,7 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'DELIVERED',
   },
   {
     campaignId: 2,
@@ -19,6 +22,7 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'COMPLETED',
 
   },
   {
@@ -27,6 +31,7 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'DISTRIBUTING',
 
   },
   {
@@ -35,6 +40,7 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'DELIVERING',
 
   },
   {
@@ -43,6 +49,7 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'CANCELED',
 
   },
   {
@@ -51,6 +58,7 @@ const chatList = [
     chatContent: '안녕하세요',
     chatTime: '13:09',
     chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignStatus: 'CONFIRM',
 
   },
 
@@ -63,7 +71,7 @@ function ChatList({ navigation }) {
 
   return <ScrollView>
     {chatList.map(({
-      campaignId, campaignTitle, chatContent, chatTime, chatThumbnailUrl,
+      campaignId, campaignTitle, chatContent, chatTime, chatThumbnailUrl, campaignStatus,
     }) => <Pressable
       onPress={() => onChatRoom(campaignId, campaignTitle)}
     >
@@ -79,6 +87,7 @@ function ChatList({ navigation }) {
         </View>
         <View style={styles.chatStateView}>
           <Text>{chatTime}</Text>
+          <Text style={styles.statusText}>{STATUS_NAME[campaignStatus]}</Text>
         </View>
       </View>
       </Pressable>)}
@@ -98,7 +107,12 @@ const styles = StyleSheet.create({
   chatListTextView: {
 
   },
+  statusText: {
+    color: 'gray',
+    marginTop: 8,
+  },
   chatStateView: {
+    alignItems: 'flex-end',
     fontFamily: 'Proxima Nova',
     position: 'absolute',
     top: 15,
