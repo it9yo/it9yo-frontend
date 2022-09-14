@@ -86,3 +86,7 @@ export interface NaverKeyProps {
   kServiceAppName: string;
   kServiceAppUrlScheme?: string;
 }
+
+export interface ObjType {
+  [key: string]: string
+}

@@ -7,7 +7,7 @@ import {
 import { useRecoilState } from 'recoil';
 import { SignUpParamList } from '@src/@types';
 import { signupState } from '@src/states';
-import address from '@constants/address';
+import AddressList from '@constants/address';
 
 type Props = NativeStackScreenProps<SignUpParamList, 'Location'>;
 
@@ -17,7 +17,7 @@ function Location({ navigation }: Props) {
   const [sido, setSido] = useState<string>('');
   const [sigungu, setSigungu] = useState<string>('');
 
-  const sidoList = Object.keys(address);
+  const sidoList = Object.keys(AddressList);
 
   const canGoNext = !!sigungu || sido === '세종특별자치시';
 
@@ -31,22 +31,18 @@ function Location({ navigation }: Props) {
             setSido(item);
             setSigungu('');
           }}>
-          <Text style={item === sido
-            ? StyleSheet.compose(styles.commonText, styles.selectedText)
-            : styles.commonText}>
+          <Text style={item === sido ? styles.selectedText : styles.commonText}>
             {item}
           </Text>
         </TouchableOpacity>
       ))}
       </View>
       <View style={styles.textList}>
-        {!!sido && address[sido].map((item, idx) => (
+        {!!sido && AddressList[sido].map((item, idx) => (
           <TouchableOpacity
           key={idx}
           onPress={() => setSigungu(item)}>
-          <Text style={item === sigungu
-            ? StyleSheet.compose(styles.commonText, styles.selectedText)
-            : styles.commonText}>
+          <Text style={item === sigungu ? styles.selectedText : styles.commonText}>
             {item}
           </Text>
         </TouchableOpacity>
@@ -102,6 +98,9 @@ const styles = StyleSheet.create({
   selectedText: {
     color: 'black',
     fontWeight: 'bold',
+    marginTop: 8,
+    paddingLeft: 12,
+    fontSize: 16,
   },
   buttonZone: {
     position: 'absolute',

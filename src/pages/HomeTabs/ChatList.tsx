@@ -5,7 +5,7 @@ import {
   ScrollView, StyleSheet, Text, View,
 } from 'react-native';
 
-import STATUS_NAME from '@constants/statusname';
+import StatusNameList from '@constants/statusname';
 
 const chatList = [
   {
@@ -94,7 +94,7 @@ function ChatList({ navigation }) {
         </View>
         <View style={styles.chatStateView}>
           <Text>{chatTime}</Text>
-          <Text style={styles.statusText}>{STATUS_NAME[campaignStatus]}</Text>
+          <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
           <Text style={styles.statusText}>{`${participatedPersonCnt}명 참여중`}</Text>
         </View>
       </View>

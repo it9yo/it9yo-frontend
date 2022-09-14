@@ -9,7 +9,7 @@ import {
 import { useRecoilState } from 'recoil';
 import { location } from '@src/states';
 
-import STATUS_NAME from '@constants/statusname';
+import StatusNameList from '@constants/statusname';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const chatList = [
@@ -85,11 +85,11 @@ const chatList = [
 
 ];
 
-function numberWithCommas(x) {
+function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function CampaignList({ navigation }) {
+export function CampaignList({ navigation }) {
   const [currentLocation, setLocation] = useRecoilState(location);
 
   useEffect(() => {
@@ -141,7 +141,7 @@ function CampaignList({ navigation }) {
             <Text style={styles.priceText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
           </View>
           <View style={styles.chatStateView}>
-            <Text style={styles.statusText}>{STATUS_NAME[campaignStatus]}</Text>
+            <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
             <Text style={styles.userCntText}>{campaignLocation}</Text>
             <Text style={styles.userCntText}>{`${participatedPersonCnt}명 참여중`}</Text>
           </View>

@@ -1,4 +1,8 @@
-const STATUS_NAME = {
+interface ObjType {
+  [key: string]: string
+}
+
+const StatusNameList: ObjType = {
   DELIVERED: '배송완료',
   COMPLETED: '배분완료',
   CANCELED: '취소',
@@ -9,4 +13,4 @@ const STATUS_NAME = {
   CONFIRM: '확정',
 };
 
-export default STATUS_NAME;
+export default StatusNameList;

@@ -112,7 +112,7 @@ function LocationCertification({ navigation }: Props) {
             zoomControl={false}
             center={{
               zoom: 10,
-              latitude: myPosition?.latitude,
+              latitude: myPosition.latitude,
               longitude: myPosition.longitude,
             }}>
             <Marker
