@@ -5,11 +5,11 @@ import {
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { useRecoilState } from 'recoil';
-import { RootStackParamList } from '@src/@types';
+import { SignUpParamList } from '@src/@types';
 import { signupState } from '@src/states';
 import address from '@constants/address';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Location'>;
+type Props = NativeStackScreenProps<SignUpParamList, 'Location'>;
 
 function Location({ navigation }: Props) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);

@@ -6,10 +6,10 @@ import {
   Text, TouchableOpacity, View,
 } from 'react-native';
 import { useRecoilState } from 'recoil';
-import { RootStackParamList } from '@src/@types';
+import { SignUpParamList } from '@src/@types';
 import { signupState } from '@src/states';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Terms'>;
+type Props = NativeStackScreenProps<SignUpParamList, 'Terms'>;
 
 function Terms({ navigation }: Props) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);

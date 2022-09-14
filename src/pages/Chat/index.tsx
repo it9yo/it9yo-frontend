@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChatList from './ChatList';
@@ -6,7 +6,12 @@ import ChatRoom from './ChatRoom';
 
 const Stack = createNativeStackNavigator();
 
-function Chat() {
+function Chat({ navigation, route }) {
+  useEffect(() => {
+    route.state && route.state.index > 0
+      ? navigation.setOptions({ tabBarVisible: false }) : navigation.setOptions({ tabBarVisible: true });
+  }, []);
+
   return <Stack.Navigator initialRouteName='ChatList'>
     <Stack.Screen
       name="ChatList"

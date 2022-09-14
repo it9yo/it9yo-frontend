@@ -18,7 +18,7 @@ const chatList = [
     campaignTitle: '마카롱 공구해요',
     itemPrice: 1000,
     campaignLocation: '자양 1동',
-    chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'DELIVERED',
     participatedPersonCnt: 5,
     hostName: '지운',
@@ -28,7 +28,7 @@ const chatList = [
     campaignTitle: '싱싱 꼬막 무침 공구',
     itemPrice: 10000,
     campaignLocation: '자양 1동',
-    chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'COMPLETED',
     participatedPersonCnt: 5,
     hostName: '지운',
@@ -40,7 +40,7 @@ const chatList = [
     itemPrice: 8000,
     campaignLocation: '자양 1동',
 
-    chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'DISTRIBUTING',
     participatedPersonCnt: 5,
     hostName: '지운',
@@ -52,7 +52,7 @@ const chatList = [
     itemPrice: 5000,
     campaignLocation: '자양 1동',
 
-    chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'DELIVERING',
     participatedPersonCnt: 5,
     hostName: '지운',
@@ -64,7 +64,7 @@ const chatList = [
     itemPrice: 3000,
     campaignLocation: '자양 1동',
 
-    chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'CANCELED',
     participatedPersonCnt: 5,
     hostName: '지운',
@@ -76,7 +76,7 @@ const chatList = [
     itemPrice: 3000,
     campaignLocation: '자양 1동',
 
-    chatThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
     campaignStatus: 'CONFIRM',
     participatedPersonCnt: 5,
     hostName: '지운',
@@ -96,8 +96,8 @@ function CampaignList({ navigation }) {
     console.log(currentLocation);
   }, []);
 
-  const onChatRoom = (campaignId: number, campaignTitle: string) => {
-    navigation.navigate('ChatRoom', { campaignId, campaignTitle });
+  const onCampaignDetail = (campaignId: number) => {
+    navigation.navigate('CampaignDetail', { campaignId });
   };
 
   return <SafeAreaView style={styles.container}>
@@ -122,14 +122,14 @@ function CampaignList({ navigation }) {
     <ScrollView>
       {chatList.map(({
         campaignId, campaignTitle, itemPrice, campaignLocation,
-        chatThumbnailUrl, campaignStatus, participatedPersonCnt, hostName,
+        campaignThumbnailUrl, campaignStatus, participatedPersonCnt, hostName,
       }) => <Pressable
-        onPress={() => onChatRoom(campaignId, campaignTitle)}
+        onPress={() => onCampaignDetail(campaignId)}
       >
         <View style={styles.campaignListZone}>
           <Image style={styles.campaignThumbnail}
             source={{
-              uri: chatThumbnailUrl,
+              uri: campaignThumbnailUrl,
             }}
           />
           <View>

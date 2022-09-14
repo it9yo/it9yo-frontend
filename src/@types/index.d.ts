@@ -12,6 +12,10 @@ export declare type PaymentParams = {
 
 export declare type RootStackParamList = {
   SignIn: undefined;
+  SignUp: undefined;
+};
+
+export declare type SignUpParamList = {
   Terms: undefined;
   AdditionalInfo: undefined;
   PhoneCertification: undefined;
