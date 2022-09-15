@@ -1,4 +1,5 @@
 import type { IMPData } from 'iamport-react-native';
+import { CampaignDetail } from '@src/pages/Home/CampaignDetail';
 
 export declare type CertificationParams = {
   params: IMPData.CertificationData;
@@ -87,6 +88,24 @@ export interface NaverKeyProps {
   kServiceAppUrlScheme?: string;
 }
 
-export interface ObjType {
-  [key: string]: string
+export interface CampaignDetailData {
+  campaignId: number;
+  title: string;
+  tags: string[];
+  description: string;
+  itemPrice: number;
+  itemImageURLs: string[];
+  siDo: string;
+  siGunGu: string;
+  detailAddress: string;
+  deadLine: string;
+  campaignStatus: string;
+  participatedPersonCnt: number;
+  totalOrderedItemCnt: number;
+  pageLinkUrl: string;
+  maxQuantityPerPerson: number;
+  minQuantityPerPerson: number;
+  hostId: number;
+  campaignCategory: string;
+  chatRoomId: number;
 }
