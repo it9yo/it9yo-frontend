@@ -1,6 +1,6 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import {
-  View, Text, Pressable, SafeAreaView, StyleSheet, ScrollView,
+  View, Text, Pressable, SafeAreaView, StyleSheet, ScrollView, Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
@@ -38,6 +38,7 @@ const campaginDetaildata: CampaignDetailData = {
 function CampaignDetail({ navigation, route }) {
   const { campaignId } = route.params;
   const accessToken = useRecoilState(userAccessToken)[0];
+  const screenWidth = Dimensions.get('screen').width;
 
   // useLayoutEffect(() => {
   //   const loadCampaignDetail = async () => {
@@ -68,21 +69,42 @@ function CampaignDetail({ navigation, route }) {
         </Pressable>
     </View>
 
-    <ScrollView>
+    <ScrollView style={{ height: '200%' }}>
+
       <View style={styles.mainContentZone}>
-        <SliderBox
-          images={campaginDetaildata.itemImageURLs}
-          onCurrentImagePressed={
-            (index) => {
-              console.log(`image pressed index : ${index}`); // console log index
+        <View style={styles.itemImageZone}>
+          <SliderBox
+            images={campaginDetaildata.itemImageURLs}
+            ImageComponentStyle={{
+              height: 200,
+              borderRadius: 30,
+            }}
+            onCurrentImagePressed={
+              (index) => {
+                console.log(`image pressed index : ${index}`); // console log index
+              }
             }
-          }
-          circleLoop // loop
-          sliderBoxHeight={200}
-        />
-        {/* <View style={styles.campaignTitleZone}></View>
-        <View style={styles.campaignInfoZone}></View>
-        <View style={styles.campaignPriceZone}></View>
+            circleLoop // loop
+            parentWidth={Number(screenWidth) - 60}
+          />
+        </View>
+        <View style={styles.campaignTitleZone}>
+          <Text style={styles.campaignTitleText}>{campaginDetaildata.title}</Text>
+          <View style={styles.campaignStatusZone}>
+            <Text style={{
+              fontWeight: '600', fontSize: 15, color: 'red', marginBottom: 5,
+            }}>
+              {StatusNameList[campaginDetaildata.campaignStatus]}
+            </Text>
+            <Text style={{ fontWeight: '600', fontSize: 15, color: 'orange' }}>
+              {`${campaginDetaildata.participatedPersonCnt}명 참여중`}
+            </Text>
+          </View>
+        </View>
+        {/* <View style={styles.campaignInfoZone}>
+
+        </View> */}
+        {/* <View style={styles.campaignPriceZone}></View>
         <View style={styles.campaignDescriptionZone}></View> */}
         {/* <View style={styles.bottomNavContainer}></View> */}
       </View>
@@ -116,10 +138,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainContentZone: {
-    borderWidth: 2,
+    width: Dimensions.get('screen').width - 30,
     borderColor: 'black',
+    // alignItems: 'center',
+    marginHorizontal: 15,
+  },
+  itemImageZone: {
     alignItems: 'center',
-    paddingHorizontal: 15,
+    paddingVertical: 10,
+    width: '100%',
+    height: 220,
+    borderWidth: 1,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderColor: 'gray',
+  },
+  campaignTitleZone: {
+    height: 56,
+    justifyContent: 'center',
+    width: '100%',
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: 'gray',
+  },
+  campaignTitleText: {
+    fontSize: 22,
+    fontWeight: '400',
+    position: 'absolute',
+    left: 20,
+  },
+  campaignStatusZone: {
+    // fontSize: 22,
+    // fontWeight: '400',
+    position: 'absolute',
+    right: 20,
+    alignItems: 'flex-end',
   },
 });
 
