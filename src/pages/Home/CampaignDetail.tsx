@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import {
-  View, Text, Pressable, SafeAreaView, StyleSheet, ScrollView, Dimensions,
+  View, Text, Pressable, SafeAreaView, StyleSheet, ScrollView, Dimensions, TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
@@ -13,7 +13,7 @@ import { CampaignDetailData } from '@src/@types';
 
 import StatusNameList from '@constants/statusname';
 
-const campaginDetaildata: CampaignDetailData = {
+const campaignDetaildata: CampaignDetailData = {
   campaignId: 1,
   title: '상주 곶감',
   tags: ['곶감', '상주', '달달'],
@@ -22,6 +22,7 @@ const campaginDetaildata: CampaignDetailData = {
   itemImageURLs: ['https://cdn.kbmaeil.com/news/photo/202001/835750_854186_5024.jpg', 'https://uyjoqvxyzgvv9714092.cdn.ntruss.com/data2/content/image/2020/11/19/20201119299991.jpg'],
   siDo: '서울시',
   siGunGu: '광진구',
+  eupMyeonDong: '구의동',
   detailAddress: '구의동 10-10',
   deadLine: '2017-03-04',
   campaignStatus: 'RECRUITING',
@@ -31,9 +32,14 @@ const campaginDetaildata: CampaignDetailData = {
   maxQuantityPerPerson: 10,
   minQuantityPerPerson: 5,
   hostId: 6,
+  hostName: '지운',
   campaignCategory: 'FOOD',
   chatRoomId: 1,
 };
+
+function numberWithCommas(x: number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 
 function CampaignDetail({ navigation, route }) {
   const { campaignId } = route.params;
@@ -60,21 +66,12 @@ function CampaignDetail({ navigation, route }) {
   // }, []);
 
   return <SafeAreaView style={styles.container}>
-    <View style={styles.navContainer}>
-      <Pressable style={styles.navButtonZone} onPress={() => navigation.pop()}>
-        <Icon name="ios-chevron-back" size={24} color="#000" />
-        <Text style={styles.locationText}>
-          목록 가기
-        </Text>
-        </Pressable>
-    </View>
-
-    <ScrollView style={{ height: '200%' }}>
+    <ScrollView style={{ height: '100%' }}>
 
       <View style={styles.mainContentZone}>
         <View style={styles.itemImageZone}>
           <SliderBox
-            images={campaginDetaildata.itemImageURLs}
+            images={campaignDetaildata.itemImageURLs}
             ImageComponentStyle={{
               height: 200,
               borderRadius: 30,
@@ -88,27 +85,88 @@ function CampaignDetail({ navigation, route }) {
             parentWidth={Number(screenWidth) - 60}
           />
         </View>
-        <View style={styles.campaignTitleZone}>
-          <Text style={styles.campaignTitleText}>{campaginDetaildata.title}</Text>
+
+        <View style={styles.campaignDetailZone}>
+          <Text style={styles.campaignTitleText}>
+            {campaignDetaildata.title}
+          </Text>
           <View style={styles.campaignStatusZone}>
             <Text style={{
               fontWeight: '600', fontSize: 15, color: 'red', marginBottom: 5,
             }}>
-              {StatusNameList[campaginDetaildata.campaignStatus]}
+              {StatusNameList[campaignDetaildata.campaignStatus]}
             </Text>
             <Text style={{ fontWeight: '600', fontSize: 15, color: 'orange' }}>
-              {`${campaginDetaildata.participatedPersonCnt}명 참여중`}
+              {`${campaignDetaildata.participatedPersonCnt}명 참여중`}
             </Text>
           </View>
         </View>
-        {/* <View style={styles.campaignInfoZone}>
 
-        </View> */}
-        {/* <View style={styles.campaignPriceZone}></View>
-        <View style={styles.campaignDescriptionZone}></View> */}
-        {/* <View style={styles.bottomNavContainer}></View> */}
+        <View style={styles.campaignInfoZone}>
+          <View style={styles.campaignLocationDetailZone}>
+            <Text style={{
+              fontWeight: '600', fontSize: 13, color: 'orange', marginBottom: 5, paddingLeft: 10,
+            }}>
+              {campaignDetaildata.eupMyeonDong}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Icon name="location-outline" size={15} color="#000" />
+              <Text style={{
+                fontWeight: '600', fontSize: 13, color: 'black',
+              }}>
+                지도보기
+              </Text>
+            </View>
+          </View>
+          <View style={styles.campaignHostDetailZone}>
+            <Icon name="person-outline" size={15} color="#000" />
+            <Text style={{
+              fontWeight: '600', fontSize: 15, color: 'orange', marginLeft: 2,
+            }}>
+              {campaignDetaildata.hostName}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.campaignInfoZone}>
+          <Text style={{
+            position: 'absolute', right: 30, fontWeight: '500', fontSize: 24, color: 'black',
+          }}>
+            {`${numberWithCommas(campaignDetaildata.itemPrice)}원`}
+          </Text>
+        </View>
+
+        <View style={styles.campaignDescribeZone}>
+          <Text style={{ fontSize: 18, color: 'black' }}>
+            {campaignDetaildata.description}
+          </Text>
+          <View style={styles.tagZone}>
+            {campaignDetaildata.tags.map((tag) => (
+              <View style={styles.tag}>
+                <Text># {tag}</Text>
+              </View>))}
+          </View>
+        </View>
+
       </View>
       </ScrollView>
+      <View style={styles.navContainer}>
+        <View style={styles.navButtonZone}>
+          <Icon name="heart-outline" size={30} color="#000" style={{ marginTop: 5 }} />
+          <Icon name="share-outline" size={28} color="#000" style={{ marginTop: 5, marginLeft: 8 }} />
+          <View style={styles.buttonZone}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>공동구매 참여하기</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* <Pressable style={styles.navButtonZone} onPress={() => navigation.pop()}>
+          <Icon name="ios-chevron-back" size={24} color="#000" />
+          <Text style={styles.locationText}>
+            목록 가기
+          </Text>
+          </Pressable> */}
+      </View>
     </SafeAreaView>;
 }
 
@@ -116,31 +174,9 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
   },
-  navContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    height: 56,
-  },
-  navButtonZone: {
-    position: 'absolute',
-    left: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  locationText: {
-    fontWeight: '400',
-    fontSize: 25,
-    marginLeft: 8,
-  },
-  locationZone: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   mainContentZone: {
     width: Dimensions.get('screen').width - 30,
     borderColor: 'black',
-    // alignItems: 'center',
     marginHorizontal: 15,
   },
   itemImageZone: {
@@ -153,8 +189,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderColor: 'gray',
   },
-  campaignTitleZone: {
+  campaignDetailZone: {
     height: 56,
+    justifyContent: 'center',
+    width: '100%',
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: 'gray',
+  },
+  campaignInfoZone: {
+    height: 50,
     justifyContent: 'center',
     width: '100%',
     borderWidth: 1,
@@ -173,6 +217,76 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     alignItems: 'flex-end',
+  },
+  campaignLocationDetailZone: {
+    alignItems: 'flex-start',
+    position: 'absolute',
+    left: 30,
+  },
+  campaignHostDetailZone: {
+    flexDirection: 'row',
+    position: 'absolute',
+    right: 40,
+  },
+  campaignDescribeZone: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    width: '100%',
+    minHeight: 150,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    borderColor: 'gray',
+  },
+  tagZone: {
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 10,
+    right: 15,
+  },
+  tag: {
+    color: 'white',
+    backgroundColor: 'orange',
+    marginLeft: 8,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 30,
+  },
+  navContainer: {
+    width: '100%',
+    height: 60,
+    position: 'absolute',
+    bottom: 25,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'gray',
+    backgroundColor: '#F5F5F5',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    paddingHorizontal: 25,
+  },
+  navButtonZone: {
+    flexDirection: 'row',
+  },
+  buttonZone: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '80%',
+    marginHorizontal: 10,
+  },
+  button: {
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    borderRadius: 5,
+    paddingHorizontal: 60,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
   },
 });
 

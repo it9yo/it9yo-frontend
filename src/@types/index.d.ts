@@ -1,5 +1,4 @@
 import type { IMPData } from 'iamport-react-native';
-import { CampaignDetail } from '@src/pages/Home/CampaignDetail';
 
 export declare type CertificationParams = {
   params: IMPData.CertificationData;
@@ -97,6 +96,7 @@ export interface CampaignDetailData {
   itemImageURLs: string[];
   siDo: string;
   siGunGu: string;
+  eupMyeonDong: string;
   detailAddress: string;
   deadLine: string;
   campaignStatus: string;
@@ -106,6 +106,7 @@ export interface CampaignDetailData {
   maxQuantityPerPerson: number;
   minQuantityPerPerson: number;
   hostId: number;
+  hostName: string;
   campaignCategory: string;
   chatRoomId: number;
 }
