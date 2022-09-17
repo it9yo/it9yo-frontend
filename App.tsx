@@ -144,7 +144,13 @@ function App() {
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
           <Stack.Screen name="ChatRoom" component={ChatRoom} />
-          <Stack.Screen name="CampaignDetail" component={CampaignDetail} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="CampaignDetail"
+            component={CampaignDetail}
+            options={{
+
+            }}
+          />
           <Stack.Screen name="Search" component={Search} />
         </Stack.Navigator>
 

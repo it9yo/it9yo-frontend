@@ -17,7 +17,35 @@ const campaignDetaildata: CampaignDetailData = {
   campaignId: 1,
   title: '상주 곶감',
   tags: ['곶감', '상주', '달달'],
-  description: '맛있는 상주 곶감!',
+  description: `맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!
+  맛있는 상주 곶감!`,
   itemPrice: 1000,
   itemImageURLs: ['https://cdn.kbmaeil.com/news/photo/202001/835750_854186_5024.jpg', 'https://uyjoqvxyzgvv9714092.cdn.ntruss.com/data2/content/image/2020/11/19/20201119299991.jpg'],
   siDo: '서울시',
@@ -76,12 +104,7 @@ function CampaignDetail({ navigation, route }) {
               height: 200,
               borderRadius: 30,
             }}
-            onCurrentImagePressed={
-              (index) => {
-                console.log(`image pressed index : ${index}`); // console log index
-              }
-            }
-            circleLoop // loop
+            circleLoop
             parentWidth={Number(screenWidth) - 60}
           />
         </View>
@@ -143,7 +166,7 @@ function CampaignDetail({ navigation, route }) {
           <View style={styles.tagZone}>
             {campaignDetaildata.tags.map((tag) => (
               <View style={styles.tag}>
-                <Text># {tag}</Text>
+                <Text style={{ fontSize: 16 }}># {tag}</Text>
               </View>))}
           </View>
         </View>
@@ -160,12 +183,6 @@ function CampaignDetail({ navigation, route }) {
             </TouchableOpacity>
           </View>
         </View>
-        {/* <Pressable style={styles.navButtonZone} onPress={() => navigation.pop()}>
-          <Icon name="ios-chevron-back" size={24} color="#000" />
-          <Text style={styles.locationText}>
-            목록 가기
-          </Text>
-          </Pressable> */}
       </View>
     </SafeAreaView>;
 }
@@ -178,6 +195,8 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width - 30,
     borderColor: 'black',
     marginHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 50,
   },
   itemImageZone: {
     alignItems: 'center',
@@ -238,12 +257,11 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     borderColor: 'gray',
+    marginBottom: 10,
   },
   tagZone: {
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 10,
-    right: 15,
+    marginTop: 10,
   },
   tag: {
     color: 'white',
@@ -255,15 +273,16 @@ const styles = StyleSheet.create({
   },
   navContainer: {
     width: '100%',
-    height: 60,
+    height: 80,
     position: 'absolute',
-    bottom: 25,
+    bottom: 0,
     borderTopWidth: 1,
-    borderBottomWidth: 1,
     borderColor: 'gray',
     backgroundColor: '#F5F5F5',
     justifyContent: 'center',
     alignItems: 'flex-start',
+    paddingTop: 25,
+    paddingBottom: 45,
     paddingHorizontal: 25,
   },
   navButtonZone: {
