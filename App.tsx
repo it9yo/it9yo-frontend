@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 
 import SplashScreen from 'react-native-splash-screen';
 
@@ -23,6 +23,7 @@ import Search from '@src/pages/Home/Search';
 import {
   userState, userAccessToken, userFcmToken, location,
 } from '@src/states';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createNativeStackNavigator();
 
@@ -144,13 +145,24 @@ function App() {
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
           <Stack.Screen name="ChatRoom" component={ChatRoom} />
-          <Stack.Screen
-            name="CampaignDetail"
-            component={CampaignDetail}
-            options={{
-
-            }}
-          />
+          <Stack.Group
+            screenOptions={({ navigation }) => ({
+              title: '',
+              headerLeft: () => (
+                <Pressable style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 2 }} onPress={navigation.goBack}>
+                  <Icon style={{ marginHorizontal: 2 }} name="chevron-back" size={24} color="#000" />
+                  <Text style={{ fontSize: 24, fontWeight: '500' }}>
+                    목록가기
+                  </Text>
+                </Pressable>
+              ),
+            })}
+          >
+            <Stack.Screen
+              name="CampaignDetail"
+              component={CampaignDetail}
+            />
+          </Stack.Group>
           <Stack.Screen name="Search" component={Search} />
         </Stack.Navigator>
 
