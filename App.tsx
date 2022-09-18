@@ -145,7 +145,14 @@ function App() {
       {isLoggedIn ? (
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
-          <Stack.Screen name="ChatRoom" component={ChatRoom} />
+          <Stack.Screen
+            name="ChatRoom"
+            component={ChatRoom}
+            options={({ navigation }) => ({
+              title: '',
+              headerLeft: () => <HeaderBackButton onPress={navigation.goBack} />,
+            })}
+          />
           <Stack.Screen
             name="CampaignDetail"
             component={CampaignDetail}
