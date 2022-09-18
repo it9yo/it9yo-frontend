@@ -24,6 +24,7 @@ import {
   userState, userAccessToken, userFcmToken, location,
 } from '@src/states';
 import Icon from 'react-native-vector-icons/Ionicons';
+import HeaderBackButton from '@components/HeaderBackButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -145,24 +146,14 @@ function App() {
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
           <Stack.Screen name="ChatRoom" component={ChatRoom} />
-          <Stack.Group
-            screenOptions={({ navigation }) => ({
+          <Stack.Screen
+            name="CampaignDetail"
+            component={CampaignDetail}
+            options={({ navigation }) => ({
               title: '',
-              headerLeft: () => (
-                <Pressable style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 2 }} onPress={navigation.goBack}>
-                  <Icon style={{ marginHorizontal: 2 }} name="chevron-back" size={24} color="#000" />
-                  <Text style={{ fontSize: 24, fontWeight: '500' }}>
-                    목록가기
-                  </Text>
-                </Pressable>
-              ),
+              headerLeft: () => <HeaderBackButton text="목록가기" onPress={navigation.goBack} />,
             })}
-          >
-            <Stack.Screen
-              name="CampaignDetail"
-              component={CampaignDetail}
-            />
-          </Stack.Group>
+          />
           <Stack.Screen name="Search" component={Search} />
         </Stack.Navigator>
 
