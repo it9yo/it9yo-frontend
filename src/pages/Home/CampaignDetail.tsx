@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
   },
   mainContentZone: {
     width: Dimensions.get('screen').width - 30,
-    borderColor: 'black',
     marginHorizontal: 15,
     marginTop: 10,
     marginBottom: 50,
