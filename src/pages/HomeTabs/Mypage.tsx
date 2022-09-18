@@ -1,36 +1,11 @@
 import React from 'react';
 import {
-  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
-import StatusNameList from '@src/constants/statusname';
 import Icon from 'react-native-vector-icons/Ionicons';
-
-const campaignDetaildata: CampaignDetailData = {
-  campaignId: 1,
-  title: '상주 곶감',
-  tags: ['곶감', '상주', '달달'],
-  description: '맛있는 상주 곶감!',
-  itemPrice: 1000,
-  itemImageURLs: ['https://cdn.kbmaeil.com/news/photo/202001/835750_854186_5024.jpg', 'https://uyjoqvxyzgvv9714092.cdn.ntruss.com/data2/content/image/2020/11/19/20201119299991.jpg'],
-  siDo: '서울시',
-  siGunGu: '광진구',
-  eupMyeonDong: '구의동',
-  detailAddress: '구의동 10-10',
-  deadLine: '2017-03-04',
-  campaignStatus: 'RECRUITING',
-  participatedPersonCnt: 0,
-  totalOrderedItemCnt: 0,
-  pageLinkUrl: '4735f881-ca32-4881-adf7-5f1e02bd43f2',
-  maxQuantityPerPerson: 10,
-  minQuantityPerPerson: 5,
-  hostId: 6,
-  hostName: '지운',
-  campaignCategory: 'FOOD',
-  chatRoomId: 1,
-};
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
