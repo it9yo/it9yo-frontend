@@ -21,6 +21,7 @@ import CampaignDetail from '@pages/Home/CampaignDetail';
 import Search from '@pages/Home/Search';
 import EditProfile from '@pages/Mypage/EditProfile';
 import It9yoPay from '@pages/Mypage/It9yoPay';
+import CreateCampaign from '@pages/Home/CreateCampaign';
 
 import {
   userState, userAccessToken, userFcmToken, location,
@@ -173,6 +174,10 @@ function App() {
               // headerShown: false,
             })}
           >
+            <Stack.Screen
+              name="CreateCampaign"
+              component={CreateCampaign}
+            />
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen
               name="EditProfile"
