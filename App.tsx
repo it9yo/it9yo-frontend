@@ -17,14 +17,17 @@ import SignIn from '@pages/SignIn';
 import SignUp from '@pages/SignUp';
 import HomeTabs from '@pages/HomeTabs';
 import ChatRoom from '@pages/Chat/ChatRoom';
-import CampaignDetail from '@src/pages/Home/CampaignDetail';
-import Search from '@src/pages/Home/Search';
+import CampaignDetail from '@pages/Home/CampaignDetail';
+import Search from '@pages/Home/Search';
+import EditProfile from '@pages/Mypage/EditProfile';
+import It9yoPay from '@pages/Mypage/It9yoPay';
 
 import {
   userState, userAccessToken, userFcmToken, location,
 } from '@src/states';
-import Icon from 'react-native-vector-icons/Ionicons';
+
 import HeaderBackButton from '@components/HeaderBackButton';
+import HeaderCloseButton from '@components/HeaderCloseButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -161,7 +164,27 @@ function App() {
               headerLeft: () => <HeaderBackButton text="목록가기" onPress={navigation.goBack} />,
             })}
           />
-          <Stack.Screen name="Search" component={Search} />
+          <Stack.Group
+            screenOptions={({ navigation }) => ({
+              headerLeft: () => <HeaderCloseButton onPress={navigation.goBack} />,
+              gestureEnabled: false,
+              gestureDirection: 'vertical',
+              headerMode: 'float',
+              // headerShown: false,
+            })}
+          >
+            <Stack.Screen name="Search" component={Search} />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfile}
+              options={{ title: '프로필 수정' }}
+            />
+            <Stack.Screen
+              name="It9yoPay"
+              component={It9yoPay}
+              options={{ title: '잇구요 페이' }}
+            />
+          </Stack.Group>
         </Stack.Navigator>
 
       ) : (

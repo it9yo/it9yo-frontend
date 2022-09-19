@@ -11,7 +11,7 @@ function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function Mypage() {
+function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const setAccessToken = useSetRecoilState(userAccessToken);
 
@@ -57,9 +57,11 @@ function Mypage() {
             {userInfo.nickName}
           </Text>
           <View style={{ alignItems: 'center' }}>
-            <View style={styles.button}>
-              <Text style={{ color: 'white', fontSize: 16 }}>프로필 수정</Text>
-            </View>
+            <Pressable onPress={() => navigation.navigate('EditProfile')}>
+              <View style={styles.button}>
+                <Text style={{ color: 'white', fontSize: 16 }}>프로필 수정</Text>
+              </View>
+            </Pressable>
             <Pressable onPress={onLogout}>
               <Text style={{ fontSize: 16, marginTop: 10 }}>로그아웃</Text>
             </Pressable>
@@ -67,9 +69,11 @@ function Mypage() {
         </View>
         <View style={styles.horizenLine} />
         <View style={styles.contentBlock}>
-          <View style={styles.button}>
-            <Text style={{ color: 'white', fontSize: 16 }}>잇구요 페이</Text>
-          </View>
+          <Pressable onPress={() => navigation.navigate('It9yoPay')}>
+            <View style={styles.button}>
+              <Text style={{ color: 'white', fontSize: 16 }}>잇구요 페이</Text>
+            </View>
+          </Pressable>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ fontSize: 18 }}>
               {'잔여 포인트: '}

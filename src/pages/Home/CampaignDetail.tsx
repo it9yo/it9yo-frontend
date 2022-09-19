@@ -163,7 +163,7 @@ function CampaignDetail({ navigation, route }) {
           <View style={{
             paddingVertical: 10,
             paddingHorizontal: 25,
-            flexDirection: 'row-reverse',
+            alignItems: 'flex-end',
           }}>
             <Text style={{
               fontWeight: '500', fontSize: 30, color: 'black',
