@@ -105,7 +105,7 @@ function ChatList({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     marginTop: StyleSheet.hairlineWidth,
-
+    height: '100%',
   },
   chatListView: {
     flexDirection: 'row',

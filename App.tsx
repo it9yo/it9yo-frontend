@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Pressable, Text } from 'react-native';
 
 import SplashScreen from 'react-native-splash-screen';
 
@@ -23,6 +23,8 @@ import Search from '@src/pages/Home/Search';
 import {
   userState, userAccessToken, userFcmToken, location,
 } from '@src/states';
+import Icon from 'react-native-vector-icons/Ionicons';
+import HeaderBackButton from '@components/HeaderBackButton';
 
 const Stack = createNativeStackNavigator();
 
@@ -143,8 +145,22 @@ function App() {
       {isLoggedIn ? (
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeTabs} options={{ headerShown: false }} />
-          <Stack.Screen name="ChatRoom" component={ChatRoom} />
-          <Stack.Screen name="CampaignDetail" component={CampaignDetail} />
+          <Stack.Screen
+            name="ChatRoom"
+            component={ChatRoom}
+            options={({ navigation }) => ({
+              title: '',
+              headerLeft: () => <HeaderBackButton onPress={navigation.goBack} />,
+            })}
+          />
+          <Stack.Screen
+            name="CampaignDetail"
+            component={CampaignDetail}
+            options={({ navigation }) => ({
+              title: '',
+              headerLeft: () => <HeaderBackButton text="목록가기" onPress={navigation.goBack} />,
+            })}
+          />
           <Stack.Screen name="Search" component={Search} />
         </Stack.Navigator>
 

@@ -70,7 +70,7 @@ function HomeTabs() {
         name="Mypage"
         component={Mypage}
         options={{
-          headerShown: false,
+          title: '내 정보',
           tabBarLabel: '내정보',
           tabBarLabelStyle: {
             fontSize: 14,
