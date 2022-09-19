@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View,
+  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -14,6 +15,22 @@ function numberWithCommas(x: number) {
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const setAccessToken = useSetRecoilState(userAccessToken);
+  const [photo, setPhoto] = useState('');
+
+  const onChangeProfilePhoto = async () => {
+    try {
+      const result: ImagePickerResponse = await launchImageLibrary({ mediaType: 'photo' });
+      if (result.didCancel) {
+        return;
+      }
+      const localUri = result.assets?.[0].uri;
+      const uriPath = localUri?.split('//').pop();
+      // const imageName = localUri?.split('/').pop();
+      setPhoto(`file://${uriPath}`);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onLogout = async () => {
     setUserInfo({
@@ -46,12 +63,19 @@ function Mypage({ navigation }) {
       <View style={styles.mainContent}>
         <View style={styles.contentBlock}>
           <View style={{ alignItems: 'center' }}>
-            {userInfo.profileImageUrl
-              ? <Image style={styles.profileThumbnail} source={{ uri: userInfo.profileImageUrl }}/>
+            {photo
+              ? <Image style={styles.profileThumbnail} source={{ uri: photo }}/>
               : <View style={styles.profileThumbnail}>
               <Icon style={{ paddingTop: 7 }} name='ios-person' size={45} color='white' />
             </View>}
-            <Icon name='camera-outline' size={30} color='gray' />
+            {/* {userInfo.profileImageUrl
+              ? <Image style={styles.profileThumbnail} source={{ uri: userInfo.profileImageUrl }}/>
+              : <View style={styles.profileThumbnail}>
+              <Icon style={{ paddingTop: 7 }} name='ios-person' size={45} color='white' />
+            </View>} */}
+            <Pressable onPress={onChangeProfilePhoto}>
+              <Icon name='camera-outline' size={30} color='gray' />
+            </Pressable>
           </View>
           <Text style={{ color: 'black', fontSize: 18 }}>
             {userInfo.nickName}

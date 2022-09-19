@@ -29,6 +29,7 @@
     "react-native-config": "^1.4.6",
     "react-native-encrypted-storage": "^4.0.2",
     "react-native-gifted-chat": "^1.0.4",
+    "react-native-image-picker": "^4.10.0",
     "react-native-image-slider-box": "megamaxs1234/react-native-image-slider-box",
     "react-native-nmap": "^0.0.66",
     "react-native-permissions": "^3.6.1",
