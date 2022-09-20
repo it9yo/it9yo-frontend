@@ -7,6 +7,8 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import axios from 'axios';
+import Config from 'react-native-config';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -14,8 +16,13 @@ function numberWithCommas(x: number) {
 
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
-  const setAccessToken = useSetRecoilState(userAccessToken);
+  const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
   const [photo, setPhoto] = useState('');
+  const [image, setImage] = useState<{
+    uri: string;
+    name: string;
+    type: string;
+  }>();
 
   const onChangeProfilePhoto = async () => {
     try {
@@ -27,6 +34,37 @@ function Mypage({ navigation }) {
       const uriPath = localUri?.split('//').pop();
       // const imageName = localUri?.split('/').pop();
       setPhoto(`file://${uriPath}`);
+
+      // const formData = new FormData();
+
+      // formData.append('image', {
+      //   name: image.name,
+      //   type: image.type || 'image/jpeg',
+      //   uri:
+      //     Platform.OS === 'android'
+      //       ? image.uri
+      //       : image.uri.replace('file://', ''),
+      // });
+
+      // const response = await axios.post(
+      //   `${Config.API_URL}/user/edit/profileImage`,
+      //   {},
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //     },
+      //   },
+      // );
+
+      // if (response.status === 200) {
+      //   const { profileImageUrl } = response.data.data;
+      //   console.log('profileImageUrl', profileImageUrl);
+      //   // setUserInfo({
+      //   //   ...userInfo,
+      //   //   profileImageUrl,
+      //   // });
+      //   Alert.alert('알림', '프로필 사진 변경이 완료되었습니다.');
+      // }
     } catch (error) {
       console.error(error);
     }
@@ -87,7 +125,7 @@ function Mypage({ navigation }) {
               </View>
             </Pressable>
             <Pressable onPress={onLogout}>
-              <Text style={{ fontSize: 16, marginTop: 10 }}>로그아웃</Text>
+              <Text style={{ color: 'black', fontSize: 16, marginTop: 10 }}>로그아웃</Text>
             </Pressable>
           </View>
         </View>
@@ -99,10 +137,10 @@ function Mypage({ navigation }) {
             </View>
           </Pressable>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 18 }}>
+            <Text style={{ color: 'black', fontSize: 18 }}>
               {'잔여 포인트: '}
             </Text>
-            <Text style={{ fontSize: 18, fontWeight: '500' }}>
+            <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>
               {`${numberWithCommas(userInfo.point)} P`}
             </Text>
           </View>
@@ -199,6 +237,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
   },
   menuText: {
+    color: 'black',
     fontSize: 18,
     fontWeight: '400',
   },

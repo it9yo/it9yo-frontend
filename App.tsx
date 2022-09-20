@@ -170,7 +170,6 @@ function App() {
               gestureEnabled: false,
               gestureDirection: 'vertical',
               headerMode: 'float',
-              // headerShown: false,
             })}
           >
             <Stack.Screen name="Search" component={Search} />

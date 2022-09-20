@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
   locationText: {
     fontWeight: '500',
     fontSize: 25,
+    color: 'black',
   },
   locationZone: {
     flexDirection: 'row',
@@ -226,14 +227,14 @@ const styles = StyleSheet.create({
   },
   campaignTitleText: {
     fontSize: 20,
-    // fontFamily: 'Noto Sans KR',
     fontWeight: '600',
     marginBottom: 8,
+    color: 'black',
   },
   priceText: {
-    // fontFamily: 'Noto Sans KR',
     fontWeight: '700',
     fontSize: 24,
+    color: 'black',
   },
 });
 
