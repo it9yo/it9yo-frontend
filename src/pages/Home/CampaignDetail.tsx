@@ -113,7 +113,7 @@ function CampaignDetail({ navigation, route }) {
           <View style={styles.horizenLine} />
 
           <View style={styles.contentBlock}>
-            <Text style={{ fontSize: 22, fontWeight: '400' }}>
+            <Text style={{ color: 'black', fontSize: 22, fontWeight: '400' }}>
               {campaignDetaildata.title}
             </Text>
             <View style={{ alignItems: 'flex-end' }}>
@@ -148,7 +148,7 @@ function CampaignDetail({ navigation, route }) {
                 </Text>
               </View>
             </View>
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icon name="person-outline" size={15} color="#000" />
               <Text style={{
                 fontWeight: '600', fontSize: 15, color: 'orange', marginLeft: 2,
@@ -178,13 +178,13 @@ function CampaignDetail({ navigation, route }) {
             paddingVertical: 10,
             paddingHorizontal: 25,
           }}>
-            <Text style={{ fontSize: 18, color: 'black' }}>
+            <Text style={{ color: 'black', fontSize: 18 }}>
               {campaignDetaildata.description}
             </Text>
             <View style={styles.tagZone}>
               {campaignDetaildata.tags.map((tag) => (
                 <View style={styles.tag}>
-                  <Text style={{ fontSize: 16 }}># {tag}</Text>
+                  <Text style={{ color: 'black', fontSize: 16 }}># {tag}</Text>
                 </View>))}
             </View>
           </View>

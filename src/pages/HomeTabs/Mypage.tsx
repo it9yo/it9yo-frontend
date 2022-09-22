@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert,
+  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert, Platform,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
+import axios from 'axios';
+import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+
+import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -14,19 +17,47 @@ function numberWithCommas(x: number) {
 
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
-  const setAccessToken = useSetRecoilState(userAccessToken);
-  const [photo, setPhoto] = useState('');
+  const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
 
   const onChangeProfilePhoto = async () => {
     try {
-      const result: ImagePickerResponse = await launchImageLibrary({ mediaType: 'photo' });
-      if (result.didCancel) {
+      const result: ImagePickerResponse = await launchImageLibrary({
+        mediaType: 'photo',
+        maxWidth: 300,
+        maxHeight: 300,
+        includeBase64: Platform.OS === 'android',
+      });
+      if (result.didCancel || !result.assets) {
         return;
       }
-      const localUri = result.assets?.[0].uri;
-      const uriPath = localUri?.split('//').pop();
-      // const imageName = localUri?.split('/').pop();
-      setPhoto(`file://${uriPath}`);
+      const { uri, type, fileName } = result.assets[0];
+
+      const formData = new FormData();
+      formData.append('file', {
+        name: fileName,
+        type,
+        uri,
+      });
+
+      const response = await axios.post(
+        `${Config.API_URL}/user/edit/profileImage`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (response.status === 200) {
+        const { profileImageUrl } = response.data.data;
+        setUserInfo({
+          ...userInfo,
+          profileImageUrl,
+        });
+        console.log('profileImageUrl', profileImageUrl);
+        Alert.alert('알림', '프로필 사진 변경이 완료되었습니다.');
+      }
     } catch (error) {
       console.error(error);
     }
@@ -63,16 +94,11 @@ function Mypage({ navigation }) {
       <View style={styles.mainContent}>
         <View style={styles.contentBlock}>
           <View style={{ alignItems: 'center' }}>
-            {photo
-              ? <Image style={styles.profileThumbnail} source={{ uri: photo }}/>
-              : <View style={styles.profileThumbnail}>
-              <Icon style={{ paddingTop: 7 }} name='ios-person' size={45} color='white' />
-            </View>}
-            {/* {userInfo.profileImageUrl
+            {userInfo.profileImageUrl
               ? <Image style={styles.profileThumbnail} source={{ uri: userInfo.profileImageUrl }}/>
               : <View style={styles.profileThumbnail}>
               <Icon style={{ paddingTop: 7 }} name='ios-person' size={45} color='white' />
-            </View>} */}
+            </View>}
             <Pressable onPress={onChangeProfilePhoto}>
               <Icon name='camera-outline' size={30} color='gray' />
             </Pressable>
@@ -87,7 +113,7 @@ function Mypage({ navigation }) {
               </View>
             </Pressable>
             <Pressable onPress={onLogout}>
-              <Text style={{ fontSize: 16, marginTop: 10 }}>로그아웃</Text>
+              <Text style={{ color: 'black', fontSize: 16, marginTop: 10 }}>로그아웃</Text>
             </Pressable>
           </View>
         </View>
@@ -99,10 +125,10 @@ function Mypage({ navigation }) {
             </View>
           </Pressable>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 18 }}>
+            <Text style={{ color: 'black', fontSize: 18 }}>
               {'잔여 포인트: '}
             </Text>
-            <Text style={{ fontSize: 18, fontWeight: '500' }}>
+            <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>
               {`${numberWithCommas(userInfo.point)} P`}
             </Text>
           </View>
@@ -199,6 +225,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
   },
   menuText: {
+    color: 'black',
     fontSize: 18,
     fontWeight: '400',
   },
