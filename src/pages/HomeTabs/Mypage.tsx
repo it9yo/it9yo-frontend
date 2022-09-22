@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert,
+  Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert, Platform,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
 import Config from 'react-native-config';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -17,54 +18,46 @@ function numberWithCommas(x: number) {
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
-  const [photo, setPhoto] = useState('');
-  const [image, setImage] = useState<{
-    uri: string;
-    name: string;
-    type: string;
-  }>();
 
   const onChangeProfilePhoto = async () => {
     try {
-      const result: ImagePickerResponse = await launchImageLibrary({ mediaType: 'photo' });
-      if (result.didCancel) {
+      const result: ImagePickerResponse = await launchImageLibrary({
+        mediaType: 'photo',
+        maxWidth: 300,
+        maxHeight: 300,
+        includeBase64: Platform.OS === 'android',
+      });
+      if (result.didCancel || !result.assets) {
         return;
       }
-      const localUri = result.assets?.[0].uri;
-      const uriPath = localUri?.split('//').pop();
-      // const imageName = localUri?.split('/').pop();
-      setPhoto(`file://${uriPath}`);
+      const { uri, type, fileName } = result.assets[0];
 
-      // const formData = new FormData();
+      const formData = new FormData();
+      formData.append('file', {
+        name: fileName,
+        type,
+        uri,
+      });
 
-      // formData.append('image', {
-      //   name: image.name,
-      //   type: image.type || 'image/jpeg',
-      //   uri:
-      //     Platform.OS === 'android'
-      //       ? image.uri
-      //       : image.uri.replace('file://', ''),
-      // });
+      const response = await axios.post(
+        `${Config.API_URL}/user/edit/profileImage`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
 
-      // const response = await axios.post(
-      //   `${Config.API_URL}/user/edit/profileImage`,
-      //   {},
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   },
-      // );
-
-      // if (response.status === 200) {
-      //   const { profileImageUrl } = response.data.data;
-      //   console.log('profileImageUrl', profileImageUrl);
-      //   // setUserInfo({
-      //   //   ...userInfo,
-      //   //   profileImageUrl,
-      //   // });
-      //   Alert.alert('알림', '프로필 사진 변경이 완료되었습니다.');
-      // }
+      if (response.status === 200) {
+        const { profileImageUrl } = response.data.data;
+        setUserInfo({
+          ...userInfo,
+          profileImageUrl,
+        });
+        console.log('profileImageUrl', profileImageUrl);
+        Alert.alert('알림', '프로필 사진 변경이 완료되었습니다.');
+      }
     } catch (error) {
       console.error(error);
     }
@@ -101,16 +94,11 @@ function Mypage({ navigation }) {
       <View style={styles.mainContent}>
         <View style={styles.contentBlock}>
           <View style={{ alignItems: 'center' }}>
-            {photo
-              ? <Image style={styles.profileThumbnail} source={{ uri: photo }}/>
-              : <View style={styles.profileThumbnail}>
-              <Icon style={{ paddingTop: 7 }} name='ios-person' size={45} color='white' />
-            </View>}
-            {/* {userInfo.profileImageUrl
+            {userInfo.profileImageUrl
               ? <Image style={styles.profileThumbnail} source={{ uri: userInfo.profileImageUrl }}/>
               : <View style={styles.profileThumbnail}>
               <Icon style={{ paddingTop: 7 }} name='ios-person' size={45} color='white' />
-            </View>} */}
+            </View>}
             <Pressable onPress={onChangeProfilePhoto}>
               <Icon name='camera-outline' size={30} color='gray' />
             </Pressable>
