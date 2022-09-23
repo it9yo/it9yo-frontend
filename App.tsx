@@ -21,6 +21,8 @@ import CampaignDetail from '@pages/Home/CampaignDetail';
 import Search from '@pages/Home/Search';
 import EditProfile from '@pages/Mypage/EditProfile';
 import It9yoPay from '@pages/Mypage/It9yoPay';
+import ChangeLocation from '@pages/Home/ChangeLocation';
+import ChangeLocationCert from '@pages/Home/ChangeLocationCert';
 
 import {
   userState, userAccessToken, userFcmToken, location,
@@ -164,6 +166,14 @@ function App() {
               headerLeft: () => <HeaderBackButton text="목록가기" onPress={navigation.goBack} />,
             })}
           />
+          <Stack.Screen
+            name="ChangeLocationCert"
+            component={ChangeLocationCert}
+            options={({ navigation }) => ({
+              title: '지역 인증',
+              headerLeft: () => <HeaderBackButton onPress={navigation.goBack} />,
+            })}
+          />
           <Stack.Group
             screenOptions={({ navigation }) => ({
               headerLeft: () => <HeaderCloseButton onPress={navigation.goBack} />,
@@ -182,6 +192,11 @@ function App() {
               name="It9yoPay"
               component={It9yoPay}
               options={{ title: '잇구요 페이' }}
+            />
+            <Stack.Screen
+              name="ChangeLocation"
+              component={ChangeLocation}
+              options={{ title: '지역 변경' }}
             />
           </Stack.Group>
         </Stack.Navigator>
