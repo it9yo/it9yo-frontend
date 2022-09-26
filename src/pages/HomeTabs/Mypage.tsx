@@ -45,6 +45,7 @@ function Mypage({ navigation }) {
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'multipart/form-data',
           },
         },
       );
