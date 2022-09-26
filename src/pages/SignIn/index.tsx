@@ -30,6 +30,7 @@ import NaverBtn from '@assets/images/naverBtn.png';
 import KakaoBtn from '@assets/images/kakaoBtn.png';
 import GoogleBtn from '@assets/images/googleBtn.png';
 import {
+  location,
   signupState, userAccessToken, userFcmToken, userState,
 } from '@src/states';
 import {
@@ -66,9 +67,9 @@ const getNaverToken = (props: NaverKeyProps) => new Promise((resolve, reject) =>
 
 function SignIn({ navigation }: SignInScreenProps) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);
-
   const setUserInfo = useSetRecoilState(userState);
   const setAccessToken = useSetRecoilState(userAccessToken);
+  const setLocation = useSetRecoilState(location);
   const fcmToken = useRecoilState(userFcmToken);
 
   useEffect(() => {
@@ -112,6 +113,11 @@ function SignIn({ navigation }: SignInScreenProps) {
             },
           },
         );
+        const { siDo, siGunGu } = userResponseData.data.data;
+        setLocation({
+          siDo,
+          siGunGu,
+        });
         setUserInfo(userResponseData.data.data);
       }
     } catch (error) {

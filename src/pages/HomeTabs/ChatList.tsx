@@ -94,8 +94,8 @@ function ChatList({ navigation }) {
         </View>
         <View style={styles.chatStateView}>
           <Text>{chatTime}</Text>
-          <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
-          <Text style={styles.statusText}>{`${participatedPersonCnt}명 참여중`}</Text>
+          <Text style={styles.campaignStatusText}>{StatusNameList[campaignStatus]}</Text>
+          <Text style={styles.joinedPeopleText}>{`${participatedPersonCnt}명 참여중`}</Text>
         </View>
       </View>
       </Pressable>)}
@@ -112,13 +112,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 10,
     paddingVertical: 15,
-    // borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: 1,
     borderColor: 'white',
   },
-  statusText: {
-    color: 'gray',
-    // paddingHorizontal: 5,
+  campaignStatusText: {
+    color: 'red',
+    paddingTop: 5,
+  },
+  joinedPeopleText: {
+    color: 'orange',
     paddingTop: 5,
   },
   chatStateView: {
@@ -139,6 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
     fontWeight: '400',
+    color: 'black',
   },
   chatContent: {
     fontSize: 16,
