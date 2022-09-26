@@ -20,6 +20,13 @@ function CreateCampaign() {
 
   const oepnGallery = async () => {
     const result = await launchImageLibrary().catch(() => { console.error('!!!') })
+    const localUri = result.assets[0].uri;
+    const uriPath = localUri.split("//").pop();
+    const imageName = localUri.split("/").pop();
+    
+    setPhoto(localUri);
+
+    console.log(photo)
   }
 
   return (
@@ -52,7 +59,9 @@ function CreateCampaign() {
       <Pressable onPress={oepnGallery} style= {styles.imageAddButton}>
         <Icon name='add-circle' size={60}/>
       </Pressable>
-      <Image source={{uri:photo}}/> 
+      <Image source={{ uri: photo }}/>
+
+
     </SafeAreaView>
   );
 }
