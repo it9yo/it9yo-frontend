@@ -13,21 +13,49 @@ function CreateCampaign() {
   const [campaignDetail, setCampaignDetail] = useState('');
   const [photo, setPhoto] = useState('');
 
-  let options = {
-    saveToPhotos: true,
-    mediaType: 'photo',
-  }
+  const onChangeProfilePhoto = async () => {
+    try {
+      const result: ImagePickerResponse = await launchImageLibrary({
+        mediaType: 'photo',
+        maxWidth: 300,
+        maxHeight: 300,
+        includeBase64: Platform.OS === 'android',
+      });
+      if (result.didCancel || !result.assets) {
+        return;
+      }
+      const { uri, type, fileName } = result.assets[0];
 
-  const oepnGallery = async () => {
-    const result = await launchImageLibrary().catch(() => { console.error('!!!') })
-    const localUri = result.assets[0].uri;
-    const uriPath = localUri.split("//").pop();
-    const imageName = localUri.split("/").pop();
-    
-    setPhoto(localUri);
+      const formData = new FormData();
+      formData.append('file', {
+        name: fileName,
+        type,
+        uri,
+      });
 
-    console.log(photo)
-  }
+      const response = await axios.post(
+        `${Config.API_URL}/user/edit/profileImage`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (response.status === 200) {
+        const { profileImageUrl } = response.data.data;
+        setUserInfo({
+          ...userInfo,
+          profileImageUrl,
+        });
+        console.log('profileImageUrl', profileImageUrl);
+        Alert.alert('알림', '프로필 사진 변경이 완료되었습니다.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,7 +84,7 @@ function CreateCampaign() {
           blurOnSubmit={false}
         />
       </View>
-      <Pressable onPress={oepnGallery} style= {styles.imageAddButton}>
+      <Pressable onPress={onChangeProfilePhoto} style= {styles.imageAddButton}>
         <Icon name='add-circle' size={60}/>
       </Pressable>
       <Image source={{ uri: photo }}/>
