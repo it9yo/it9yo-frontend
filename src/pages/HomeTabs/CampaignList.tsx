@@ -3,7 +3,7 @@ import {
   Image,
   Pressable,
   SafeAreaView,
-  ScrollView, StyleSheet, Text, View,
+  ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
@@ -119,6 +119,12 @@ export function CampaignList({ navigation }) {
       </Pressable>
      </View>
     </View>
+    <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => navigation.navigate('CreateCampaign')}
+          style={styles.floatingButtonStyle}>
+          <Icon name='add-circle' size={60}/>
+        </TouchableOpacity>
     <ScrollView>
       {chatList.map(({
         campaignId, campaignTitle, itemPrice, campaignLocation,
@@ -235,6 +241,15 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 24,
     color: 'black',
+  },
+  floatingButtonStyle: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+    right: 30,
+    bottom: 80,
+    backgroundColor: 'red',
   },
 });
 

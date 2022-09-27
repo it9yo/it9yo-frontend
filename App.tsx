@@ -23,6 +23,7 @@ import EditProfile from '@pages/Mypage/EditProfile';
 import It9yoPay from '@pages/Mypage/It9yoPay';
 import ChangeLocation from '@pages/Home/ChangeLocation';
 import ChangeLocationCert from '@pages/Home/ChangeLocationCert';
+import CreateCampaign from '@pages/Home/CreateCampaign';
 
 import {
   userState, userAccessToken, userFcmToken, location,
@@ -182,6 +183,10 @@ function App() {
               headerMode: 'float',
             })}
           >
+            <Stack.Screen
+              name="CreateCampaign"
+              component={CreateCampaign}
+            />
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen
               name="EditProfile"
