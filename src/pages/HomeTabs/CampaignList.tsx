@@ -102,7 +102,7 @@ export function CampaignList({ navigation }) {
 
   return <SafeAreaView style={styles.container}>
     <View style={styles.navContainer}>
-     <Pressable>
+     <Pressable onPress={() => navigation.navigate('ChangeLocation')}>
       <View style={styles.locationZone}>
         <Text style={styles.locationText}>
           {currentLocation.siGunGu ? currentLocation.siGunGu : currentLocation.siDo}
