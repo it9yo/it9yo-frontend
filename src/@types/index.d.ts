@@ -110,3 +110,9 @@ export interface CampaignDetailData {
   campaignCategory: string;
   chatRoomId: number;
 }
+
+export interface PhotoData {
+  name: string;
+  type: string;
+  uri: string;
+}
