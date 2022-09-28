@@ -1,29 +1,78 @@
+import React, { useEffect, useState } from 'react';
 import {
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Text, TextInput, View, PermissionsAndroid, Image, Alert, Platform, ScrollView,
+  Text, TextInput, View, Image, Alert, Platform, ScrollView, Modal, Button,
 } from 'react-native';
-import React, { useState } from 'react';
+
+import { format } from 'date-fns';
+import ko from 'date-fns/esm/locale/ko/index.js';
+
 import ImagePicker from 'react-native-image-crop-picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import Config from 'react-native-config';
 
 import { ImageData } from '@src/@types';
+import { useRecoilState } from 'recoil';
+import { userAccessToken } from '@src/states';
 
 interface Preview {
   key: number;
   uri: string;
 }
 
-function CreateCampaign() {
-  const [campaignTitle, setCampaignTitle] = useState('');
-  const [campaignDetail, setCampaignDetail] = useState('');
+function CreateCampaign({ navigation, route }) {
+  const accessToken = useRecoilState(userAccessToken)[0];
+
   const [images, setImages] = useState<ImageData[]>([]);
   const [previews, setPreviews] = useState<Preview[]>([]);
   const [imageKey, setImageKey] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const [date, onChangeDate] = useState(new Date());
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [itemPrice, setItemPrice] = useState('');
+  const [siDo, setSiDo] = useState('');
+  const [siGunGu, setSiGunGu] = useState('');
+  const [eupMyeonDong, setEupMyeonDong] = useState('');
+  const [detailAddress, setDetailAddress] = useState('');
+  const [deadLine, setDeadLine] = useState('');
+  const [minQuantityPerPerson, setMinQuantity] = useState('1');
+  const [maxQuantityPerPerson, setMaxQuantity] = useState('');
+  const [campaignCategory, setCategory] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tag, setTag] = useState('');
+
+  useEffect(() => {
+    if (route.params?.data) {
+      console.log(route.params.data);
+      const {
+        sido, sigungu, bname, address,
+      } = route.params.data;
+      setSiDo(sido);
+      setSiGunGu(sigungu);
+      setEupMyeonDong(bname);
+      setDetailAddress(address);
+    }
+  }, [route.params?.data]);
+
+  const onPressDate = () => {
+    setVisible(true);
+  };
+
+  const onCancel = () => {
+    setVisible(false);
+  };
+
+  const onConfirm = (selectedDate) => {
+    setVisible(false);
+    onChangeDate(selectedDate);
+  };
 
   const onAddImage = async () => {
     try {
@@ -87,6 +136,11 @@ function CreateCampaign() {
     );
   };
 
+  const onAddTag = () => {
+    setTags((prev) => [...prev, tag]);
+    setTag('');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -111,26 +165,143 @@ function CreateCampaign() {
           <Text style={styles.label}>상품명</Text>
           <TextInput
             style={styles.textInput}
-            onChangeText={setCampaignTitle}
+            onChangeText={setTitle}
             placeholder="상품명을 입력해주세요"
             placeholderTextColor="#666"
-            value={campaignTitle}
+            value={title}
             clearButtonMode="while-editing"
             blurOnSubmit={false}
           />
         </View>
+
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>상품 설명</Text>
           <TextInput
             style={styles.textInput}
-            onChangeText={setCampaignDetail}
+            onChangeText={setDescription}
             placeholder="상품 설명을 입력해주세요"
             placeholderTextColor="#666"
-            value={campaignDetail}
+            value={description}
             clearButtonMode="while-editing"
             blurOnSubmit={false}
           />
         </View>
+
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>가격(1개당)</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={setItemPrice}
+            placeholder="가격을 입력해주세요"
+            placeholderTextColor="#666"
+            value={itemPrice}
+            clearButtonMode="while-editing"
+            blurOnSubmit={false}
+            keyboardType="numeric"
+          />
+        </View>
+
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>주소</Text>
+          <TextInput
+            style={styles.textInput}
+            value={detailAddress}
+            editable={false}
+          />
+          <Pressable onPress={() => navigation.navigate('SearchAddress')}>
+            <Text>주소찾기</Text>
+          </Pressable>
+        </View>
+
+        {/* TODO: 날짜 선택 */}
+        {/* <View style={styles.inputWrapper}>
+          <Text style={styles.label}>마감 날짜</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={setDeadLine}
+            placeholder="마감날짜를 입력해주세요"
+            placeholderTextColor="#666"
+            value={deadLine}
+            clearButtonMode="while-editing"
+            blurOnSubmit={false}
+          />
+        </View> */}
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>마감 날짜</Text>
+          <Pressable onPress={onPressDate}>
+            <Text>{format(new Date(date), 'PPP', { locale: ko })}</Text>
+          </Pressable>
+        </View>
+        <DateTimePickerModal
+          isVisible={visible}
+          mode='date'
+          onConfirm={onConfirm}
+          onCancel={onCancel}
+          date={date} />
+
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>인당 최소 구매 개수(기본 1)</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={setMinQuantity}
+            placeholder="최소 구매 개수를 입력해주세요"
+            placeholderTextColor="#666"
+            value={minQuantityPerPerson}
+            clearButtonMode="while-editing"
+            blurOnSubmit={false}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>인당 최대 구매 개수</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={setMaxQuantity}
+            placeholder="최대 구매 개수를 입력해주세요"
+            placeholderTextColor="#666"
+            value={maxQuantityPerPerson}
+            clearButtonMode="while-editing"
+            blurOnSubmit={false}
+            keyboardType="numeric"
+          />
+        </View>
+
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>카테고리</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={setMaxQuantity}
+            placeholder="카테고리를 선택해주세요"
+            placeholderTextColor="#666"
+            value={maxQuantityPerPerson}
+            // clearButtonMode="while-editing"
+            blurOnSubmit={false}
+          />
+        </View>
+
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>태그</Text>
+          <View>
+            {tags?.map((_tag) => <Text>{`#${_tag} `}</Text>)}
+          </View>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={setTag}
+            placeholder="태그를 입력해주세요"
+            placeholderTextColor="#666"
+            value={tag}
+            clearButtonMode="while-editing"
+            blurOnSubmit={false}
+          />
+          {tag
+            ? <Pressable style={styles.buttonActive} onPress={onAddTag}>
+            <Text style={styles.buttonText}>태그 추가</Text>
+          </Pressable>
+            : <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>태그 추가</Text>
+          </Pressable>}
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -186,7 +357,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   button: {
-    width: '45%',
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
@@ -195,7 +365,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonActive: {
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'black',
+    paddingVertical: 10,
+    borderRadius: 5,
   },
   buttonText: {
     color: 'white',
@@ -215,6 +390,9 @@ const styles = StyleSheet.create({
   imageAddButton: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  separator: {
+    width: 3,
   },
 });
 
