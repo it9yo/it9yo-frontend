@@ -360,9 +360,6 @@ PODS:
     - React-Core
   - react-native-image-picker (4.10.0):
     - React-Core
-  - react-native-multiple-image-picker (0.4.10):
-    - React-Core
-    - TLPhotoPicker (= 2.1.4)
   - react-native-nmap (0.0.66):
     - NMapsMap
     - React
@@ -455,6 +452,15 @@ PODS:
   - RNGoogleSignin (8.0.0):
     - GoogleSignIn (~> 6.2.2)
     - React-Core
+  - RNImageCropPicker (0.38.0):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.38.0)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.38.0):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNNaverLogin (2.3.0):
     - naveridlogin-sdk-ios (~> 4.1)
     - React
@@ -465,7 +471,7 @@ PODS:
     - React-RCTImage
   - RNVectorIcons (9.2.0):
     - React-Core
-  - TLPhotoPicker (2.1.4)
+  - TOCropViewController (2.6.1)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -505,7 +511,6 @@ DEPENDENCIES:
   - react-native-encrypted-storage (from `../node_modules/react-native-encrypted-storage`)
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
-  - "react-native-multiple-image-picker (from `../node_modules/@baronha/react-native-multiple-image-picker`)"
   - react-native-nmap (from `../node_modules/react-native-nmap`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
@@ -526,6 +531,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
+  - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - "RNNaverLogin (from `../node_modules/@react-native-seoul/naver-login`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -562,7 +568,7 @@ SPEC REPOS:
     - naveridlogin-sdk-ios
     - NMapsMap
     - PromisesObjC
-    - TLPhotoPicker
+    - TOCropViewController
 
 EXTERNAL SOURCES:
   boost:
@@ -627,8 +633,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/geolocation"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
-  react-native-multiple-image-picker:
-    :path: "../node_modules/@baronha/react-native-multiple-image-picker"
   react-native-nmap:
     :path: "../node_modules/react-native-nmap"
   react-native-safe-area-context:
@@ -669,6 +673,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
+  RNImageCropPicker:
+    :path: "../node_modules/react-native-image-crop-picker"
   RNNaverLogin:
     :path: "../node_modules/@react-native-seoul/naver-login"
   RNPermissions:
@@ -740,7 +746,6 @@ SPEC CHECKSUMS:
   react-native-encrypted-storage: e78d848ce0fb663c2ce306e37921d026809322e6
   react-native-geolocation: 69f4fd37650b8e7fee91816d395e62dd16f5ab8d
   react-native-image-picker: 4bc9ed38c8be255b515d8c88babbaf74973f91a8
-  react-native-multiple-image-picker: af1788309fa361fe7c910649d9e24097c34aac6f
   react-native-nmap: cfcc5402746040494c544ea90a6062f49505acdf
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
@@ -761,11 +766,12 @@ SPEC CHECKSUMS:
   RNFBApp: a6fca2cd8f392b5efc1f2ab7bd4b3b64a6039abf
   RNFBMessaging: eca46a70527dd469e684250b22d5c927bc4a5ed9
   RNGoogleSignin: b2179ba653c759b936404a7746fc5302f9de6a5a
+  RNImageCropPicker: ffbba608264885c241cbf3a8f78eb7aeeb978241
   RNNaverLogin: d4a1a99535542ef0e5da6082264033dd8dcee611
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
-  TLPhotoPicker: f486e8499e1c3f464d0e886697635e25a72a52b8
+  TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   Yoga: 44c64131616253fa83366295acdbce3d14926041
 
 PODFILE CHECKSUM: edeb9ed5f8876e981000e06b70d1fab8a9138c78

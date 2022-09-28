@@ -5,55 +5,78 @@ import {
   Text, TextInput, View, PermissionsAndroid, Image, Alert, Platform, ScrollView,
 } from 'react-native';
 import React, { useState } from 'react';
-import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import Config from 'react-native-config';
-import MultipleImagePicker, { type Results } from '@baronha/react-native-multiple-image-picker';
-import { PhotoData } from '@src/@types';
+
+import { ImageData } from '@src/@types';
+
+interface Preview {
+  key: number;
+  uri: string;
+}
 
 function CreateCampaign() {
   const [campaignTitle, setCampaignTitle] = useState('');
   const [campaignDetail, setCampaignDetail] = useState('');
-  const [photos, setPhotos] = useState<PhotoData[]>([]);
+  const [images, setImages] = useState<ImageData[]>([]);
+  const [previews, setPreviews] = useState<Preview[]>([]);
+  const [imageKey, setImageKey] = useState(0);
 
-  const onAddPhoto = async () => {
+  const onAddImage = async () => {
     try {
-      const response: Results[] = await MultipleImagePicker.openPicker({
-        mediaType: 'image',
-        maxSelectedAssets: 10,
+      const response = await ImagePicker.openPicker({
+        mediaType: 'photo',
+        cropping: true,
+        multiple: true,
+        maxFiles: 10,
+        includeExif: true,
+        includeBase64: true,
+        compressImageMaxWidth: 800,
+        compressImageMaxHeight: 800,
       });
-      console.log('photos', photos);
+
       if (response.length > 0) {
+        let key = imageKey;
         response.map((item) => {
-          const { fileName, type } = item;
-          const path = Platform.OS === 'android' ? `file:/${item.realPath}` : item.path;
-          console.log(item);
-          console.log(path);
-          const isPhotoExist = photos.filter((photo) => photo.uri === path);
-          const photo: PhotoData = {
-            name: fileName,
-            type,
-            uri: path,
-          };
-          setPhotos((prevPhotos) => [...prevPhotos, photo]);
-          // if (!isPhotoExist.length) {
-          // }
+          const priviewUri = `data:${item.mime};base64,${item.data}`;
+          const isImageExist = previews.filter((preview) => preview.uri === priviewUri);
+          if (!isImageExist.length) {
+            setPreviews((prev) => [...prev, { key, uri: priviewUri }]);
+            const { path, filename, mime } = item;
+            setImages((prev) => [...prev, {
+              key,
+              name: filename || `image_${item.path}`,
+              type: mime,
+              uri: Platform.OS === 'android' ? path : path.replace('file://', ''),
+            }]);
+            key += 1;
+          }
         });
+        setImageKey(key);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const onDeletePhoto = (uri: string) => {
+  const onDeleteImage = (key: number) => {
     Alert.alert(
       '알림',
       '해당 이미지를 삭제하겠습니까?',
       [
         {
           text: '예',
-          onPress: () => setPhotos((prevPhotos) => prevPhotos.filter((photo) => photo.uri !== uri)),
+          onPress: () => {
+            console.log(key);
+            setPreviews((prevPreviews) => prevPreviews.filter((preview) => {
+              console.log(preview, key);
+              return preview.key !== key;
+            }));
+            setImages((prevImages) => prevImages.filter((image) => image.key !== key));
+          },
         },
         {
           text: '아니오',
@@ -71,14 +94,13 @@ function CreateCampaign() {
           <Text style={styles.label}>상품 이미지</Text>
           <View style={styles.images}>
             <ScrollView horizontal={true}>
-              {photos && photos.map((photo) => {
-                const { uri } = photo;
-                console.log(uri);
-                return <Pressable onPress={() => onDeletePhoto(uri)}>
-                  <Image style={styles.image} key={uri} source={{ uri }}/>
+              {previews && previews.map((preview) => {
+                const { key, uri } = preview;
+                return <Pressable onPress={() => onDeleteImage(key)}>
+                  <Image style={styles.image} key={key} source={{ uri }}/>
                 </Pressable>;
               })}
-              <Pressable onPress={onAddPhoto} style={styles.imageAddButton}>
+              <Pressable onPress={onAddImage} style={styles.imageAddButton}>
                 <Icon name='add-circle' size={60} color={'orange'}/>
               </Pressable>
             </ScrollView>

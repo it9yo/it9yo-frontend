@@ -111,7 +111,8 @@ export interface CampaignDetailData {
   chatRoomId: number;
 }
 
-export interface PhotoData {
+export interface ImageData {
+  key: number;
   name: string;
   type: string;
   uri: string;
