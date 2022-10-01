@@ -112,7 +112,6 @@ export interface CampaignDetailData {
 }
 
 export interface ImageData {
-  key: number;
   name: string;
   type: string;
   uri: string;

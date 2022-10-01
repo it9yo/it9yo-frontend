@@ -3,25 +3,33 @@ import {
   Pressable,
   SafeAreaView,
   StyleSheet,
-  Text, TextInput, View, Image, Alert, Platform, ScrollView, Modal, Button,
+  Text, TextInput, View, Image, Alert, Platform, ScrollView,
 } from 'react-native';
 
 import { format } from 'date-fns';
 import ko from 'date-fns/esm/locale/ko/index.js';
 
 import ImagePicker from 'react-native-image-crop-picker';
+import ImageResizer from 'react-native-image-resizer';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Picker } from '@react-native-picker/picker';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import Config from 'react-native-config';
 
-import { ImageData } from '@src/@types';
 import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
 
 interface Preview {
-  key: number;
+  key: string;
+  uri: string;
+}
+
+interface ImageData {
+  key: string;
+  name: string;
+  type: string;
   uri: string;
 }
 
@@ -30,9 +38,7 @@ function CreateCampaign({ navigation, route }) {
 
   const [images, setImages] = useState<ImageData[]>([]);
   const [previews, setPreviews] = useState<Preview[]>([]);
-  const [imageKey, setImageKey] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [date, onChangeDate] = useState(new Date());
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -41,10 +47,10 @@ function CreateCampaign({ navigation, route }) {
   const [siGunGu, setSiGunGu] = useState('');
   const [eupMyeonDong, setEupMyeonDong] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
-  const [deadLine, setDeadLine] = useState('');
+  const [deadLine, setDeadLine] = useState(new Date());
   const [minQuantityPerPerson, setMinQuantity] = useState('1');
   const [maxQuantityPerPerson, setMaxQuantity] = useState('');
-  const [campaignCategory, setCategory] = useState('');
+  const [campaignCategory, setCategory] = useState('FOOD');
   const [tags, setTags] = useState<string[]>([]);
   const [tag, setTag] = useState('');
 
@@ -61,6 +67,79 @@ function CreateCampaign({ navigation, route }) {
     }
   }, [route.params?.data]);
 
+  const onCreateCampaign = async () => {
+    // TODO: 유효성 검사, loading 처리
+    console.log(title, typeof title);
+    console.log(tags, typeof tags);
+    console.log(description, typeof description);
+    console.log(Number(itemPrice), typeof Number(itemPrice));
+    console.log(siDo, typeof siDo);
+    console.log(siGunGu, typeof siGunGu);
+    console.log(eupMyeonDong, typeof eupMyeonDong);
+    console.log(detailAddress, typeof detailAddress);
+    const stringDeadLine = deadLine.toISOString().split('T')[0];
+    console.log(stringDeadLine, typeof stringDeadLine);
+    console.log(Number(maxQuantityPerPerson), typeof Number(maxQuantityPerPerson));
+    console.log(Number(minQuantityPerPerson), typeof Number(minQuantityPerPerson));
+    console.log(campaignCategory, typeof campaignCategory);
+    console.log(accessToken);
+    try {
+      const campaignResponse = await axios.post(
+        `${Config.API_URL}/campaign/add`,
+        {
+          title,
+          tags,
+          description,
+          itemPrice: Number(itemPrice),
+          siDo,
+          siGunGu,
+          eupMyeonDong,
+          detailAddress,
+          deadLine: deadLine.toISOString().split('T')[0],
+          maxQuantityPerPerson: Number(maxQuantityPerPerson),
+          minQuantityPerPerson: Number(minQuantityPerPerson),
+          campaignCategory,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (campaignResponse.status === 200) {
+        console.log('campaignResponse', campaignResponse);
+        // TODO: 사진 유효성 검사
+        const { campaignId } = campaignResponse.data.data;
+        console.log(campaignId);
+        const formData = new FormData();
+        images.map((image) => {
+          const { name, type, uri } = image;
+          formData.append('files', { name, type, uri });
+        });
+        // console.log(files);
+        // formData.append('files', files);
+        const imageResponse = await axios.post(
+          `${Config.API_URL}/campaign/${campaignId}/addImages`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        );
+
+        if (imageResponse.status === 200) {
+          console.log('imageResponse', imageResponse);
+          Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const onPressDate = () => {
     setVisible(true);
   };
@@ -71,7 +150,7 @@ function CreateCampaign({ navigation, route }) {
 
   const onConfirm = (selectedDate) => {
     setVisible(false);
-    onChangeDate(selectedDate);
+    setDeadLine(selectedDate);
   };
 
   const onAddImage = async () => {
@@ -88,30 +167,36 @@ function CreateCampaign({ navigation, route }) {
       });
 
       if (response.length > 0) {
-        let key = imageKey;
-        response.map((item) => {
+        console.log(response);
+        response.map(async (item) => {
           const priviewUri = `data:${item.mime};base64,${item.data}`;
           const isImageExist = previews.filter((preview) => preview.uri === priviewUri);
           if (!isImageExist.length) {
-            setPreviews((prev) => [...prev, { key, uri: priviewUri }]);
-            const { path, filename, mime } = item;
+            setPreviews((prev) => [...prev, { key: item.localIdentifier, uri: priviewUri }]);
+            const resizedImage = await ImageResizer.createResizedImage(
+              item.path,
+              800,
+              800,
+              item.mime.includes('jpeg') ? 'JPEG' : 'PNG',
+              100,
+            );
+            console.log(item);
+            console.log(resizedImage);
             setImages((prev) => [...prev, {
-              key,
-              name: filename || `image_${item.path}`,
-              type: mime,
-              uri: Platform.OS === 'android' ? path : path.replace('file://', ''),
+              key: item.localIdentifier,
+              name: resizedImage.name,
+              type: item.mime,
+              uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
             }]);
-            key += 1;
           }
         });
-        setImageKey(key);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const onDeleteImage = (key: number) => {
+  const onDeleteImage = (key: string) => {
     Alert.alert(
       '알림',
       '해당 이미지를 삭제하겠습니까?',
@@ -119,11 +204,7 @@ function CreateCampaign({ navigation, route }) {
         {
           text: '예',
           onPress: () => {
-            console.log(key);
-            setPreviews((prevPreviews) => prevPreviews.filter((preview) => {
-              console.log(preview, key);
-              return preview.key !== key;
-            }));
+            setPreviews((prevPreviews) => prevPreviews.filter((preview) => preview.key !== key));
             setImages((prevImages) => prevImages.filter((image) => image.key !== key));
           },
         },
@@ -150,8 +231,8 @@ function CreateCampaign({ navigation, route }) {
             <ScrollView horizontal={true}>
               {previews && previews.map((preview) => {
                 const { key, uri } = preview;
-                return <Pressable onPress={() => onDeleteImage(key)}>
-                  <Image style={styles.image} key={key} source={{ uri }}/>
+                return <Pressable key={key} onPress={() => onDeleteImage(key)}>
+                  <Image style={styles.image} source={{ uri }}/>
                 </Pressable>;
               })}
               <Pressable onPress={onAddImage} style={styles.imageAddButton}>
@@ -229,7 +310,7 @@ function CreateCampaign({ navigation, route }) {
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>마감 날짜</Text>
           <Pressable onPress={onPressDate}>
-            <Text>{format(new Date(date), 'PPP', { locale: ko })}</Text>
+            <Text>{format(new Date(deadLine), 'PPP', { locale: ko })}</Text>
           </Pressable>
         </View>
         <DateTimePickerModal
@@ -237,7 +318,7 @@ function CreateCampaign({ navigation, route }) {
           mode='date'
           onConfirm={onConfirm}
           onCancel={onCancel}
-          date={date} />
+          date={deadLine} />
 
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>인당 최소 구매 개수(기본 1)</Text>
@@ -266,18 +347,17 @@ function CreateCampaign({ navigation, route }) {
           />
         </View>
 
-        <View style={styles.inputWrapper}>
-          <Text style={styles.label}>카테고리</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setMaxQuantity}
-            placeholder="카테고리를 선택해주세요"
-            placeholderTextColor="#666"
-            value={maxQuantityPerPerson}
-            // clearButtonMode="while-editing"
-            blurOnSubmit={false}
-          />
-        </View>
+        <Picker
+          selectedValue={campaignCategory}
+          onValueChange={(itemValue) => setCategory(itemValue)}
+        >
+          <Picker.Item label="식품" value="FOOD" />
+          {/* <Picker.Item label="의류" value="clothes" />
+          <Picker.Item label="전자기기" value="electronic" />
+          <Picker.Item label="아동용품" value="baby" />
+          <Picker.Item label="도서" value="book" />
+          <Picker.Item label="기타" value="etc" /> */}
+        </Picker>
 
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>태그</Text>
@@ -301,6 +381,10 @@ function CreateCampaign({ navigation, route }) {
           <Text style={styles.buttonText}>태그 추가</Text>
           </Pressable>}
         </View>
+
+        <Pressable style={styles.buttonActive} onPress={onCreateCampaign}>
+          <Text style={styles.buttonText}>캠페인 등록하기</Text>
+        </Pressable>
 
       </ScrollView>
     </SafeAreaView>
