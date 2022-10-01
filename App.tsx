@@ -24,6 +24,7 @@ import It9yoPay from '@pages/Mypage/It9yoPay';
 import ChangeLocation from '@pages/Home/ChangeLocation';
 import ChangeLocationCert from '@pages/Home/ChangeLocationCert';
 import CreateCampaign from '@pages/Home/CreateCampaign';
+import SearchAddress from '@pages/Home/SearchAddress';
 
 import {
   userState, userAccessToken, userFcmToken, location,
@@ -202,6 +203,11 @@ function App() {
               name="ChangeLocation"
               component={ChangeLocation}
               options={{ title: '지역 변경' }}
+            />
+            <Stack.Screen
+              name="SearchAddress"
+              component={SearchAddress}
+              options={{ title: '주소 검색' }}
             />
           </Stack.Group>
         </Stack.Navigator>

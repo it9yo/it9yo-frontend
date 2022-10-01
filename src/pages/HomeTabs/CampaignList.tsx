@@ -249,7 +249,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
     right: 30,
     bottom: 80,
-    backgroundColor: 'red',
   },
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert, Platform,
 } from 'react-native';
@@ -19,6 +19,11 @@ function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
 
+  useEffect(() => {
+    console.log(userInfo);
+    console.log(accessToken);
+  }, []);
+
   const onChangeProfilePhoto = async () => {
     try {
       const result: ImagePickerResponse = await launchImageLibrary({
@@ -31,7 +36,6 @@ function Mypage({ navigation }) {
         return;
       }
       const { uri, type, fileName } = result.assets[0];
-
       const formData = new FormData();
       formData.append('file', {
         name: fileName,
@@ -56,7 +60,6 @@ function Mypage({ navigation }) {
           ...userInfo,
           profileImageUrl,
         });
-        console.log('profileImageUrl', profileImageUrl);
         Alert.alert('알림', '프로필 사진 변경이 완료되었습니다.');
       }
     } catch (error) {
