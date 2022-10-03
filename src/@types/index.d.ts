@@ -111,8 +111,13 @@ export interface CampaignDetailData {
   chatRoomId: number;
 }
 
-export interface ImageData {
-  name: string;
-  type: string;
-  uri: string;
+export interface CampaignListData {
+  campaignId: number;
+  campaignTitle: string;
+  itemPrice: number;
+  campaignLocation: string;
+  campaignThumbnailUrl: string;
+  campaignStatus: string;
+  participatedPersonCnt: number;
+  hostName: string;
 }
