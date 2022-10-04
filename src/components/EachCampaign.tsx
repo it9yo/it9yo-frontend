@@ -16,7 +16,7 @@ function EachCampaign({ item }: { item: CampaignListData }) {
   const navigation = useNavigation();
   const {
     campaignId, title, eupMyeonDong, itemImageURLs,
-    campaignStatus, hostName, participatedPersonCnt, itemPrice,
+    campaignStatus, hostNickName, participatedPersonCnt, itemPrice,
   } = item;
 
   return <Pressable onPress={() => navigation.navigate('CampaignDetail', { campaignId })}>
@@ -30,7 +30,7 @@ function EachCampaign({ item }: { item: CampaignListData }) {
         <Text style={styles.campaignTitleText}>{title}</Text>
         <View style={styles.hostInfoZone}>
           <Icon name="person-outline" size={16} color="#000" />
-          <Text style={styles.hostNameZone}>{hostName}</Text>
+          <Text style={styles.hostNameZone}>{hostNickName}</Text>
         </View>
         <Text style={styles.priceText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
       </View>

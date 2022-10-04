@@ -1,16 +1,30 @@
 import { userAccessToken } from '@src/states';
 import axios from 'axios';
-import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, View } from 'react-native';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 
+import EachCampaign from '@components/EachCampaign';
+import { CampaignListData } from '@src/@types';
+
+const pageSize = 20;
+
 function CreatedList() {
   const accessToken = useRecoilState(userAccessToken)[0];
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [campaignList, setCampaignList] = useState<CampaignListData[] | null>(null); // TODO
 
   useEffect(() => {
-    const loadData = async () => {
+    console.log('CampaignList start');
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    if (!campaignList || campaignList.length >= page * pageSize) {
       try {
+        setLoading(true);
         const url = `${Config.API_URL}/campaign/createByMe?status=RECRUITING&size=2&page=0&sort=createdDate&direction=DESC`;
         const response = await axios.get(
           url,
@@ -20,16 +34,40 @@ function CreatedList() {
             },
           },
         );
-        console.log('CreatedList start', response);
+        console.log(response);
+        console.log(response.data.data);
+        if (response.status === 200 && response.data.data.numberOfElements > 0) {
+          // setPage((prev) => prev + 1);
+          // setCampaignList();
+        }
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
-    };
+    }
+  };
 
-    loadData();
-  }, []);
+  const onEndReached = () => {
+    if (!loading) {
+      loadData();
+    }
+  };
 
-  return <View style={{ flex: 1, backgroundColor: '#673ab7' }} />;
+  const renderItem = ({ item }: { item: CampaignListData }) => (
+    <EachCampaign item={item}/>
+  );
+
+  return <View style={{ flex: 1 }}>
+    <FlatList
+      data={campaignList}
+      keyExtractor={(item) => item.campaignId.toString()}
+      renderItem={renderItem}
+      // onEndReached={onEndReached}
+      // onEndReachedThreshold={0.6}
+      // ListFooterComponent={loading && <ActivityIndicator />}
+    />
+  </View>;
 }
 
 export default CreatedList;

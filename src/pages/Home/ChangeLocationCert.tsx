@@ -58,10 +58,14 @@ function ChangeLocationCert({ navigation, route }) {
         },
       );
 
+      console.log(response);
+
       const sido = response.data.results[0].region.area1.name;
+      const sidoAlias = response.data.results[0].region.area1.alias;
       const sigungu = response.data.results[0].region.area2.name;
 
-      if (changedLocation.sido === sido && changedLocation.sigungu === sigungu) {
+      if ((changedLocation.sido === sido || changedLocation.sido === sidoAlias)
+        && changedLocation.sigungu === sigungu) {
         setLocationAuth(true);
         Alert.alert('알림', '지역 인증이 완료되었습니다.');
       } else {

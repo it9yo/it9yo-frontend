@@ -130,7 +130,7 @@ export interface CampaignListData {
   maxQuantityPerPerson: number;
   minQuantityPerPerson: number;
   hostId: number;
-  hostName: string;
+  hostNickName: string;
   campaignCategory: string;
   chatRoomName: string;
   chatRoomParticipatedPersonCnt: number;

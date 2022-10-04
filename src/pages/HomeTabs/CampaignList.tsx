@@ -14,91 +14,91 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { userAccessToken } from '../../states/user';
 
-const campaignList = [
-  {
-    campaignId: 1,
-    title: '마카롱 공구해요',
-    itemPrice: 1000,
-    eupMyeonDong: '자양 1동',
-    itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
-    campaignStatus: 'DELIVERED',
-    participatedPersonCnt: 5,
-    hostName: '지운',
+// const campaignList = [
+//   {
+//     campaignId: 1,
+//     title: '마카롱 공구해요',
+//     itemPrice: 1000,
+//     eupMyeonDong: '자양 1동',
+//     itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
+//     campaignStatus: 'DELIVERED',
+//     participatedPersonCnt: 5,
+//     hostNickName: '지운',
 
-    tags: [],
-    description: '',
-    siDo: '서울시',
-    siGunGu: '광진구',
-    detailAddress: '',
-    deadLine: '2019-01-01',
-    totalOrderedItemCnt: 5,
-    pageLinkUrl: '',
-    maxQuantityPerPerson: 0,
-    minQuantityPerPerson: 0,
-    hostId: 1,
-    campaignCategory: 'FOOD',
-    chatRoomName: '',
-    chatRoomParticipatedPersonCnt: 10,
-  },
-  {
-    campaignId: 2,
-    title: '싱싱 꼬막 무침 공구',
-    itemPrice: 10000,
-    eupMyeonDong: '자양 1동',
-    itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
-    campaignStatus: 'COMPLETED',
-    participatedPersonCnt: 5,
-    hostName: '지운',
+//     tags: [],
+//     description: '',
+//     siDo: '서울시',
+//     siGunGu: '광진구',
+//     detailAddress: '',
+//     deadLine: '2019-01-01',
+//     totalOrderedItemCnt: 5,
+//     pageLinkUrl: '',
+//     maxQuantityPerPerson: 0,
+//     minQuantityPerPerson: 0,
+//     hostId: 1,
+//     campaignCategory: 'FOOD',
+//     chatRoomName: '',
+//     chatRoomParticipatedPersonCnt: 10,
+//   },
+//   {
+//     campaignId: 2,
+//     title: '싱싱 꼬막 무침 공구',
+//     itemPrice: 10000,
+//     eupMyeonDong: '자양 1동',
+//     itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
+//     campaignStatus: 'COMPLETED',
+//     participatedPersonCnt: 5,
+//     hostNickName: '지운',
 
-    tags: [],
-    description: '',
-    siDo: '서울시',
-    siGunGu: '광진구',
-    detailAddress: '',
-    deadLine: '2019-01-01',
-    totalOrderedItemCnt: 5,
-    pageLinkUrl: '',
-    maxQuantityPerPerson: 0,
-    minQuantityPerPerson: 0,
-    hostId: 1,
-    campaignCategory: 'FOOD',
-    chatRoomName: '',
-    chatRoomParticipatedPersonCnt: 10,
-  },
-  {
-    campaignId: 3,
-    title: '상주 곶감 산지 직송',
-    itemPrice: 8000,
-    eupMyeonDong: '자양 1동',
-    itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
-    campaignStatus: 'DISTRIBUTING',
-    participatedPersonCnt: 5,
-    hostName: '지운',
+//     tags: [],
+//     description: '',
+//     siDo: '서울시',
+//     siGunGu: '광진구',
+//     detailAddress: '',
+//     deadLine: '2019-01-01',
+//     totalOrderedItemCnt: 5,
+//     pageLinkUrl: '',
+//     maxQuantityPerPerson: 0,
+//     minQuantityPerPerson: 0,
+//     hostId: 1,
+//     campaignCategory: 'FOOD',
+//     chatRoomName: '',
+//     chatRoomParticipatedPersonCnt: 10,
+//   },
+//   {
+//     campaignId: 3,
+//     title: '상주 곶감 산지 직송',
+//     itemPrice: 8000,
+//     eupMyeonDong: '자양 1동',
+//     itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
+//     campaignStatus: 'DISTRIBUTING',
+//     participatedPersonCnt: 5,
+//     hostNickName: '지운',
 
-    tags: [],
-    description: '',
-    siDo: '서울시',
-    siGunGu: '광진구',
-    detailAddress: '',
-    deadLine: '2019-01-01',
-    totalOrderedItemCnt: 5,
-    pageLinkUrl: '',
-    maxQuantityPerPerson: 0,
-    minQuantityPerPerson: 0,
-    hostId: 1,
-    campaignCategory: 'FOOD',
-    chatRoomName: '',
-    chatRoomParticipatedPersonCnt: 10,
-  },
+//     tags: [],
+//     description: '',
+//     siDo: '서울시',
+//     siGunGu: '광진구',
+//     detailAddress: '',
+//     deadLine: '2019-01-01',
+//     totalOrderedItemCnt: 5,
+//     pageLinkUrl: '',
+//     maxQuantityPerPerson: 0,
+//     minQuantityPerPerson: 0,
+//     hostId: 1,
+//     campaignCategory: 'FOOD',
+//     chatRoomName: '',
+//     chatRoomParticipatedPersonCnt: 10,
+//   },
 
-];
+// ];
 
 const pageSize = 20;
 
 export function CampaignList({ navigation }) {
   const [currentLocation, setLocation] = useRecoilState(location);
   const accessToken = useRecoilState(userAccessToken)[0];
-  // const [campaignList, setCampaignList] = useState<CampaignListData[] | null>(null); // TODO
+  const [campaignList, setCampaignList] = useState<CampaignListData[]>([]); // TODO
   // const [page, setPage] = useState(0); // TODO
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -109,15 +109,18 @@ export function CampaignList({ navigation }) {
   useEffect(() => {
     loadCampaignData();
   }, []);
+
   useEffect(() => {
     console.log(accessToken);
+    console.log(currentLocation);
   }, []);
 
   const loadCampaignData = async () => {
-    if (campaignList.length >= page * pageSize) {
+    if (!campaignList || campaignList.length >= page * pageSize) {
       try {
         setLoading(true);
-        const url = `${Config.API_URL}/campaign/findAll?size=${pageSize}&page=${page}&sort=createdDate&direction=DESC&title=''&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
+        const url = `${Config.API_URL}/campaign/findAll?size=${pageSize}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
+        console.log(`url: ${url}`);
         const response = await axios.get(
           url,
           {
@@ -126,11 +129,11 @@ export function CampaignList({ navigation }) {
             },
           },
         );
-        console.log(response);
-        console.log(response.data.data);
+        console.log(response.data.data.content);
         if (response.status === 200 && response.data.data.numberOfElements > 0) {
-          // setPage((prev) => prev + 1);
-          // setCampaignList();
+          const { content } = response.data.data;
+          content.map((item: CampaignListData) => setCampaignList((prev) => [...prev, item]));
+          setPage((prev) => prev + 1);
         }
       } catch (error) {
         console.error(error);
