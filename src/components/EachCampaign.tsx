@@ -1,30 +1,33 @@
 import React from 'react';
 import {
-  View, Image, Text, StyleSheet,
+  View, Image, Text, StyleSheet, Pressable,
 } from 'react-native';
 
 import StatusNameList from '@constants/statusname';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CampaignListData } from '@src/@types';
+import { useNavigation } from '@react-navigation/native';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function EachCampaign({ item }: { item: CampaignListData }) {
+  const navigation = useNavigation();
   const {
-    campaignTitle, campaignLocation, campaignThumbnailUrl,
+    campaignId, title, eupMyeonDong, itemImageURLs,
     campaignStatus, hostName, participatedPersonCnt, itemPrice,
   } = item;
 
-  return <View style={styles.campaignListZone}>
+  return <Pressable onPress={() => navigation.navigate('CampaignDetail', { campaignId })}>
+    <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
         source={{
-          uri: campaignThumbnailUrl,
+          uri: itemImageURLs[0],
         }}
       />
       <View>
-        <Text style={styles.campaignTitleText}>{campaignTitle}</Text>
+        <Text style={styles.campaignTitleText}>{title}</Text>
         <View style={styles.hostInfoZone}>
           <Icon name="person-outline" size={16} color="#000" />
           <Text style={styles.hostNameZone}>{hostName}</Text>
@@ -33,10 +36,11 @@ function EachCampaign({ item }: { item: CampaignListData }) {
       </View>
       <View style={styles.chatStateView}>
         <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
-        <Text style={styles.userCntText}>{campaignLocation}</Text>
+        <Text style={styles.userCntText}>{eupMyeonDong}</Text>
         <Text style={styles.userCntText}>{`${participatedPersonCnt}명 참여중`}</Text>
       </View>
-    </View>;
+    </View>
+  </Pressable>;
 }
 
 export default EachCampaign;
@@ -47,7 +51,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 10,
     paddingVertical: 15,
-    // borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: 1,
     borderColor: 'white',
   },

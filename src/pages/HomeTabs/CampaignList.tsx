@@ -1,10 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
-  FlatList,
-  Image,
-  Pressable,
-  SafeAreaView,
-  ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  FlatList, Image, Pressable, SafeAreaView,
+  StyleSheet, Text, TouchableOpacity, View, ActivityIndicator,
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
@@ -13,92 +10,145 @@ import EachCampaign from '@components/EachCampaign';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CampaignListData } from '@src/@types';
+import axios from 'axios';
+import Config from 'react-native-config';
+import { userAccessToken } from '../../states/user';
 
 const campaignList = [
   {
     campaignId: 1,
-    campaignTitle: '마카롱 공구해요',
+    title: '마카롱 공구해요',
     itemPrice: 1000,
-    campaignLocation: '자양 1동',
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    eupMyeonDong: '자양 1동',
+    itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
     campaignStatus: 'DELIVERED',
     participatedPersonCnt: 5,
     hostName: '지운',
+
+    tags: [],
+    description: '',
+    siDo: '서울시',
+    siGunGu: '광진구',
+    detailAddress: '',
+    deadLine: '2019-01-01',
+    totalOrderedItemCnt: 5,
+    pageLinkUrl: '',
+    maxQuantityPerPerson: 0,
+    minQuantityPerPerson: 0,
+    hostId: 1,
+    campaignCategory: 'FOOD',
+    chatRoomName: '',
+    chatRoomParticipatedPersonCnt: 10,
   },
   {
     campaignId: 2,
-    campaignTitle: '싱싱 꼬막 무침 공구',
+    title: '싱싱 꼬막 무침 공구',
     itemPrice: 10000,
-    campaignLocation: '자양 1동',
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    eupMyeonDong: '자양 1동',
+    itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
     campaignStatus: 'COMPLETED',
     participatedPersonCnt: 5,
     hostName: '지운',
 
+    tags: [],
+    description: '',
+    siDo: '서울시',
+    siGunGu: '광진구',
+    detailAddress: '',
+    deadLine: '2019-01-01',
+    totalOrderedItemCnt: 5,
+    pageLinkUrl: '',
+    maxQuantityPerPerson: 0,
+    minQuantityPerPerson: 0,
+    hostId: 1,
+    campaignCategory: 'FOOD',
+    chatRoomName: '',
+    chatRoomParticipatedPersonCnt: 10,
   },
   {
     campaignId: 3,
-    campaignTitle: '상주 곶감 산지 직송',
+    title: '상주 곶감 산지 직송',
     itemPrice: 8000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
+    eupMyeonDong: '자양 1동',
+    itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
     campaignStatus: 'DISTRIBUTING',
     participatedPersonCnt: 5,
     hostName: '지운',
 
-  },
-  {
-    campaignId: 4,
-    campaignTitle: '아라비카 커피 원두',
-    itemPrice: 5000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'DELIVERING',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
-  },
-  {
-    campaignId: 5,
-    campaignTitle: '천안 호두과자',
-    itemPrice: 3000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'CANCELED',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
-  },
-  {
-    campaignId: 6,
-    campaignTitle: '스테비아 토마토 공구',
-    itemPrice: 3000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'CONFIRM',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
+    tags: [],
+    description: '',
+    siDo: '서울시',
+    siGunGu: '광진구',
+    detailAddress: '',
+    deadLine: '2019-01-01',
+    totalOrderedItemCnt: 5,
+    pageLinkUrl: '',
+    maxQuantityPerPerson: 0,
+    minQuantityPerPerson: 0,
+    hostId: 1,
+    campaignCategory: 'FOOD',
+    chatRoomName: '',
+    chatRoomParticipatedPersonCnt: 10,
   },
 
 ];
 
+const pageSize = 20;
+
 export function CampaignList({ navigation }) {
   const [currentLocation, setLocation] = useRecoilState(location);
+  const accessToken = useRecoilState(userAccessToken)[0];
+  // const [campaignList, setCampaignList] = useState<CampaignListData[] | null>(null); // TODO
+  // const [page, setPage] = useState(0); // TODO
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
 
+  // useLayoutEffect(() => {
+  //   loadCampaignData();
+  // }, []);
   useEffect(() => {
-    console.log(currentLocation);
+    loadCampaignData();
+  }, []);
+  useEffect(() => {
+    console.log(accessToken);
   }, []);
 
-  const onCampaignDetail = (campaignId: number) => {
-    navigation.navigate('CampaignDetail', { campaignId });
+  const loadCampaignData = async () => {
+    if (campaignList.length >= page * pageSize) {
+      try {
+        setLoading(true);
+        const url = `${Config.API_URL}/campaign/findAll?size=${pageSize}&page=${page}&sort=createdDate&direction=DESC&title=''&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
+        const response = await axios.get(
+          url,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        console.log(response);
+        console.log(response.data.data);
+        if (response.status === 200 && response.data.data.numberOfElements > 0) {
+          // setPage((prev) => prev + 1);
+          // setCampaignList();
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
-  const renderItem = ({ item }: { item: CampaignListData }) => <EachCampaign item={item}/>;
+  const onEndReached = () => {
+    if (!loading) {
+      loadCampaignData();
+    }
+  };
+
+  const renderItem = ({ item }: { item: CampaignListData }) => (
+    <EachCampaign item={item}/>
+  );
 
   return <SafeAreaView style={styles.container}>
     <View style={styles.navContainer}>
@@ -123,6 +173,9 @@ export function CampaignList({ navigation }) {
       data={campaignList}
       keyExtractor={(item) => item.campaignId.toString()}
       renderItem={renderItem}
+      // onEndReached={onEndReached}
+      // onEndReachedThreshold={0.6}
+      // ListFooterComponent={loading && <ActivityIndicator />}
     />
 
     <TouchableOpacity
@@ -137,6 +190,7 @@ export function CampaignList({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    flex: 1,
   },
   navContainer: {
     flexDirection: 'row',

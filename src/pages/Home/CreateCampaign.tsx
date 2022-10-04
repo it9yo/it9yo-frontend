@@ -22,12 +22,12 @@ import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
 
 interface Preview {
-  key: string;
+  key: string | undefined;
   uri: string;
 }
 
 interface ImageData {
-  key: string;
+  key: string | undefined;
   name: string;
   type: string;
   uri: string;
@@ -115,7 +115,7 @@ function CreateCampaign({ navigation, route }) {
         const formData = new FormData();
         images.map((image) => {
           const { name, type, uri } = image;
-          formData.append('files', { name, type, uri });
+          return formData.append('files', { name, type, uri });
         });
         // console.log(files);
         // formData.append('files', files);
@@ -162,8 +162,8 @@ function CreateCampaign({ navigation, route }) {
         maxFiles: 10,
         includeExif: true,
         includeBase64: true,
-        compressImageMaxWidth: 800,
-        compressImageMaxHeight: 800,
+        compressImageMaxWidth: 600,
+        compressImageMaxHeight: 600,
       });
 
       if (response.length > 0) {
@@ -175,8 +175,8 @@ function CreateCampaign({ navigation, route }) {
             setPreviews((prev) => [...prev, { key: item.localIdentifier, uri: priviewUri }]);
             const resizedImage = await ImageResizer.createResizedImage(
               item.path,
-              800,
-              800,
+              600,
+              600,
               item.mime.includes('jpeg') ? 'JPEG' : 'PNG',
               100,
             );
