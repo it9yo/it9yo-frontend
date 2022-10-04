@@ -169,6 +169,7 @@ export function CampaignList({ navigation }) {
       </Pressable>
      </View>
     </View>
+
     <FlatList
       data={campaignList}
       keyExtractor={(item) => item.campaignId.toString()}
