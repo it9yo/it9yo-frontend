@@ -5,93 +5,14 @@ import {
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
-import { location } from '@src/states';
+import { location } from '@states/location';
+import { userAccessToken } from '@states/user';
 import EachCampaign from '@components/EachCampaign';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CampaignListData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
-import { userAccessToken } from '../../states/user';
-
-// const campaignList = [
-//   {
-//     campaignId: 1,
-//     title: '마카롱 공구해요',
-//     itemPrice: 1000,
-//     eupMyeonDong: '자양 1동',
-//     itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
-//     campaignStatus: 'DELIVERED',
-//     participatedPersonCnt: 5,
-//     hostNickName: '지운',
-
-//     tags: [],
-//     description: '',
-//     siDo: '서울시',
-//     siGunGu: '광진구',
-//     detailAddress: '',
-//     deadLine: '2019-01-01',
-//     totalOrderedItemCnt: 5,
-//     pageLinkUrl: '',
-//     maxQuantityPerPerson: 0,
-//     minQuantityPerPerson: 0,
-//     hostId: 1,
-//     campaignCategory: 'FOOD',
-//     chatRoomName: '',
-//     chatRoomParticipatedPersonCnt: 10,
-//   },
-//   {
-//     campaignId: 2,
-//     title: '싱싱 꼬막 무침 공구',
-//     itemPrice: 10000,
-//     eupMyeonDong: '자양 1동',
-//     itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
-//     campaignStatus: 'COMPLETED',
-//     participatedPersonCnt: 5,
-//     hostNickName: '지운',
-
-//     tags: [],
-//     description: '',
-//     siDo: '서울시',
-//     siGunGu: '광진구',
-//     detailAddress: '',
-//     deadLine: '2019-01-01',
-//     totalOrderedItemCnt: 5,
-//     pageLinkUrl: '',
-//     maxQuantityPerPerson: 0,
-//     minQuantityPerPerson: 0,
-//     hostId: 1,
-//     campaignCategory: 'FOOD',
-//     chatRoomName: '',
-//     chatRoomParticipatedPersonCnt: 10,
-//   },
-//   {
-//     campaignId: 3,
-//     title: '상주 곶감 산지 직송',
-//     itemPrice: 8000,
-//     eupMyeonDong: '자양 1동',
-//     itemImageURLs: ['https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg'],
-//     campaignStatus: 'DISTRIBUTING',
-//     participatedPersonCnt: 5,
-//     hostNickName: '지운',
-
-//     tags: [],
-//     description: '',
-//     siDo: '서울시',
-//     siGunGu: '광진구',
-//     detailAddress: '',
-//     deadLine: '2019-01-01',
-//     totalOrderedItemCnt: 5,
-//     pageLinkUrl: '',
-//     maxQuantityPerPerson: 0,
-//     minQuantityPerPerson: 0,
-//     hostId: 1,
-//     campaignCategory: 'FOOD',
-//     chatRoomName: '',
-//     chatRoomParticipatedPersonCnt: 10,
-//   },
-
-// ];
 
 const pageSize = 20;
 
@@ -99,25 +20,18 @@ export function CampaignList({ navigation }) {
   const [currentLocation, setLocation] = useRecoilState(location);
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignList, setCampaignList] = useState<CampaignListData[]>([]); // TODO
-  // const [page, setPage] = useState(0); // TODO
+
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // useLayoutEffect(() => {
-  //   loadCampaignData();
-  // }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     loadCampaignData();
-  }, []);
-
-  useEffect(() => {
-    console.log(accessToken);
-    console.log(currentLocation);
-  }, []);
+  }, [currentLocation]);
 
   const loadCampaignData = async () => {
-    if (!campaignList || campaignList.length >= page * pageSize) {
+    if (!campaignList.length || campaignList.length >= page * pageSize) {
       try {
+        console.log('loadCampaignData', campaignList);
         setLoading(true);
         const url = `${Config.API_URL}/campaign/findAll?size=${pageSize}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
         console.log(`url: ${url}`);
@@ -132,6 +46,7 @@ export function CampaignList({ navigation }) {
         console.log(response.data.data.content);
         if (response.status === 200 && response.data.data.numberOfElements > 0) {
           const { content } = response.data.data;
+          console.log(`content: ${content}`);
           content.map((item: CampaignListData) => setCampaignList((prev) => [...prev, item]));
           setPage((prev) => prev + 1);
         }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View, Image, Text, StyleSheet, Pressable,
 } from 'react-native';
@@ -19,11 +19,15 @@ function EachCampaign({ item }: { item: CampaignListData }) {
     campaignStatus, hostNickName, participatedPersonCnt, itemPrice,
   } = item;
 
+  useEffect(() => {
+    console.log('itemImageURLs', itemImageURLs);
+  }, []);
+
   return <Pressable onPress={() => navigation.navigate('CampaignDetail', { campaignId })}>
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
         source={{
-          uri: itemImageURLs[0],
+          uri: itemImageURLs[1] || 'https://www.tibs.org.tw/images/default.jpg',
         }}
       />
       <View>
