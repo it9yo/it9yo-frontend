@@ -54,6 +54,8 @@ function CreateCampaign({ navigation, route }) {
   const [tags, setTags] = useState<string[]>([]);
   const [tag, setTag] = useState('');
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (route.params?.data) {
       console.log(route.params.data);
@@ -83,60 +85,70 @@ function CreateCampaign({ navigation, route }) {
     console.log(Number(minQuantityPerPerson), typeof Number(minQuantityPerPerson));
     console.log(campaignCategory, typeof campaignCategory);
     console.log(accessToken);
-    try {
-      const campaignResponse = await axios.post(
-        `${Config.API_URL}/campaign/add`,
-        {
-          title,
-          tags,
-          description,
-          itemPrice: Number(itemPrice),
-          siDo,
-          siGunGu,
-          eupMyeonDong,
-          detailAddress,
-          deadLine: deadLine.toISOString().split('T')[0],
-          maxQuantityPerPerson: Number(maxQuantityPerPerson),
-          minQuantityPerPerson: Number(minQuantityPerPerson),
-          campaignCategory,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
+    if (images.length === 0) {
+      Alert.alert('알림', '사진을 추가해 주세요');
+      return;
+    }
+    if (!loading) {
+      setLoading(true);
+      try {
+        const campaignResponse = await axios.post(
+          `${Config.API_URL}/campaign/add`,
+          {
+            title,
+            tags,
+            description,
+            itemPrice: Number(itemPrice),
+            siDo,
+            siGunGu,
+            eupMyeonDong,
+            detailAddress,
+            deadLine: deadLine.toISOString().split('T')[0],
+            maxQuantityPerPerson: Number(maxQuantityPerPerson),
+            minQuantityPerPerson: Number(minQuantityPerPerson),
+            campaignCategory,
           },
-        },
-      );
-
-      if (campaignResponse.status === 200) {
-        console.log('campaignResponse', campaignResponse);
-        // TODO: 사진 유효성 검사
-        const { campaignId } = campaignResponse.data.data;
-        console.log(campaignId);
-        const formData = new FormData();
-        images.map((image) => {
-          const { name, type, uri } = image;
-          return formData.append('files', { name, type, uri });
-        });
-        // console.log(files);
-        // formData.append('files', files);
-        const imageResponse = await axios.post(
-          `${Config.API_URL}/campaign/${campaignId}/addImages`,
-          formData,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'multipart/form-data',
             },
           },
         );
 
-        if (imageResponse.status === 200) {
-          console.log('imageResponse', imageResponse);
-          Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
+        if (campaignResponse.status === 200) {
+          console.log('campaignResponse', campaignResponse);
+          // TODO: 사진 유효성 검사
+          const { campaignId } = campaignResponse.data.data;
+          console.log(campaignId);
+          const formData = new FormData();
+          images.map((image) => {
+            const { name, type, uri } = image;
+            return formData.append('files', { name, type, uri });
+          });
+          // console.log(files);
+          // formData.append('files', files);
+          const imageResponse = await axios.post(
+            `${Config.API_URL}/campaign/${campaignId}/addImages`,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'multipart/form-data',
+              },
+            },
+          );
+
+          if (imageResponse.status === 200) {
+            console.log('imageResponse', imageResponse);
+            Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
+            navigation.navigate('Home');
+          }
         }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -162,8 +174,8 @@ function CreateCampaign({ navigation, route }) {
         maxFiles: 10,
         includeExif: true,
         includeBase64: true,
-        compressImageMaxWidth: 600,
-        compressImageMaxHeight: 600,
+        compressImageMaxWidth: 300,
+        compressImageMaxHeight: 300,
       });
 
       if (response.length > 0) {
@@ -175,8 +187,8 @@ function CreateCampaign({ navigation, route }) {
             setPreviews((prev) => [...prev, { key: item.localIdentifier, uri: priviewUri }]);
             const resizedImage = await ImageResizer.createResizedImage(
               item.path,
-              600,
-              600,
+              300,
+              300,
               item.mime.includes('jpeg') ? 'JPEG' : 'PNG',
               100,
             );
@@ -362,7 +374,7 @@ function CreateCampaign({ navigation, route }) {
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>태그</Text>
           <View>
-            {tags?.map((_tag) => <Text>{`#${_tag} `}</Text>)}
+            {tags?.map((_tag) => <Text key={_tag}>{`#${_tag} `}</Text>)}
           </View>
           <TextInput
             style={styles.textInput}

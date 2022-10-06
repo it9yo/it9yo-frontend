@@ -42,16 +42,28 @@ function PhoneCertification({ navigation }: Props) {
     }
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${Config.API_URL}/auth/phoneAuth`,
+      const phoneNumberCheck = await axios.post(
+        `${Config.API_URL}/auth/phone/exists`,
         {
-          tel: phoneNumber,
+          phoneNumber,
         },
       );
-      setCertNumber(response.data.data);
-      setLoading(false);
+
+      if (phoneNumberCheck.status === 200) {
+        const response = await axios.post(
+          `${Config.API_URL}/auth/phoneAuth`,
+          {
+            tel: phoneNumber,
+          },
+        );
+        setCertNumber(response.data.data);
+      } else {
+        Alert.alert('알림', '이미 등록된 전화번호입니다.');
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }, [phoneNumber, certNumber]);
 
@@ -70,7 +82,7 @@ function PhoneCertification({ navigation }: Props) {
         <TextInput
           style={styles.textInput}
           onChangeText={onChangePhoneNumber}
-          placeholder="전화번호 입력"
+          placeholder="전화번호 입력('-' 제외)"
           placeholderTextColor="#666"
           textContentType="telephoneNumber"
           value={phoneNumber}

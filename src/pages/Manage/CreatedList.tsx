@@ -6,7 +6,7 @@ import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 
 import EachCampaign from '@components/EachCampaign';
-import { CampaignListData } from '@src/@types';
+import { CampaignData } from '@src/@types';
 
 const pageSize = 20;
 
@@ -14,7 +14,7 @@ function CreatedList() {
   const accessToken = useRecoilState(userAccessToken)[0];
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [campaignList, setCampaignList] = useState<CampaignListData[] | null>(null); // TODO
+  const [campaignList, setCampaignList] = useState<CampaignData[] | null>(null); // TODO
 
   useEffect(() => {
     console.log('CampaignList start');
@@ -54,7 +54,7 @@ function CreatedList() {
     }
   };
 
-  const renderItem = ({ item }: { item: CampaignListData }) => (
+  const renderItem = ({ item }: { item: CampaignData }) => (
     <EachCampaign item={item}/>
   );
 

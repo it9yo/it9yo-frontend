@@ -10,7 +10,7 @@ import { userAccessToken } from '@states/user';
 import EachCampaign from '@components/EachCampaign';
 
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CampaignListData } from '@src/@types';
+import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
 
@@ -19,13 +19,14 @@ const pageSize = 20;
 export function CampaignList({ navigation }) {
   const [currentLocation, setLocation] = useRecoilState(location);
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [campaignList, setCampaignList] = useState<CampaignListData[]>([]); // TODO
+  const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
 
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useLayoutEffect(() => {
     loadCampaignData();
+    console.log(currentLocation);
   }, [currentLocation]);
 
   const loadCampaignData = async () => {
@@ -46,8 +47,8 @@ export function CampaignList({ navigation }) {
         console.log(response.data.data.content);
         if (response.status === 200 && response.data.data.numberOfElements > 0) {
           const { content } = response.data.data;
-          console.log(`content: ${content}`);
-          content.map((item: CampaignListData) => setCampaignList((prev) => [...prev, item]));
+          console.log(`response.data.data.content: ${content}`);
+          content.map((item: CampaignData) => setCampaignList((prev) => [...prev, item]));
           setPage((prev) => prev + 1);
         }
       } catch (error) {
@@ -64,7 +65,7 @@ export function CampaignList({ navigation }) {
     }
   };
 
-  const renderItem = ({ item }: { item: CampaignListData }) => (
+  const renderItem = ({ item }: { item: CampaignData }) => (
     <EachCampaign item={item}/>
   );
 

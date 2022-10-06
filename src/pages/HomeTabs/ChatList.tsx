@@ -80,6 +80,7 @@ function ChatList({ navigation }) {
       campaignId, campaignTitle, chatContent, chatTime,
       chatThumbnailUrl, campaignStatus, participatedPersonCnt,
     }) => <Pressable
+      key={campaignId.toString()}
       onPress={() => onChatRoom(campaignId, campaignTitle)}
     >
       <View style={styles.chatListView}>

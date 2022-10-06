@@ -87,31 +87,7 @@ export interface NaverKeyProps {
   kServiceAppUrlScheme?: string;
 }
 
-export interface CampaignDetailData {
-  campaignId: number;
-  title: string;
-  tags: string[];
-  description: string;
-  itemPrice: number;
-  itemImageURLs: string[];
-  siDo: string;
-  siGunGu: string;
-  eupMyeonDong: string;
-  detailAddress: string;
-  deadLine: string;
-  campaignStatus: string;
-  participatedPersonCnt: number;
-  totalOrderedItemCnt: number;
-  pageLinkUrl: string;
-  maxQuantityPerPerson: number;
-  minQuantityPerPerson: number;
-  hostId: number;
-  hostName: string;
-  campaignCategory: string;
-  chatRoomId: number;
-}
-
-export interface CampaignListData {
+export interface CampaignData {
   campaignId: number;
   title: string;
   tags: string[];

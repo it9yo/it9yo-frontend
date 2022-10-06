@@ -5,14 +5,14 @@ import {
 
 import StatusNameList from '@constants/statusname';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CampaignListData } from '@src/@types';
+import { CampaignData } from '@src/@types';
 import { useNavigation } from '@react-navigation/native';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function EachCampaign({ item }: { item: CampaignListData }) {
+function EachCampaign({ item }: { item: CampaignData }) {
   const navigation = useNavigation();
   const {
     campaignId, title, eupMyeonDong, itemImageURLs,
@@ -27,7 +27,7 @@ function EachCampaign({ item }: { item: CampaignListData }) {
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
         source={{
-          uri: itemImageURLs[1] || 'https://www.tibs.org.tw/images/default.jpg',
+          uri: itemImageURLs[0] || 'https://www.tibs.org.tw/images/default.jpg',
         }}
       />
       <View>
