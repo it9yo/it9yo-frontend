@@ -23,7 +23,11 @@ function EachCampaign({ item }: { item: CampaignData }) {
     console.log('itemImageURLs', itemImageURLs);
   }, []);
 
-  return <Pressable onPress={() => navigation.navigate('CampaignDetail', { campaignId })}>
+  return <Pressable onPress={() => navigation.navigate('CampaignDetail', {
+    screen: 'DetailHome',
+    params: { campaignId },
+  })
+  }>
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
         source={{

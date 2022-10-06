@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
-  View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, TouchableOpacity,
+  View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
@@ -12,63 +12,13 @@ import { SliderBox } from 'react-native-image-slider-box';
 import { CampaignData } from '@src/@types';
 
 import StatusNameList from '@constants/statusname';
-
-// const campaignDetail: CampaignData = {
-//   campaignId: 1,
-//   title: '상주 곶감',
-//   tags: ['곶감', '상주', '달달'],
-//   description: `맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!
-//   맛있는 상주 곶감!`,
-//   itemPrice: 1000,
-//   itemImageURLs: ['https://cdn.kbmaeil.com/news/photo/202001/835750_854186_5024.jpg', 'https://uyjoqvxyzgvv9714092.cdn.ntruss.com/data2/content/image/2020/11/19/20201119299991.jpg'],
-//   siDo: '서울시',
-//   siGunGu: '광진구',
-//   eupMyeonDong: '구의동',
-//   detailAddress: '구의동 10-10',
-//   deadLine: '2017-03-04',
-//   campaignStatus: 'RECRUITING',
-//   participatedPersonCnt: 0,
-//   totalOrderedItemCnt: 0,
-//   pageLinkUrl: '4735f881-ca32-4881-adf7-5f1e02bd43f2',
-//   maxQuantityPerPerson: 10,
-//   minQuantityPerPerson: 5,
-//   hostId: 6,
-//   hostNickName: '지운',
-//   campaignCategory: 'FOOD',
-// };
+import { CampaignDetail } from '@pages/Home/CampaignDetail';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function CampaignDetail({ navigation, route }) {
+function DetailHome({ navigation, route }) {
   const { campaignId } = route.params;
   const accessToken = useRecoilState(userAccessToken)[0];
   const screenWidth = Dimensions.get('screen').width;
@@ -147,14 +97,17 @@ function CampaignDetail({ navigation, route }) {
                 }}>
                   {campaignDetail.eupMyeonDong}
                 </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Pressable
+                  style={{ flexDirection: 'row', alignItems: 'center' }}
+                  onPress={() => navigation.navigate('ViewLocation', { location: campaignDetail.detailAddress })}
+                >
                   <Icon name="location-outline" size={15} color="#000" />
                   <Text style={{
                     fontWeight: '600', fontSize: 13, color: 'black',
                   }}>
                     지도보기
                   </Text>
-                </View>
+                </Pressable>
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Icon name="person-outline" size={15} color="#000" />
@@ -191,7 +144,7 @@ function CampaignDetail({ navigation, route }) {
               </Text>
               <View style={styles.tagZone}>
                 {campaignDetail.tags.map((tag) => (
-                  <View style={styles.tag}>
+                  <View key={tag} style={styles.tag}>
                     <Text style={{ color: 'black', fontSize: 16 }}># {tag}</Text>
                   </View>))}
               </View>
@@ -327,4 +280,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CampaignDetail;
+export default DetailHome;

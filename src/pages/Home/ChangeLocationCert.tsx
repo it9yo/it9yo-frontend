@@ -12,9 +12,9 @@ import axios, { AxiosResponse } from 'axios';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import RedDot from '@assets/images/red-dot.png';
-import { userAccessToken } from '@states/user';
+import { userAccessToken, userState } from '@states/user';
 import { location } from '@states/location';
-import { userState } from '../../states/user';
+import { Coord } from '@src/@types';
 
 function ChangeLocationCert({ navigation, route }) {
   const changedLocation = route.params;
@@ -22,10 +22,7 @@ function ChangeLocationCert({ navigation, route }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const setLocation = useSetRecoilState(location);
 
-  const [myPosition, setMyPosition] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [myPosition, setMyPosition] = useState<Coord | null>(null);
 
   const [locationAuth, setLocationAuth] = useState(false);
 
@@ -46,35 +43,40 @@ function ChangeLocationCert({ navigation, route }) {
   }, []);
 
   useEffect(() => {
-    const isLocationOk = async (lat: number, lng: number) => {
-      const url = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${lng},${lat}&orders=addr&output=json`;
-      const response: AxiosResponse<any, any> = await axios.get(
-        url,
-        {
-          headers: {
-            'X-NCP-APIGW-API-KEY-ID': Config.NAVER_MAP_CLIENT_ID,
-            'X-NCP-APIGW-API-KEY': Config.NAVER_MAP_CLIENT_SECRET,
+    const isLocationOk = async (position: Coord) => {
+      const { latitude, longitude } = position;
+      const url = `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${longitude},${latitude}&orders=addr&output=json`;
+      try {
+        const response: AxiosResponse<any, any> = await axios.get(
+          url,
+          {
+            headers: {
+              'X-NCP-APIGW-API-KEY-ID': Config.NAVER_MAP_CLIENT_ID,
+              'X-NCP-APIGW-API-KEY': Config.NAVER_MAP_CLIENT_SECRET,
+            },
           },
-        },
-      );
+        );
 
-      console.log(response);
+        console.log(response);
 
-      const sido = response.data.results[0].region.area1.name;
-      const sidoAlias = response.data.results[0].region.area1.alias;
-      const sigungu = response.data.results[0].region.area2.name;
+        const sido = response.data.results[0].region.area1.name;
+        const sidoAlias = response.data.results[0].region.area1.alias;
+        const sigungu = response.data.results[0].region.area2.name;
 
-      if ((changedLocation.sido === sido || changedLocation.sido === sidoAlias)
-        && changedLocation.sigungu === sigungu) {
-        setLocationAuth(true);
-        Alert.alert('알림', '지역 인증이 완료되었습니다.');
-      } else {
-        Alert.alert('알림', '지역이 일치하지 않습니다.');
+        if ((changedLocation.sido === sido || changedLocation.sido === sidoAlias)
+          && changedLocation.sigungu === sigungu) {
+          setLocationAuth(true);
+          Alert.alert('알림', '지역 인증이 완료되었습니다.');
+        } else {
+          Alert.alert('알림', '지역이 일치하지 않습니다.');
+        }
+      } catch (error) {
+        console.error(error);
       }
     };
 
     if (myPosition) {
-      isLocationOk(myPosition.latitude, myPosition.longitude);
+      isLocationOk(myPosition);
     }
   }, [myPosition]);
 

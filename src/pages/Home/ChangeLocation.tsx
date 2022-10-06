@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   SafeAreaView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { useRecoilState } from 'recoil';
-import { SignUpParamList } from '@src/@types';
-import { location, signupState } from '@src/states';
+import { location } from '@src/states';
 import AddressList from '@constants/address';
 
-type Props = NativeStackScreenProps<SignUpParamList, 'Location'>;
-
-function ChangeLocation({ navigation }: Props) {
+function ChangeLocation({ navigation }) {
   const currentLocation = useRecoilState(location)[0];
 
   const [sido, setSido] = useState(currentLocation.siDo);

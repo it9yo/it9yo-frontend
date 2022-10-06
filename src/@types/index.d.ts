@@ -68,7 +68,7 @@ export interface UserSignUpProps {
   providerType: string;
   nickName: string;
   introduction: string;
-  phoneNumber: string; // '-' 를 붙여줘야 하는지
+  phoneNumber: string;
   siDo: string;
   siGunGu: string;
   locationAuth: boolean;
@@ -78,6 +78,11 @@ export interface UserSignUpProps {
 export interface Location {
   siDo: string;
   siGunGu: string;
+}
+
+export interface Coord {
+  latitude: number;
+  longitude: number;
 }
 
 export interface NaverKeyProps {

@@ -27,7 +27,6 @@ function HomeTabs() {
             iconName = focused ? 'person' : 'person-outline';
           }
 
-          // You can return any component that you like here!
           return <Icon name={iconName} size={iconSize} color={color} />;
         },
         tabBarActiveTintColor: 'black',
