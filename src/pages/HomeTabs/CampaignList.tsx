@@ -1,104 +1,73 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
-  Image,
-  Pressable,
-  SafeAreaView,
-  ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  FlatList, Image, Pressable, SafeAreaView,
+  StyleSheet, Text, TouchableOpacity, View, ActivityIndicator,
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
-import { location } from '@src/states';
+import { location } from '@states/location';
+import { userAccessToken } from '@states/user';
+import EachCampaign from '@components/EachCampaign';
 
-import StatusNameList from '@constants/statusname';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { CampaignData } from '@src/@types';
+import axios from 'axios';
+import Config from 'react-native-config';
 
-const chatList = [
-  {
-    campaignId: 1,
-    campaignTitle: '마카롱 공구해요',
-    itemPrice: 1000,
-    campaignLocation: '자양 1동',
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'DELIVERED',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-  },
-  {
-    campaignId: 2,
-    campaignTitle: '싱싱 꼬막 무침 공구',
-    itemPrice: 10000,
-    campaignLocation: '자양 1동',
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'COMPLETED',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
-  },
-  {
-    campaignId: 3,
-    campaignTitle: '상주 곶감 산지 직송',
-    itemPrice: 8000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'DISTRIBUTING',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
-  },
-  {
-    campaignId: 4,
-    campaignTitle: '아라비카 커피 원두',
-    itemPrice: 5000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'DELIVERING',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
-  },
-  {
-    campaignId: 5,
-    campaignTitle: '천안 호두과자',
-    itemPrice: 3000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'CANCELED',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
-  },
-  {
-    campaignId: 6,
-    campaignTitle: '스테비아 토마토 공구',
-    itemPrice: 3000,
-    campaignLocation: '자양 1동',
-
-    campaignThumbnailUrl: 'https://cdn.incheontoday.com/news/photo/201911/118073_110377_567.jpg',
-    campaignStatus: 'CONFIRM',
-    participatedPersonCnt: 5,
-    hostName: '지운',
-
-  },
-
-];
-
-function numberWithCommas(x: number) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
+const pageSize = 20;
 
 export function CampaignList({ navigation }) {
   const [currentLocation, setLocation] = useRecoilState(location);
+  const accessToken = useRecoilState(userAccessToken)[0];
+  const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
 
-  useEffect(() => {
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  useLayoutEffect(() => {
+    loadCampaignData();
     console.log(currentLocation);
-  }, []);
+  }, [currentLocation]);
 
-  const onCampaignDetail = (campaignId: number) => {
-    navigation.navigate('CampaignDetail', { campaignId });
+  const loadCampaignData = async () => {
+    if (!campaignList.length || campaignList.length >= page * pageSize) {
+      try {
+        console.log('loadCampaignData', campaignList);
+        setLoading(true);
+        const url = `${Config.API_URL}/campaign/findAll?size=${pageSize}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
+        console.log(`url: ${url}`);
+        const response = await axios.get(
+          url,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        console.log(response.data.data.content);
+        if (response.status === 200 && response.data.data.numberOfElements > 0) {
+          const { content } = response.data.data;
+          console.log(`response.data.data.content: ${content}`);
+          content.map((item: CampaignData) => setCampaignList((prev) => [...prev, item]));
+          setPage((prev) => prev + 1);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
+
+  const onEndReached = () => {
+    if (!loading) {
+      loadCampaignData();
+    }
+  };
+
+  const renderItem = ({ item }: { item: CampaignData }) => (
+    <EachCampaign item={item}/>
+  );
 
   return <SafeAreaView style={styles.container}>
     <View style={styles.navContainer}>
@@ -119,47 +88,29 @@ export function CampaignList({ navigation }) {
       </Pressable>
      </View>
     </View>
+
+    <FlatList
+      data={campaignList}
+      keyExtractor={(item) => item.campaignId.toString()}
+      renderItem={renderItem}
+      // onEndReached={onEndReached}
+      // onEndReachedThreshold={0.6}
+      // ListFooterComponent={loading && <ActivityIndicator />}
+    />
+
     <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate('CreateCampaign')}
-          style={styles.floatingButtonStyle}>
-          <Icon name='add-circle' size={60}/>
-        </TouchableOpacity>
-    <ScrollView>
-      {chatList.map(({
-        campaignId, campaignTitle, itemPrice, campaignLocation,
-        campaignThumbnailUrl, campaignStatus, participatedPersonCnt, hostName,
-      }) => <Pressable
-        onPress={() => onCampaignDetail(campaignId)}
-      >
-        <View style={styles.campaignListZone}>
-          <Image style={styles.campaignThumbnail}
-            source={{
-              uri: campaignThumbnailUrl,
-            }}
-          />
-          <View>
-            <Text style={styles.campaignTitleText}>{campaignTitle}</Text>
-            <View style={styles.hostInfoZone}>
-              <Icon name="person-outline" size={16} color="#000" />
-              <Text style={styles.hostNameZone}>{hostName}</Text>
-            </View>
-            <Text style={styles.priceText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
-          </View>
-          <View style={styles.chatStateView}>
-            <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
-            <Text style={styles.userCntText}>{campaignLocation}</Text>
-            <Text style={styles.userCntText}>{`${participatedPersonCnt}명 참여중`}</Text>
-          </View>
-        </View>
-        </Pressable>)}
-    </ScrollView>
+      activeOpacity={0.7}
+      onPress={() => navigation.navigate('CreateCampaign')}
+      style={styles.floatingButtonStyle}>
+      <Icon name='add-circle' size={60}/>
+    </TouchableOpacity>
   </SafeAreaView>;
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    flex: 1,
   },
   navContainer: {
     flexDirection: 'row',
@@ -184,64 +135,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  campaignListZone: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    paddingVertical: 15,
-    // borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: 1,
-    borderColor: 'white',
-  },
-  hostNameZone: {
-    color: 'orange',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 2,
-  },
-  hostInfoZone: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  statusText: {
-    color: 'red',
-    fontWeight: '700',
-    fontSize: 16,
-    marginTop: 5,
-    marginBottom: 8,
-  },
-  userCntText: {
-    color: 'orange',
-    fontWeight: '600',
-    fontSize: 16,
-    paddingTop: 5,
-  },
-  chatStateView: {
-    alignItems: 'flex-end',
-    fontFamily: 'Proxima Nova',
-    position: 'absolute',
-    top: 15,
-    right: 15,
-    fontSize: 14,
-  },
-  campaignThumbnail: {
-    width: 120,
-    height: 80,
-    borderRadius: 80 / 2,
-    marginRight: 10,
-  },
-  campaignTitleText: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: 'black',
-  },
-  priceText: {
-    fontWeight: '700',
-    fontSize: 24,
-    color: 'black',
-  },
+
   floatingButtonStyle: {
     position: 'absolute',
     alignItems: 'center',

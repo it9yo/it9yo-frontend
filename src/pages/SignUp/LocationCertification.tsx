@@ -59,9 +59,11 @@ function LocationCertification({ navigation }: Props) {
       );
 
       const sido = response.data.results[0].region.area1.name;
+      const sidoAlias = response.data.results[0].region.area1.alias;
       const sigungu = response.data.results[0].region.area2.name;
 
-      if (signupInfo.siDo === sido && signupInfo.siGunGu === sigungu) {
+      if ((signupInfo.siDo === sido || signupInfo.siDo === sidoAlias)
+        && signupInfo.siGunGu === sigungu) {
         setLocationAuth(true);
         Alert.alert('알림', '지역 인증이 완료되었습니다.');
       } else {
@@ -89,9 +91,9 @@ function LocationCertification({ navigation }: Props) {
       );
 
       if (response.status === 200) {
-        console.log(response.data.data);
-        const { data } = response.data;
-        setUserInfo({ ...data });
+        // console.log(response.data.data);
+        // const { data } = response.data;
+        // setUserInfo({ ...data });
         navigation.push('SignupComplete');
       }
     } catch (error) {

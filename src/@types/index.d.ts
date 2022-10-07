@@ -68,7 +68,7 @@ export interface UserSignUpProps {
   providerType: string;
   nickName: string;
   introduction: string;
-  phoneNumber: string; // '-' 를 붙여줘야 하는지
+  phoneNumber: string;
   siDo: string;
   siGunGu: string;
   locationAuth: boolean;
@@ -80,6 +80,11 @@ export interface Location {
   siGunGu: string;
 }
 
+export interface Coord {
+  latitude: number;
+  longitude: number;
+}
+
 export interface NaverKeyProps {
   kConsumerKey: string;
   kConsumerSecret: string;
@@ -87,7 +92,7 @@ export interface NaverKeyProps {
   kServiceAppUrlScheme?: string;
 }
 
-export interface CampaignDetailData {
+export interface CampaignData {
   campaignId: number;
   title: string;
   tags: string[];
@@ -106,13 +111,8 @@ export interface CampaignDetailData {
   maxQuantityPerPerson: number;
   minQuantityPerPerson: number;
   hostId: number;
-  hostName: string;
+  hostNickName: string;
   campaignCategory: string;
-  chatRoomId: number;
-}
-
-export interface ImageData {
-  name: string;
-  type: string;
-  uri: string;
+  chatRoomName: string;
+  chatRoomParticipatedPersonCnt: number;
 }
