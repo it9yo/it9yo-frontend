@@ -99,7 +99,7 @@ function DetailHome({ navigation, route }) {
                 </Text>
                 <Pressable
                   style={{ flexDirection: 'row', alignItems: 'center' }}
-                  onPress={() => navigation.navigate('ViewLocation', { location: campaignDetail.detailAddress })}
+                  onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}
                 >
                   <Icon name="location-outline" size={15} color="#000" />
                   <Text style={{

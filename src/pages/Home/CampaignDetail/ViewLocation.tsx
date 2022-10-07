@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView, View, Dimensions, Text, TouchableOpacity, StyleSheet,
+  SafeAreaView, View, Dimensions, Text, StyleSheet, Image,
 } from 'react-native';
 
 import NaverMapView, { Marker } from 'react-native-nmap';
@@ -9,9 +9,14 @@ import { Coord } from '@src/@types';
 import RedDot from '@assets/images/red-dot.png';
 import axios, { AxiosResponse } from 'axios';
 import Config from 'react-native-config';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { CampaignData } from '../../../@types/index.d';
 
 function ViewLocation({ navigation, route }) {
-  const { location } = route.params;
+  const { campaignDetail }:{ campaignDetail: CampaignData } = route.params;
+  const {
+    title, hostNickName, itemImageURLs, detailAddress,
+  } = campaignDetail;
   const [coord, setCoord] = useState<Coord | null>(null);
 
   useEffect(() => {
@@ -43,17 +48,17 @@ function ViewLocation({ navigation, route }) {
       }
     };
 
-    getCoord(location);
-  }, [location]);
+    getCoord(detailAddress);
+  }, [detailAddress]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View
-        style={{
-          width: Dimensions.get('window').width,
-          height: Dimensions.get('window').height - 180,
-        }}>
-          {coord ? (
+      {coord ? (
+        <View
+          style={{
+            width: Dimensions.get('window').width,
+            height: Dimensions.get('window').height - 230,
+          }}>
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
             center={{
@@ -73,7 +78,36 @@ function ViewLocation({ navigation, route }) {
               image={RedDot}
             />
           </NaverMapView>
-          ) : <Text>Loading...</Text>}
+        </View>
+      ) : <Text>Loading...</Text>}
+      <View style={styles.bottomNav}>
+        <View style={styles.itemImageZone}>
+          <Image style={styles.imageThumbnail}
+            source={{ uri: itemImageURLs[0] }}
+          />
+        </View>
+        <View style={styles.detailInfoZone}>
+          <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 8 }}>{title}</Text>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Icon name="person-outline" size={18} color="#000" />
+            <Text style={{
+              fontWeight: '600', fontSize: 15, color: 'orange', marginLeft: 2,
+            }}>
+              {hostNickName}
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Icon name="location-outline" size={18} color="#000" />
+            <Text style={{
+              fontWeight: '600', fontSize: 15, color: 'black', marginLeft: 2,
+            }}>
+              {detailAddress}
+            </Text>
+          </View>
+
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -84,6 +118,32 @@ const styles = StyleSheet.create({
     flex: 1,
     // justifyContent: 'center',
     alignItems: 'center',
+  },
+  bottomNav: {
+    position: 'absolute',
+    width: '100%',
+    height: 150,
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    bottom: 0,
+  },
+  itemImageZone: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingLeft: 10,
+    paddingBottom: 20,
+  },
+  detailInfoZone: {
+    flex: 2,
+    justifyContent: 'center',
+    paddingLeft: 10,
+    paddingBottom: 20,
+  },
+  imageThumbnail: {
+    width: 120,
+    height: 80,
+    borderRadius: 80 / 2,
+    marginRight: 10,
   },
 });
 
