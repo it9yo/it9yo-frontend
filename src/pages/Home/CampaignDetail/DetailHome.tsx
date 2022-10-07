@@ -12,7 +12,6 @@ import { SliderBox } from 'react-native-image-slider-box';
 import { CampaignData } from '@src/@types';
 
 import StatusNameList from '@constants/statusname';
-import { CampaignDetail } from '@pages/Home/CampaignDetail';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -81,9 +80,14 @@ function DetailHome({ navigation, route }) {
                   {StatusNameList[campaignDetail.campaignStatus]}
                 </Text>
                 <Text style={{
-                  fontSize: 15, fontWeight: '600', color: 'orange',
+                  fontSize: 15, fontWeight: '600', color: 'orange', marginBottom: 5,
                 }}>
                   {`${campaignDetail.participatedPersonCnt}명 참여중`}
+                </Text>
+                <Text style={{
+                  fontSize: 15, fontWeight: '600', color: 'black',
+                }}>
+                  {`${campaignDetail.deadLine} 마감`}
                 </Text>
               </View>
             </View>
