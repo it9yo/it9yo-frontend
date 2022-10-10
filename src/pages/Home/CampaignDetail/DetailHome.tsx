@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
-import { userAccessToken } from '@src/states';
+import { userAccessToken, userState } from '@src/states';
 import Config from 'react-native-config';
 import axios from 'axios';
 import { SliderBox } from 'react-native-image-slider-box';
@@ -12,6 +12,8 @@ import { SliderBox } from 'react-native-image-slider-box';
 import { CampaignData } from '@src/@types';
 
 import StatusNameList from '@constants/statusname';
+import CampaignCancelButton from '@src/components/CampaignCancelButton';
+import CampaignJoinButton from '@src/components/CampaignJoinButton';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -19,9 +21,13 @@ function numberWithCommas(x: number) {
 
 function DetailHome({ navigation, route }) {
   const { campaignId } = route.params;
-  const accessToken = useRecoilState(userAccessToken)[0];
   const screenWidth = Dimensions.get('screen').width;
+
+  const userInfo = useRecoilState(userState)[0];
+  const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignDetail, setCampaignDetail] = useState<CampaignData | undefined>();
+  const [isHost, setHost] = useState(false);
+  const [inCampaign, setInCampaign] = useState(true);
 
   useEffect(() => {
     console.log(campaignDetail);
@@ -40,6 +46,20 @@ function DetailHome({ navigation, route }) {
         );
         if (response.status === 200) {
           setCampaignDetail(response.data.data);
+
+          if (userInfo.userId === response.data.data.hostId) {
+            setHost(true);
+          } else {
+            const isInCampaign = await axios.get(
+              `${Config.API_URL}/campaign/inCampaign/${campaignId}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              },
+            );
+            setInCampaign(isInCampaign.data.data.inCampaign);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -164,20 +184,15 @@ function DetailHome({ navigation, route }) {
               <Icon name="heart-outline" size={32} color="#000" />
               <Icon name="share-outline" size={30} color="#000" />
             </View>
-            <View style={{
-              flex: 2, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingRight: 10,
-            }}>
-
-              {/* 참여 전 */}
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>        공동구매 참여하기        </Text>
-              </TouchableOpacity>
-
-              {/* 참여 중 */}
-              {/* <Text style={{ fontSize: 18, marginRight: 10 }}>현재 참여중</Text>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>참여 취소하기</Text>
-              </TouchableOpacity> */}
+              {
+                inCampaign ? (
+                  // 참여 중
+                  <CampaignCancelButton />
+                ) : (
+                  // 참여 전
+                  <CampaignJoinButton />
+                )
+              }
 
               {/* 확정 ~ 수령완료 */}
               {/* <TouchableOpacity style={styles.button}>
@@ -198,7 +213,6 @@ function DetailHome({ navigation, route }) {
                 <Text style={styles.buttonText}>신고</Text>
               </TouchableOpacity> */}
 
-            </View>
           </View>
       </SafeAreaView>);
   }

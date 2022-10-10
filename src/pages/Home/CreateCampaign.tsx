@@ -20,6 +20,7 @@ import Config from 'react-native-config';
 
 import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
+import { CommonActions } from '@react-navigation/native';
 
 interface Preview {
   key: string | undefined;
@@ -70,7 +71,7 @@ function CreateCampaign({ navigation, route }) {
   }, [route.params?.data]);
 
   const onCreateCampaign = async () => {
-    // TODO: 유효성 검사, loading 처리
+    // TODO: 유효성 검사
     console.log(title, typeof title);
     console.log(tags, typeof tags);
     console.log(description, typeof description);
@@ -92,57 +93,45 @@ function CreateCampaign({ navigation, route }) {
     if (!loading) {
       setLoading(true);
       try {
-        const campaignResponse = await axios.post(
-          `${Config.API_URL}/campaign/add`,
-          {
-            title,
-            tags,
-            description,
-            itemPrice: Number(itemPrice),
-            siDo,
-            siGunGu,
-            eupMyeonDong,
-            detailAddress,
-            deadLine: deadLine.toISOString().split('T')[0],
-            maxQuantityPerPerson: Number(maxQuantityPerPerson),
-            minQuantityPerPerson: Number(minQuantityPerPerson),
-            campaignCategory,
-          },
+        const formData = new FormData();
+        const metaData = {
+          title,
+          tags,
+          description,
+          itemPrice: Number(itemPrice),
+          siDo,
+          siGunGu,
+          eupMyeonDong,
+          detailAddress,
+          deadLine: deadLine.toISOString().split('T')[0],
+          maxQuantityPerPerson: Number(maxQuantityPerPerson),
+          minQuantityPerPerson: Number(minQuantityPerPerson),
+          campaignCategory,
+        };
+        formData.append('metaData', JSON.stringify(metaData));
+        images.map((image) => {
+          const { name, type, uri } = image;
+          return formData.append('files', { name, type, uri });
+        });
+
+        console.log(formData);
+
+        const response = await axios.post(
+          `${Config.API_URL}/campaign/add/v2`,
+          formData,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'multipart/form-data',
             },
           },
         );
 
-        if (campaignResponse.status === 200) {
-          console.log('campaignResponse', campaignResponse);
-          // TODO: 사진 유효성 검사
-          const { campaignId } = campaignResponse.data.data;
-          console.log(campaignId);
-          const formData = new FormData();
-          images.map((image) => {
-            const { name, type, uri } = image;
-            return formData.append('files', { name, type, uri });
-          });
-          // console.log(files);
-          // formData.append('files', files);
-          const imageResponse = await axios.post(
-            `${Config.API_URL}/campaign/${campaignId}/addImages`,
-            formData,
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                'Content-Type': 'multipart/form-data',
-              },
-            },
-          );
-
-          if (imageResponse.status === 200) {
-            console.log('imageResponse', imageResponse);
-            Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
-            navigation.navigate('Home');
-          }
+        if (response.status === 200) {
+          console.log('imageResponse', response);
+          Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
+          navigation.dispatch(CommonActions.goBack());
+          // navigation.navigate('Home');
         }
       } catch (error) {
         console.error(error);

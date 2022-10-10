@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
+import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
@@ -24,10 +25,13 @@ export function CampaignList({ navigation }) {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const isFocused = useIsFocused();
+
   useLayoutEffect(() => {
+    console.log('campaignList start');
     loadCampaignData();
     console.log(currentLocation);
-  }, [currentLocation]);
+  }, [currentLocation, isFocused]);
 
   const loadCampaignData = async () => {
     if (!campaignList.length || campaignList.length >= page * pageSize) {
@@ -113,6 +117,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navContainer: {
+    // zIndex: 1,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 25,
