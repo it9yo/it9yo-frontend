@@ -22,52 +22,51 @@ export function CampaignList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
 
-  const [page, setPage] = useState(0);
+  const [currentPage, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const isFocused = useIsFocused();
 
   useLayoutEffect(() => {
     console.log('campaignList start');
-    loadCampaignData();
+    loadCampaignData(0, pageSize);
     console.log(currentLocation);
+
+    return setCampaignList([]);
   }, [currentLocation, isFocused]);
 
-  const loadCampaignData = async () => {
-    if (!campaignList.length || campaignList.length >= page * pageSize) {
-      try {
-        console.log('loadCampaignData', campaignList);
-        setLoading(true);
-        const url = `${Config.API_URL}/campaign/findAll?size=${pageSize}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
-        console.log(`url: ${url}`);
-        const response = await axios.get(
-          url,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+  // if (!campaignList.length || campaignList.length >= page * pageSize) {
+
+  const loadCampaignData = async (page: number, size: number) => {
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/campaign/findAll?size=${size}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
+      console.log(`url: ${url}`);
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
-        );
-        console.log(response.data.data.content);
-        if (response.status === 200 && response.data.data.numberOfElements > 0) {
-          const { content } = response.data.data;
-          console.log(`response.data.data.content: ${content}`);
-          content.map((item: CampaignData) => setCampaignList((prev) => [...prev, item]));
-          setPage((prev) => prev + 1);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+        },
+      );
+      console.log(response.data.data.content);
+      if (response.status === 200 && response.data.data.numberOfElements > 0) {
+        const { content } = response.data.data;
+        content.map((item: CampaignData) => setCampaignList((prev) => [...prev, item]));
       }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const onEndReached = () => {
-    if (!loading) {
-      loadCampaignData();
-    }
-  };
+  // const onEndReached = () => {
+  //   if (!loading) {
+  //     loadCampaignData();
+  //   }
+  // };
 
   const renderItem = ({ item }: { item: CampaignData }) => (
     <EachCampaign item={item}/>

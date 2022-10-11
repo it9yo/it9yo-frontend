@@ -125,22 +125,20 @@ function App() {
           response: { status },
         } = error;
         if (status === 406) {
-          if (error.response.data.code === 'expired') {
-            const originalRequest = config;
-            const refreshToken = await EncryptedStorage.getItem('refreshToken');
-            // token refresh 요청
-            const response = await axios.post(
-              `${Config.API_URL}/auth/refresh`,
-              { refreshToken },
-            );
-            setAccessToken(response.data.data.accessToken);
-            await EncryptedStorage.setItem(
-              'refreshToken',
-              response.data.data.refreshToken,
-            );
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            return axios(originalRequest);
-          }
+          const originalRequest = config;
+          const refreshToken = await EncryptedStorage.getItem('refreshToken');
+          // token refresh 요청
+          const response = await axios.post(
+            `${Config.API_URL}/auth/refresh`,
+            { refreshToken },
+          );
+          setAccessToken(response.data.data.accessToken);
+          await EncryptedStorage.setItem(
+            'refreshToken',
+            response.data.data.refreshToken,
+          );
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return axios(originalRequest);
         }
         return Promise.reject(error);
       },
