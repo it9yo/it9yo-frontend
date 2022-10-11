@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
-  View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Pressable,
+  View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Pressable, Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
@@ -14,6 +14,7 @@ import { CampaignData } from '@src/@types';
 import StatusNameList from '@constants/statusname';
 import CampaignCancelButton from '@src/components/CampaignCancelButton';
 import CampaignJoinButton from '@src/components/CampaignJoinButton';
+import StatusChangeButton from '../../../components/StatusChangeButton';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -68,6 +69,28 @@ function DetailHome({ navigation, route }) {
 
     loadCampaignDetail();
   }, []);
+
+  const onChangeStatus = async (status: string) => {
+    try {
+      console.log(status);
+      const response = await axios.post(
+        `${Config.API_URL}/campaign/status/change/${campaignId}/${status}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        Alert.alert('알림', '캠페인 상태 변경이 완료되었습니다.');
+        setCampaignDetail(response.data.data);
+        return true;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (campaignDetail) {
     return (
@@ -184,15 +207,18 @@ function DetailHome({ navigation, route }) {
               <Icon name="heart-outline" size={32} color="#000" />
               <Icon name="share-outline" size={30} color="#000" />
             </View>
-              {
-                inCampaign ? (
-                  // 참여 중
-                  <CampaignCancelButton />
-                ) : (
-                  // 참여 전
-                  <CampaignJoinButton />
-                )
+              {isHost
+              && <StatusChangeButton
+                status={campaignDetail.campaignStatus}
+                onChangeStatus={onChangeStatus} />
               }
+              {inCampaign ? (
+                // 참여 중
+                !isHost && <CampaignCancelButton />
+              ) : (
+                // 참여 전
+                !isHost && <CampaignJoinButton />
+              )}
 
               {/* 확정 ~ 수령완료 */}
               {/* <TouchableOpacity style={styles.button}>
