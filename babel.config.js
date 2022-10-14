@@ -29,6 +29,7 @@ module.exports = {
           '@modules': './src/modules',
           '@pages': './src/pages',
           '@states': './src/states',
+          '@utils': './src/utils',
         },
       },
     ],

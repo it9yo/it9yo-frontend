@@ -15,6 +15,7 @@ import StatusNameList from '@constants/statusname';
 import CampaignCancelButton from '@src/components/CampaignCancelButton';
 import CampaignJoinButton from '@src/components/CampaignJoinButton';
 import StatusChangeButton from '../../../components/StatusChangeButton';
+import getUserInfo from '../../../utils/getUserInfo';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -24,11 +25,11 @@ function DetailHome({ navigation, route }) {
   const { campaignId } = route.params;
   const screenWidth = Dimensions.get('screen').width;
 
-  const userInfo = useRecoilState(userState)[0];
+  const [userInfo, setUserInfo] = useRecoilState(userState);
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignDetail, setCampaignDetail] = useState<CampaignData | undefined>();
   const [isHost, setHost] = useState(false);
-  const [inCampaign, setInCampaign] = useState(true);
+  const [inCampaign, setInCampaign] = useState(false);
 
   useEffect(() => {
     console.log(campaignDetail);
@@ -85,7 +86,33 @@ function DetailHome({ navigation, route }) {
       if (response.status === 200) {
         Alert.alert('알림', '캠페인 상태 변경이 완료되었습니다.');
         setCampaignDetail(response.data.data);
-        return true;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleWish = async () => {
+
+  };
+
+  const onJoinCampaign = async (quantity: number) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/campaign/join/${campaignId}`,
+        {
+          quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const changedUserInfo = await getUserInfo(accessToken);
+        setUserInfo(changedUserInfo);
+        Alert.alert('알림', '캠페인 참여가 완료되었습니다.');
       }
     } catch (error) {
       console.error(error);
@@ -204,10 +231,13 @@ function DetailHome({ navigation, route }) {
             <View style={{
               flex: 1, flexDirection: 'row', justifyContent: 'space-evenly',
             }}>
-              <Icon name="heart-outline" size={32} color="#000" />
+              <TouchableOpacity onPress={handleWish}>
+                <Icon name="heart-outline" size={32} color="#000" />
+              </TouchableOpacity>
               <Icon name="share-outline" size={30} color="#000" />
             </View>
-              {isHost
+
+              {/* {isHost
               && <StatusChangeButton
                 status={campaignDetail.campaignStatus}
                 onChangeStatus={onChangeStatus} />
@@ -218,6 +248,19 @@ function DetailHome({ navigation, route }) {
               ) : (
                 // 참여 전
                 !isHost && <CampaignJoinButton />
+              )} */}
+
+              {/* 개발용 */}
+
+              {inCampaign ? (
+                // 참여 중
+                <CampaignCancelButton />
+              ) : (
+                // 참여 전
+                <CampaignJoinButton
+                  campaignDetail={campaignDetail}
+                  onJoinCampaign={onJoinCampaign}
+                />
               )}
 
               {/* 확정 ~ 수령완료 */}

@@ -8,7 +8,6 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import StatusNameList from '@constants/statusname';
-import { Picker } from '@react-native-picker/picker';
 
 function StatusChangeButton({ status, onChangeStatus }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -37,10 +36,10 @@ function StatusChangeButton({ status, onChangeStatus }) {
   }, [status]);
 
   const handleStatusChange = async (newStatus: string) => {
-    Alert.alert( // 말그대로 Alert를 띄운다
+    Alert.alert(
       '알림',
       `정말 ${StatusNameList[status]}에서 ${StatusNameList[newStatus]}(으)로 바꾸시겠습니까?`,
-      [ // 버튼 배열
+      [
         {
           text: '네',
           onPress: async () => {
