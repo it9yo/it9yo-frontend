@@ -4,15 +4,18 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-function CampaignIngButton() {
+function CompleteButton() {
   return <View style={{
     flex: 2, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingRight: 10,
   }}>
     <TouchableOpacity style={styles.button}>
-      <Icon name="ios-chatbubble-ellipses-outline" size={28} color="white" />
+      <Icon style={{ marginHorizontal: 5 }} name="ios-chatbubble-ellipses-outline" size={28} color="white" />
     </TouchableOpacity>
     <TouchableOpacity style={styles.button}>
-      <Text style={styles.buttonText}>     수령 완료하기     </Text>
+      <Text style={styles.buttonText}>후기 작성</Text>
+    </TouchableOpacity>
+    <TouchableOpacity style={styles.button}>
+      <Text style={styles.buttonText}>신고</Text>
     </TouchableOpacity>
   </View>;
 }
@@ -31,4 +34,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CampaignIngButton;
+export default CompleteButton;

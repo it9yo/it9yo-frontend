@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HeaderCloseButton from '@components/HeaderCloseButton';
-import HeaderBackButton from '@src/components/HeaderBackButton';
+import CloseButton from '@components/Header/CloseButton';
+import BackButton from '@src/components/Header/BackButton';
 import DetailHome from './DetailHome';
 import ViewLocation from './ViewLocation';
 
@@ -14,12 +14,12 @@ function CampaignDetail() {
       component={DetailHome}
       options={({ navigation }) => ({
         title: '',
-        headerLeft: () => <HeaderBackButton text="목록가기" onPress={navigation.goBack} />,
+        headerLeft: () => <BackButton text="목록가기" onPress={navigation.goBack} />,
       })}
     />
     <Stack.Group
       screenOptions={({ navigation }) => ({
-        headerLeft: () => <HeaderCloseButton onPress={navigation.goBack} />,
+        headerLeft: () => <CloseButton onPress={navigation.goBack} />,
         gestureEnabled: false,
         gestureDirection: 'vertical',
         headerMode: 'float',

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
+import JoinedChatList from '@pages/Chat/JoinedChatList';
+import CreatedChatList from '@pages/Chat/CreatedChatList';
 
-import JoinedCampaignList from '@src/pages/Manage/JoinedCampaignList';
-import CreatedCampaignList from '@src/pages/Manage/CreatedCampaignList';
-
-function Manage() {
+function Chat() {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -14,8 +13,8 @@ function Manage() {
   ]);
 
   const renderScene = SceneMap({
-    joined: JoinedCampaignList,
-    created: CreatedCampaignList,
+    joined: JoinedChatList,
+    created: CreatedChatList,
   });
 
   return (
@@ -37,4 +36,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Manage;
+export default Chat;

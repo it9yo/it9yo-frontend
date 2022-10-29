@@ -7,15 +7,16 @@ import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
 import Config from 'react-native-config';
 import axios from 'axios';
+
 import { SliderBox } from 'react-native-image-slider-box';
 
 import { CampaignData } from '@src/@types';
 
 import StatusNameList from '@constants/statusname';
-import CampaignCancelButton from '@src/components/CampaignCancelButton';
-import CampaignJoinButton from '@src/components/CampaignJoinButton';
-import StatusChangeButton from '../../../components/StatusChangeButton';
-import getUserInfo from '../../../utils/getUserInfo';
+import CancelButton from '@components/Campaign/CancelButton';
+import JoinButton from '@components/Campaign/JoinButton';
+import StatusChangeButton from '@src/components/Campaign/StatusChangeButton';
+import getUserInfo from '@utils/getUserInfo';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -254,10 +255,10 @@ function DetailHome({ navigation, route }) {
 
               {inCampaign ? (
                 // 참여 중
-                <CampaignCancelButton />
+                <CancelButton />
               ) : (
                 // 참여 전
-                <CampaignJoinButton
+                <JoinButton
                   campaignDetail={campaignDetail}
                   onJoinCampaign={onJoinCampaign}
                 />

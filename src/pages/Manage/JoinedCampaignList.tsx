@@ -5,13 +5,13 @@ import { FlatList, View } from 'react-native';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 
-import EachCampaign from '@components/EachCampaign';
+import EachCampaign from '@components/Campaign/EachCampaign';
 import { CampaignData } from '@src/@types';
 import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
-function CreatedList() {
+function JoinedCampaignList() {
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
 
@@ -29,7 +29,7 @@ function CreatedList() {
   const loadData = async (page: number, size: number) => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/createByMe?status=RECRUITING&size=${size}&page=${page}&sort=createdDate&direction=DESC`;
+      const url = `${Config.API_URL}/campaign/participating?status=RECRUITING&size=${size}&page=${page}&sort=createdDate&direction=DESC`;
       const response = await axios.get(
         url,
         {
@@ -73,4 +73,4 @@ function CreatedList() {
   </View>;
 }
 
-export default CreatedList;
+export default JoinedCampaignList;

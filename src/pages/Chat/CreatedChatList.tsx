@@ -70,7 +70,7 @@ const chatList = [
 
 ];
 
-function ChatList({ navigation }) {
+function CreatedChatList({ navigation }) {
   const onChatRoom = (campaignId: number, campaignTitle: string) => {
     navigation.navigate('ChatRoom', { campaignId, campaignTitle });
   };
@@ -152,4 +152,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatList;
+export default CreatedChatList;

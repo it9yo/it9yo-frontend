@@ -9,7 +9,7 @@ import {
 import { CampaignData } from '@src/@types';
 import BottomSheet from './BottomSheet';
 
-function CampaignJoinButton({ campaignDetail, onJoinCampaign }) {
+function JoinButton({ campaignDetail, onJoinCampaign }) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return <View style={{
@@ -77,4 +77,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CampaignJoinButton;
+export default JoinButton;

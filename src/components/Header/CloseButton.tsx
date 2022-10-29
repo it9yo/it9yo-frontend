@@ -2,13 +2,13 @@ import React from 'react';
 import { Text, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-function HeaderBackButton({ text, onPress }: { text?:string, onPress?:()=>void }) {
+function CloseButton({ text, onPress }: { text?:string, onPress?:()=>void }) {
   return <Pressable style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 2 }} onPress={onPress}>
-    <Icon style={{ marginHorizontal: 2 }} name="chevron-back" size={24} color="#000" />
+    <Icon style={{ marginHorizontal: 2 }} name="close" size={24} color="#000" />
     {text && <Text style={{ color: 'black', fontSize: 24, fontWeight: '500' }}>
       {text}
     </Text>}
   </Pressable>;
 }
 
-export default HeaderBackButton;
+export default CloseButton;
