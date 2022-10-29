@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import CampaignList from './CampaignList';
+import CampaignList from '@pages/Home/CampaignList';
 
 const Stack = createNativeStackNavigator();
 

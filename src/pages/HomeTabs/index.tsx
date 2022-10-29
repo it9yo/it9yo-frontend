@@ -3,7 +3,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './Home';
 import Manage from './Manage';
-import ChatList from './ChatList';
+import Chat from './Chat';
 import Mypage from './Mypage';
 
 const Tab = createBottomTabNavigator();
@@ -21,7 +21,7 @@ function HomeTabs() {
               : 'home-outline';
           } else if (route.name === 'Manage') {
             iconName = focused ? 'cart' : 'cart-outline';
-          } else if (route.name === 'ChatList') {
+          } else if (route.name === 'Chat') {
             iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
           } else if (route.name === 'Mypage') {
             iconName = focused ? 'person' : 'person-outline';
@@ -47,7 +47,7 @@ function HomeTabs() {
         name="Manage"
         component={Manage}
         options={{
-          headerShown: false,
+          title: '캠페인관리',
           tabBarLabel: '캠페인관리',
           tabBarLabelStyle: {
             fontSize: 14,
@@ -55,8 +55,8 @@ function HomeTabs() {
         }}
         />
       <Tab.Screen
-        name="ChatList"
-        component={ChatList}
+        name="Chat"
+        component={Chat}
         options={{
           title: '채팅 목록',
           tabBarLabel: '채팅',

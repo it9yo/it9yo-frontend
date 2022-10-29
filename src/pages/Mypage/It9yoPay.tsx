@@ -1,10 +1,14 @@
-import { userState } from '@src/states';
+import { userAccessToken, userState } from '@src/states';
+import axios from 'axios';
 import React from 'react';
 import {
+  Alert,
   Dimensions, Pressable, SafeAreaView, StyleSheet, Text, View,
 } from 'react-native';
+import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
+import getUserInfo from '@utils/getUserInfo';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -12,6 +16,48 @@ function numberWithCommas(x: number) {
 
 function It9yoPay({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
+  const accessToken = useRecoilState(userAccessToken)[0];
+
+  const onCheck = () => {
+    Alert.alert(
+      '테스트용',
+      '999999원 충전',
+      [
+        {
+          text: '네',
+          onPress: onChargePoint,
+        },
+        {
+          text: '아니요',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false },
+    );
+  };
+
+  const onChargePoint = async () => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/pay/charge`,
+        {
+          amount: 999999,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const changedUserInfo = await getUserInfo(accessToken);
+        setUserInfo(changedUserInfo);
+        Alert.alert('알림', '포인트 충전이 완료되었습니다.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (<SafeAreaView style={styles.container}>
     <View style={styles.mainContent}>
@@ -23,7 +69,7 @@ function It9yoPay({ navigation }) {
       </View>
 
       <View style={styles.buttonZone}>
-        <Pressable style={styles.button}>
+        <Pressable style={styles.button} onPress={onCheck}>
           <Text style={{
             color: 'white', fontSize: 18, marginHorizontal: 8, marginVertical: 2,
           }}>

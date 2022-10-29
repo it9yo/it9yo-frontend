@@ -97,22 +97,23 @@ function SignIn({ navigation }: SignInScreenProps) {
         },
       );
 
-      console.log(response);
       if (response.status === 200) {
-        setAccessToken(response.data.data.accessToken);
+        const { accessToken, refreshToken } = response.data.data;
+        setAccessToken(accessToken);
         await EncryptedStorage.setItem(
           'refreshToken',
-          response.data.data.refreshToken,
+          refreshToken,
         );
 
         const userResponseData = await axios.get(
-          `${Config.API_URL}/user/info`,
+          `${Config.API_URL}/user/detail`,
           {
             headers: {
-              Authorization: `Bearer ${response.data.data.accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
             },
           },
         );
+        console.log('userResponseData', userResponseData);
         const { siDo, siGunGu } = userResponseData.data.data;
         setLocation({
           siDo,

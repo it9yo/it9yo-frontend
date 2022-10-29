@@ -116,3 +116,14 @@ export interface CampaignData {
   chatRoomName: string;
   chatRoomParticipatedPersonCnt: number;
 }
+
+export interface ChatRoomData {
+  campaignId: number;
+  campaignTitle: string;
+  thumbNail: string;
+  campaignStatus: string;
+  campaignParticipatedPersonCnt: number;
+  hostId: number;
+  chatRoomName: string;
+  chatRoomParticipatedPersonCnt: number;
+}

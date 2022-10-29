@@ -5,67 +5,72 @@ import {
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
-import { location } from '@states/location';
 import { userAccessToken } from '@states/user';
 import EachCampaign from '@components/EachCampaign';
 
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
+import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
-export function CampaignList({ navigation }) {
-  const [currentLocation, setLocation] = useRecoilState(location);
-  const accessToken = useRecoilState(userAccessToken)[0];
-  const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
+interface WishListData {
+  id : number;
+  userId : number;
+  campaignId : number;
+}
 
-  const [page, setPage] = useState(0);
+export function WishList({ navigation }) {
+  const accessToken = useRecoilState(userAccessToken)[0];
+  const [wishList, setWishList] = useState<WishListData[]>([]); // TODO
+
+  const [currentPage, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  const isFocused = useIsFocused();
+
   useLayoutEffect(() => {
-    loadCampaignData();
-    console.log(currentLocation);
-  }, [currentLocation]);
+    console.log('wishlist start');
+    loadWishList(0, pageSize);
 
-  const loadCampaignData = async () => {
-    if (!campaignList.length || campaignList.length >= page * pageSize) {
-      try {
-        console.log('loadCampaignData', campaignList);
-        setLoading(true);
-        const url = `${Config.API_URL}/campaign/findAll?size=${pageSize}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
-        console.log(`url: ${url}`);
-        const response = await axios.get(
-          url,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+    return setWishList([]);
+  }, [isFocused]);
+
+  // if (!campaignList.length || campaignList.length >= page * pageSize) {
+
+  const loadWishList = async (page: number, size: number) => {
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/campaign/findAll?size=${size}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
+      console.log(`url: ${url}`);
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
-        );
-        console.log(response.data.data.content);
-        if (response.status === 200 && response.data.data.numberOfElements > 0) {
-          const { content } = response.data.data;
-          console.log(`response.data.data.content: ${content}`);
-          content.map((item: CampaignData) => setCampaignList((prev) => [...prev, item]));
-          setPage((prev) => prev + 1);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+        },
+      );
+      console.log(response.data.data.content);
+      if (response.status === 200 && response.data.data.numberOfElements > 0) {
+        const { content } = response.data.data;
+        content.map((item: WishListData) => setWishList((prev) => [...prev, item]));
       }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const onEndReached = () => {
-    if (!loading) {
-      loadCampaignData();
-    }
-  };
+  // const onEndReached = () => {
+  //   if (!loading) {
+  //     loadCampaignData();
+  //   }
+  // };
 
-  const renderItem = ({ item }: { item: CampaignData }) => (
+  const renderItem = ({ item }: { item: WishListData }) => (
     <EachCampaign item={item}/>
   );
 
@@ -90,7 +95,7 @@ export function CampaignList({ navigation }) {
     </View>
 
     <FlatList
-      data={campaignList}
+      data={wishList}
       keyExtractor={(item) => item.campaignId.toString()}
       renderItem={renderItem}
       // onEndReached={onEndReached}
@@ -113,6 +118,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navContainer: {
+    // zIndex: 1,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 25,
@@ -146,4 +159,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CampaignList;
+export default WishList;
