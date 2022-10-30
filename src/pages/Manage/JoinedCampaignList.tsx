@@ -29,7 +29,7 @@ function JoinedCampaignList() {
   const loadData = async (page: number, size: number) => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/participating?status=RECRUITING&size=${size}&page=${page}&sort=createdDate&direction=DESC`;
+      const url = `${Config.API_URL}/campaign/joining?status=RECRUITING&size=${size}&page=${page}&sort=createdDate&direction=DESC`;
       const response = await axios.get(
         url,
         {

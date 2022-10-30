@@ -13,6 +13,8 @@ import {
 import Config from 'react-native-config';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
+import messaging from '@react-native-firebase/messaging';
+
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   getProfile as getKakaoProfile, KakaoProfile,
@@ -70,7 +72,7 @@ function SignIn({ navigation }: SignInScreenProps) {
   const setUserInfo = useSetRecoilState(userState);
   const setAccessToken = useSetRecoilState(userAccessToken);
   const setLocation = useSetRecoilState(location);
-  const fcmToken = useRecoilState(userFcmToken);
+  const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -80,9 +82,23 @@ function SignIn({ navigation }: SignInScreenProps) {
     });
   }, []);
 
+  const getPushPermissions = async () => {
+    let authorized;
+    const enabled = await messaging().hasPermission();
+
+    if (!enabled) {
+      authorized = await messaging().requestPermission();
+    }
+
+    if (enabled || authorized) {
+      const token = await messaging().getToken();
+      return token;
+    }
+  };
+
   const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
-      const mobileToken = fcmToken[0];
+      const mobileToken = await getPushPermissions();
       console.log({
         id,
         providerType,

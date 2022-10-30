@@ -19,11 +19,6 @@ function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
 
-  useEffect(() => {
-    console.log(userInfo);
-    console.log(accessToken);
-  }, []);
-
   const onChangeProfilePhoto = async () => {
     try {
       const result: ImagePickerResponse = await launchImageLibrary({

@@ -54,14 +54,15 @@ function DetailHome({ navigation, route }) {
             setHost(true);
           } else {
             const isInCampaign = await axios.get(
-              `${Config.API_URL}/campaign/inCampaign/${campaignId}`,
+              `${Config.API_URL}/campaign/join/in/${campaignId}`,
               {
                 headers: {
                   Authorization: `Bearer ${accessToken}`,
                 },
               },
             );
-            setInCampaign(isInCampaign.data.data.inCampaign);
+            console.log(isInCampaign);
+            setInCampaign(isInCampaign.data.data);
           }
         }
       } catch (error) {

@@ -1,42 +1,38 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import {
-  FlatList, Image, Pressable, SafeAreaView,
-  StyleSheet, Text, TouchableOpacity, View, ActivityIndicator,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList } from 'react-native';
 
 import { useRecoilState } from 'recoil';
-import { location } from '@states/location';
 import { userAccessToken } from '@states/user';
 import EachCampaign from '@components/Campaign/EachCampaign';
 
-import Icon from 'react-native-vector-icons/Ionicons';
 import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
-import { useIsFocused } from '@react-navigation/native';
+import { location } from '@src/states';
 
-const size = 10;
+const pageSize = 10;
 
-export function CampaignList({ navigation }) {
-  const [currentLocation, setLocation] = useRecoilState(location);
+export function CampaignList() {
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
+  const [currentLocation, setLocation] = useRecoilState(location);
+  const { siDo, siGunGu } = currentLocation;
 
-  const [currentPage, setPage] = useState(1);
+  const [campaignList, setCampaignList] = useState<CampaignData[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [noMoreData, setNoMoreData] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
-  const isFocused = useIsFocused();
-
   useEffect(() => {
-    loadCampaignData(0);
-    console.log('currentLocation', currentLocation);
-    return () => setCampaignList([]);
-  }, [currentLocation, isFocused]);
+    loadCampaignData();
+  }, [currentLocation]);
 
-  const loadCampaignData = async (page: number) => {
+  const loadCampaignData = async () => {
+    if (!siDo && !siGunGu) return;
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${size}&page=${page}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&siDo=${siDo}&siGunGu=${siGunGu}`;
 
       console.log(`url: ${url}`);
       const response = await axios.get(
@@ -47,11 +43,16 @@ export function CampaignList({ navigation }) {
           },
         },
       );
-      console.log(response.data.data.content);
-      if (response.status === 200 && response.data.data.numberOfElements > 0) {
-        const { content } = response.data.data;
-        content.map((item: CampaignData) => setCampaignList((prev) => [...prev, item]));
-        setPage((prev) => prev + 1);
+      if (response.status === 200) {
+        if (response.data.data.numberOfElements > 0) {
+          const { content, totalPages } = response.data.data;
+          console.log(response.data.data);
+          if (currentPage === totalPages - 1) setNoMoreData(true);
+          if (campaignList.length <= pageSize * currentPage) {
+            setCampaignList((prev) => [...prev, ...content]);
+            setCurrentPage((prev) => prev + 1);
+          }
+        }
       }
     } catch (error) {
       console.error(error);
@@ -60,91 +61,24 @@ export function CampaignList({ navigation }) {
     }
   };
 
-  // const onEndReached = () => {
-  //   if (!loading) {
-  //     loadCampaignData(currentPage);
-  //   }
-  // };
+  const onEndReached = () => {
+    if (!noMoreData || !loading) {
+      loadCampaignData();
+    }
+  };
 
   const renderItem = ({ item }: { item: CampaignData }) => (
     <EachCampaign item={item}/>
   );
 
-  return <SafeAreaView style={styles.container}>
-    <View style={styles.navContainer}>
-     <Pressable onPress={() => navigation.navigate('ChangeLocation')}>
-      <View style={styles.locationZone}>
-        <Text style={styles.locationText}>
-          {currentLocation.siGunGu ? currentLocation.siGunGu : currentLocation.siDo}
-        </Text>
-        <Icon style={{ paddingLeft: 2 }} name="chevron-down" size={24} color="#000" />
-      </View>
-     </Pressable>
-     <View style={styles.navButtonZone}>
-      <Pressable>
-        <Icon name="filter" size={28} color="#000" />
-      </Pressable>
-      <Pressable style={{ marginLeft: 5 }} onPress={() => navigation.navigate('Search')}>
-        <Icon name="search" size={24} color="#000" />
-      </Pressable>
-     </View>
-    </View>
-
-    <FlatList
+  return <FlatList
       data={campaignList}
       keyExtractor={(item) => item.campaignId.toString()}
       renderItem={renderItem}
-      // onEndReached={onEndReached}
-      // onEndReachedThreshold={0.6}
-      // ListFooterComponent={loading && <ActivityIndicator />}
-    />
-
-    <TouchableOpacity
-      activeOpacity={0.7}
-      onPress={() => navigation.navigate('CreateCampaign')}
-      style={styles.floatingButtonStyle}>
-      <Icon name='add-circle' size={60}/>
-    </TouchableOpacity>
-  </SafeAreaView>;
+      onEndReached={onEndReached}
+      onEndReachedThreshold={1}
+      ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+    />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    flex: 1,
-  },
-  navContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 25,
-    borderBottom: 1,
-    borderBottomColor: 'black',
-    height: 56,
-  },
-  navButtonZone: {
-    position: 'absolute',
-    right: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  locationText: {
-    fontWeight: '500',
-    fontSize: 25,
-    color: 'black',
-  },
-  locationZone: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  floatingButtonStyle: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-    right: 30,
-    bottom: 80,
-  },
-});
 
 export default CampaignList;

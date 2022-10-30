@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert, Pressable, Text } from 'react-native';
+import { Alert } from 'react-native';
 
 import SplashScreen from 'react-native-splash-screen';
 
@@ -53,25 +53,26 @@ function App() {
 
   useEffect(() => {
     SplashScreen.hide();
+    console.log('user info', userInfo);
   }, []);
 
-  useEffect(() => {
-    const getPushPermissions = async () => {
-      let authorized;
-      const enabled = await messaging().hasPermission();
+  // useEffect(() => {
+  //   const getPushPermissions = async () => {
+  //     let authorized;
+  //     const enabled = await messaging().hasPermission();
 
-      if (!enabled) {
-        authorized = await messaging().requestPermission();
-      }
+  //     if (!enabled) {
+  //       authorized = await messaging().requestPermission();
+  //     }
 
-      if (enabled || authorized) {
-        const token = await messaging().getToken();
-        setFcmToken(token);
-      }
-    };
+  //     if (enabled || authorized) {
+  //       const token = await messaging().getToken();
+  //       setFcmToken(token);
+  //     }
+  //   };
 
-    getPushPermissions();
-  }, []);
+  //   getPushPermissions();
+  // }, []);
 
   useEffect(() => {
     // 로그인 시 refresh token으로 accessToken을 발급하는 코드
@@ -153,7 +154,6 @@ function App() {
             name="ChatRoom"
             component={ChatRoom}
             options={({ navigation }) => ({
-              title: '',
               headerLeft: () => <BackButton onPress={navigation.goBack} />,
             })}
           />

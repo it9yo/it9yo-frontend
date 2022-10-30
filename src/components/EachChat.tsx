@@ -7,29 +7,28 @@ import { useNavigation } from '@react-navigation/native';
 import StatusNameList from '@constants/statusname';
 import { ChatRoomData } from '@src/@types';
 
-function EachChatRoom({ item } : { item: ChatRoomData }) {
+function EachChat({ item } : { item: ChatRoomData }) {
   const navigation = useNavigation();
 
   const {
-    campaignId, campaignTitle, thumbNail, campaignStatus, campaignParticipatedPersonCnt,
-    hostId, chatRoomName, chatRoomParticipatedPersonCnt,
+    campaignId, title, itemImageURLs, campaignStatus, participatedPersonCnt,
   } = item;
 
-  return <Pressable onPress={() => navigation.navigate('ChatRoom', { campaignId, campaignTitle })}>
+  return <Pressable onPress={() => navigation.navigate('ChatRoom', { campaignId, title })}>
     <View style={styles.chatListView}>
       <Image style={styles.chatThumbnail}
         source={{
-          uri: thumbNail,
+          uri: itemImageURLs[0],
         }}
       />
       <View>
-        <Text style={styles.chatTitle}>{campaignTitle}</Text>
+        <Text style={styles.chatTitle}>{title}</Text>
         {/* <Text style={styles.chatContent}>{chatContent}</Text> */}
       </View>
       <View style={styles.chatStateView}>
         {/* <Text>{chatTime}</Text> */}
         <Text style={styles.campaignStatusText}>{StatusNameList[campaignStatus]}</Text>
-        <Text style={styles.joinedPeopleText}>{`${campaignParticipatedPersonCnt}명 참여중`}</Text>
+        <Text style={styles.joinedPeopleText}>{`${participatedPersonCnt}명 참여중`}</Text>
       </View>
     </View>
   </Pressable>;
@@ -78,3 +77,5 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
 });
+
+export default EachChat;

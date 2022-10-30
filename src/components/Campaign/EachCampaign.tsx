@@ -19,10 +19,6 @@ function EachCampaign({ item }: { item: CampaignData }) {
     campaignStatus, hostNickName, participatedPersonCnt, itemPrice,
   } = item;
 
-  useEffect(() => {
-    console.log('itemImageURLs', itemImageURLs);
-  }, []);
-
   return <Pressable onPress={() => navigation.navigate('CampaignDetail', {
     screen: 'DetailHome',
     params: { campaignId },
