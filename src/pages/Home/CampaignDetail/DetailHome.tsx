@@ -13,10 +13,8 @@ import { SliderBox } from 'react-native-image-slider-box';
 import { CampaignData } from '@src/@types';
 
 import StatusNameList from '@constants/statusname';
-import CancelButton from '@components/Campaign/CancelButton';
-import JoinButton from '@components/Campaign/JoinButton';
-import StatusChangeButton from '@src/components/Campaign/StatusChangeButton';
 import getUserInfo from '@utils/getUserInfo';
+import BottomNavButton from '@src/components/Campaign/BottomNavButton';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -112,8 +110,15 @@ function DetailHome({ navigation, route }) {
         },
       );
       if (response.status === 200) {
-        const changedUserInfo = await getUserInfo(accessToken);
-        setUserInfo(changedUserInfo);
+        const changedUserInfo = await axios.get(
+          `${Config.API_URL}/user/detail`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        setUserInfo(changedUserInfo.data.data);
         Alert.alert('알림', '캠페인 참여가 완료되었습니다.');
       }
     } catch (error) {
@@ -239,51 +244,13 @@ function DetailHome({ navigation, route }) {
               <Icon name="share-outline" size={30} color="#000" />
             </View>
 
-              {/* {isHost
-              && <StatusChangeButton
-                status={campaignDetail.campaignStatus}
-                onChangeStatus={onChangeStatus} />
-              }
-              {inCampaign ? (
-                // 참여 중
-                !isHost && <CampaignCancelButton />
-              ) : (
-                // 참여 전
-                !isHost && <CampaignJoinButton />
-              )} */}
-
-              {/* 개발용 */}
-
-              {inCampaign ? (
-                // 참여 중
-                <CancelButton />
-              ) : (
-                // 참여 전
-                <JoinButton
-                  campaignDetail={campaignDetail}
-                  onJoinCampaign={onJoinCampaign}
-                />
-              )}
-
-              {/* 확정 ~ 수령완료 */}
-              {/* <TouchableOpacity style={styles.button}>
-                <Icon name="ios-chatbubble-ellipses-outline" size={28} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>     수령 완료하기     </Text>
-              </TouchableOpacity> */}
-
-              {/* 완료 후 */}
-              {/* <TouchableOpacity style={styles.button}>
-                <Icon style={{ marginHorizontal: 5 }} name="ios-chatbubble-ellipses-outline" size={28} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>후기 작성</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>신고</Text>
-              </TouchableOpacity> */}
-
+             <BottomNavButton
+              campaignDetail={campaignDetail}
+              isHost={isHost}
+              inCampaign={inCampaign}
+              onJoinCampaign={onJoinCampaign}
+              onChangeStatus={onChangeStatus}
+             />
           </View>
       </SafeAreaView>);
   }

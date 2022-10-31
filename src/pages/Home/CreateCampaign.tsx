@@ -117,7 +117,7 @@ function CreateCampaign({ navigation, route }) {
         console.log(formData);
 
         const response = await axios.post(
-          `${Config.API_URL}/campaign/add/v2`,
+          `${Config.API_URL}/campaign/add`,
           formData,
           {
             headers: {

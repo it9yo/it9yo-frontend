@@ -24,6 +24,7 @@ export function CampaignList() {
   const [noMoreData, setNoMoreData] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useLayoutEffect(() => {
     loadCampaignData();
@@ -55,18 +56,65 @@ export function CampaignList() {
         const {
           content, first, last, number, empty,
         } = response.data.data;
+        if (empty) return;
         if (first) {
           setCampaignList([...content]);
-        } else if (!empty) {
+        } else {
           setCampaignList((prev) => [...prev, ...content]);
         }
         setCurrentPage(number + 1);
-        if (last) setNoMoreData(true);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
       }
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getRefreshData = async () => {
+    if (!siDo && !siGunGu) return;
+    try {
+      setRefreshing(true);
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&siDo=${siDo}&siGunGu=${siGunGu}`;
+
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        console.log(response.data.data);
+        const {
+          content, first, last, number, empty,
+        } = response.data.data;
+        setCampaignList([...content]);
+        if (first) {
+          setCurrentPage(1);
+        }
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = () => {
+    if (!refreshing) {
+      getRefreshData();
     }
   };
 
@@ -88,6 +136,8 @@ export function CampaignList() {
       onEndReached={onEndReached}
       onEndReachedThreshold={1}
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
     /> : <Text>no data</Text>}
   </View>;
 }
