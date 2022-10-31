@@ -10,7 +10,6 @@ import { useRecoilState } from 'recoil';
 
 function Home() {
   const navigation = useNavigation();
-  const [currentLocation, setLocation] = useRecoilState(location);
 
   return <SafeAreaView style={styles.container}>
     <HomeHeader />

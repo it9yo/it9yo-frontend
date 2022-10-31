@@ -1,15 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
-import { location } from '@src/states';
+import { locationState } from '@src/states/user';
 import React from 'react';
 import {
   Pressable, StyleSheet, Text, View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 function HomeHeader() {
   const navigation = useNavigation();
-  const [currentLocation, setLocation] = useRecoilState(location);
+  const currentLocation = useRecoilValue(locationState);
 
   return <View style={styles.navContainer}>
 

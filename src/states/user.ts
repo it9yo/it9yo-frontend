@@ -1,4 +1,5 @@
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
+import { Location } from '@src/@types';
 import { UserInfo, UserSignUpProps } from '../@types';
 
 export const userAccessToken = atom<string>({
@@ -29,6 +30,17 @@ export const userState = atom<UserInfo>({
     point: 0,
     accountNumber: '',
     mobileToken: '',
+  },
+});
+
+export const locationState = selector<Location>({
+  key: 'locationState',
+  get: ({ get }) => {
+    const userInfo = get(userState);
+    const { siDo, siGunGu } = userInfo;
+    const location = { siDo, siGunGu };
+
+    return location;
   },
 });
 
