@@ -1,6 +1,8 @@
 import { CampaignData } from '@src/@types';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Alert, StyleSheet, TouchableOpacity, View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
@@ -18,14 +20,60 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
 
-  const [isWish, setisWish] = useState(false);
+  const [isWish, setWish] = useState(false);
 
   useEffect(() => {
+    const checkInWish = async () => {
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/campaign/wish/InWishes/${campaignId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        if (response.status === 200) {
+          const { data } = response.data;
+          if (data === 'ok') {
+            setWish(true);
+          } else {
+            setWish(false);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    checkInWish();
   }, []);
 
   const handleWish = async () => {
-
+    if (!isWish) {
+      // 찜하기
+      try {
+        const response = await axios.post(
+          `${Config.API_URL}/campaign/wish/add/${campaignId}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        if (response.status === 200) {
+          console.log(response);
+          Alert.alert('알림', '찜 목록 추가 완료되었습니다.');
+          setWish(true);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      // 찜 취소
+      setWish(false);
+    }
   };
 
   return <View style={styles.navContainer}>
@@ -35,7 +83,10 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
 
     {/* 찜하기 버튼 */}
     <TouchableOpacity onPress={handleWish}>
-      <Icon name="heart-outline" size={32} color="#000" />
+      {isWish
+        ? <Icon name="heart" size={32} color="#000" />
+        : <Icon name="heart-outline" size={32} color="#000" />
+      }
     </TouchableOpacity>
 
     {/* 공유하기 버튼 */}
