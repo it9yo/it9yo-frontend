@@ -1,16 +1,51 @@
 import React, { useState } from 'react';
 import {
   Alert,
-  Modal,
-  Pressable,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 
 import { CampaignData } from '@src/@types';
+import axios from 'axios';
+import Config from 'react-native-config';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { userAccessToken, userState } from '@src/states';
 import BottomSheet from './BottomSheet';
 
-function JoinButton({ campaignDetail, onJoinCampaign }) {
+function JoinButton({ campaignDetail }: { campaignDetail:CampaignData }) {
+  const { campaignId } = campaignDetail;
+  const setUserInfo = useSetRecoilState(userState);
+  const accessToken = useRecoilState(userAccessToken)[0];
   const [modalVisible, setModalVisible] = useState(false);
+
+  const onJoinCampaign = async (quantity: number) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/campaign/join/${campaignId}`,
+        {
+          quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const changedUserInfo = await axios.get(
+          `${Config.API_URL}/user/detail`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        setUserInfo(changedUserInfo.data.data);
+        Alert.alert('알림', '캠페인 참여가 완료되었습니다.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return <View style={{
     flex: 2, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingRight: 10,

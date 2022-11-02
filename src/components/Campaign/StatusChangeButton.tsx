@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  Modal,
-  Pressable,
-  StyleSheet, Text, TouchableOpacity, View,
+  Alert, Modal, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import StatusNameList from '@constants/statusname';
+import { CampaignData } from '@src/@types';
+import axios from 'axios';
+import Config from 'react-native-config';
+import { useRecoilState } from 'recoil';
+import { userAccessToken } from '@src/states';
 
-function StatusChangeButton({ status, onChangeStatus }) {
+interface BottomNavProps {
+  campaignDetail: CampaignData;
+  setCampaignDetail: any;
+}
+
+function StatusChangeButton({ campaignDetail, setCampaignDetail }: BottomNavProps) {
+  const { campaignId, campaignStatus } = campaignDetail;
+  const accessToken = useRecoilState(userAccessToken)[0];
+
   const [modalVisible, setModalVisible] = useState(false);
   const [nextStatus, setNextStatus] = useState<string[]>([]);
 
   useEffect(() => {
-    switch (status) {
+    switch (campaignStatus) {
       case 'RECRUITING':
         setNextStatus(['CONFIRM']);
         break;
@@ -33,12 +43,35 @@ function StatusChangeButton({ status, onChangeStatus }) {
       default:
         break;
     }
-  }, [status]);
+  }, [campaignStatus]);
+
+  const onChangeStatus = async (status: string) => {
+    try {
+      console.log(status);
+      const response = await axios.post(
+        `${Config.API_URL}/campaign/status/change/${campaignId}/${status}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        Alert.alert('알림', '캠페인 상태 변경이 완료되었습니다.');
+        setCampaignDetail(response.data.data);
+        return true;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    return false;
+  };
 
   const handleStatusChange = async (newStatus: string) => {
     Alert.alert(
       '알림',
-      `정말 ${StatusNameList[status]}에서 ${StatusNameList[newStatus]}(으)로 바꾸시겠습니까?`,
+      `정말 ${StatusNameList[campaignStatus]}에서 ${StatusNameList[newStatus]}(으)로 바꾸시겠습니까?`,
       [
         {
           text: '네',
@@ -61,7 +94,7 @@ function StatusChangeButton({ status, onChangeStatus }) {
   return <View style={{
     flex: 2, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingRight: 10,
   }}>
-    <Text style={{ fontSize: 18, marginRight: 10 }}>{StatusNameList[status]}</Text>
+    <Text style={{ fontSize: 18, marginRight: 10 }}>{StatusNameList[campaignStatus]}</Text>
     <TouchableOpacity style={styles.button}>
       <Icon name="ios-chatbubble-ellipses-outline" size={28} color="white" />
     </TouchableOpacity>
@@ -119,7 +152,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
   },
-  //
   centeredView: {
     flex: 1,
     justifyContent: 'center',

@@ -94,7 +94,7 @@ function CreateCampaign({ navigation, route }) {
       setLoading(true);
       try {
         const formData = new FormData();
-        const metaData = {
+        const request = {
           title,
           tags,
           description,
@@ -108,13 +108,14 @@ function CreateCampaign({ navigation, route }) {
           minQuantityPerPerson: Number(minQuantityPerPerson),
           campaignCategory,
         };
-        formData.append('metaData', JSON.stringify(metaData));
+        formData.append('request', new Blob([JSON.stringify(request, null, 2)], { type: 'application/json' }));
+
         images.map((image) => {
           const { name, type, uri } = image;
           return formData.append('files', { name, type, uri });
         });
-
-        console.log(formData);
+        console.log(accessToken);
+        console.log(new Blob([JSON.stringify(request)]));
 
         const response = await axios.post(
           `${Config.API_URL}/campaign/add`,
@@ -461,17 +462,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-  // button: {
-  //   maxWidth: 100,
-  //   paddingVertical: 5,
-  //   paddingHorizontal: 8,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   backgroundColor: '#E2B950',
-  //   borderColor: 'black',
-  //   borderWidth: StyleSheet.hairlineWidth,
-  //   borderRadius: 5,
-  // },
   imageAddButton: {
     alignItems: 'center',
     justifyContent: 'center',

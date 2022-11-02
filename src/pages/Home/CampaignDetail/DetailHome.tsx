@@ -1,10 +1,10 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import {
-  View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, TouchableOpacity, Pressable, Alert,
+  View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
-import { userAccessToken, userState } from '@src/states';
+import { userAccessToken } from '@src/states';
 import Config from 'react-native-config';
 import axios from 'axios';
 
@@ -13,8 +13,7 @@ import { SliderBox } from 'react-native-image-slider-box';
 import { CampaignData } from '@src/@types';
 
 import StatusNameList from '@constants/statusname';
-import getUserInfo from '@utils/getUserInfo';
-import BottomNavButton from '@src/components/Campaign/BottomNavButton';
+import BottomNav from '@src/components/Campaign/BottomNav';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -24,15 +23,8 @@ function DetailHome({ navigation, route }) {
   const { campaignId } = route.params;
   const screenWidth = Dimensions.get('screen').width;
 
-  const [userInfo, setUserInfo] = useRecoilState(userState);
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignDetail, setCampaignDetail] = useState<CampaignData | undefined>();
-  const [isHost, setHost] = useState(false);
-  const [inCampaign, setInCampaign] = useState(false);
-
-  useEffect(() => {
-    console.log(campaignDetail);
-  }, [campaignDetail]);
 
   useLayoutEffect(() => {
     const loadCampaignDetail = async () => {
@@ -47,21 +39,6 @@ function DetailHome({ navigation, route }) {
         );
         if (response.status === 200) {
           setCampaignDetail(response.data.data);
-
-          if (userInfo.userId === response.data.data.hostId) {
-            setHost(true);
-          } else {
-            const isInCampaign = await axios.get(
-              `${Config.API_URL}/campaign/join/in/${campaignId}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                },
-              },
-            );
-            console.log(isInCampaign);
-            setInCampaign(isInCampaign.data.data);
-          }
         }
       } catch (error) {
         console.error(error);
@@ -70,61 +47,6 @@ function DetailHome({ navigation, route }) {
 
     loadCampaignDetail();
   }, []);
-
-  const onChangeStatus = async (status: string) => {
-    try {
-      console.log(status);
-      const response = await axios.post(
-        `${Config.API_URL}/campaign/status/change/${campaignId}/${status}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      if (response.status === 200) {
-        Alert.alert('알림', '캠페인 상태 변경이 완료되었습니다.');
-        setCampaignDetail(response.data.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleWish = async () => {
-
-  };
-
-  const onJoinCampaign = async (quantity: number) => {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/campaign/join/${campaignId}`,
-        {
-          quantity,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      if (response.status === 200) {
-        const changedUserInfo = await axios.get(
-          `${Config.API_URL}/user/detail`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        setUserInfo(changedUserInfo.data.data);
-        Alert.alert('알림', '캠페인 참여가 완료되었습니다.');
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   if (campaignDetail) {
     return (
@@ -234,24 +156,11 @@ function DetailHome({ navigation, route }) {
           </View>
           </ScrollView>
 
-          <View style={styles.navContainer}>
-            <View style={{
-              flex: 1, flexDirection: 'row', justifyContent: 'space-evenly',
-            }}>
-              <TouchableOpacity onPress={handleWish}>
-                <Icon name="heart-outline" size={32} color="#000" />
-              </TouchableOpacity>
-              <Icon name="share-outline" size={30} color="#000" />
-            </View>
+          <BottomNav
+            campaignDetail={campaignDetail}
+            setCampaignDetail={setCampaignDetail}
+          />
 
-             <BottomNavButton
-              campaignDetail={campaignDetail}
-              isHost={isHost}
-              inCampaign={inCampaign}
-              onJoinCampaign={onJoinCampaign}
-              onChangeStatus={onChangeStatus}
-             />
-          </View>
       </SafeAreaView>);
   }
 }
