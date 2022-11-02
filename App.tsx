@@ -11,7 +11,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import SignIn from '@pages/SignIn';
 import SignUp from '@pages/SignUp';
@@ -25,8 +25,9 @@ import ChangeLocation from '@pages/Home/ChangeLocation';
 import ChangeLocationCert from '@pages/Home/ChangeLocationCert';
 import CreateCampaign from '@pages/Home/CreateCampaign';
 import SearchAddress from '@pages/Home/SearchAddress';
+import WishList from '@src/pages/Mypage/WishList';
 
-import { userState, userAccessToken, userFcmToken } from '@src/states';
+import { userState, userAccessToken } from '@src/states';
 
 import BackButton from '@src/components/Header/BackButton';
 import CloseButton from '@components/Header/CloseButton';
@@ -36,7 +37,6 @@ const Stack = createNativeStackNavigator();
 function App() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
-  const setFcmToken = useSetRecoilState(userFcmToken);
 
   const isLoggedIn = !!userInfo.userId;
 
@@ -52,24 +52,6 @@ function App() {
     SplashScreen.hide();
     console.log('user info', userInfo);
   }, []);
-
-  // useEffect(() => {
-  //   const getPushPermissions = async () => {
-  //     let authorized;
-  //     const enabled = await messaging().hasPermission();
-
-  //     if (!enabled) {
-  //       authorized = await messaging().requestPermission();
-  //     }
-
-  //     if (enabled || authorized) {
-  //       const token = await messaging().getToken();
-  //       setFcmToken(token);
-  //     }
-  //   };
-
-  //   getPushPermissions();
-  // }, []);
 
   useEffect(() => {
     // 로그인 시 refresh token으로 accessToken을 발급하는 코드
@@ -190,6 +172,11 @@ function App() {
               name="SearchAddress"
               component={SearchAddress}
               options={{ title: '주소 검색' }}
+            />
+            <Stack.Screen
+              name="WishList"
+              component={WishList}
+              options={{ title: '찜 목록' }}
             />
           </Stack.Group>
         </Stack.Navigator>
