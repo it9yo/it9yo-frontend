@@ -1,10 +1,14 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Home from './Home';
+// import Home from './Home';
+import CampaignList from '@pages/Home/CampaignList';
+import { useRecoilState } from 'recoil';
+import { location } from '@src/states';
 import Manage from './Manage';
 import Chat from './Chat';
 import Mypage from './Mypage';
+import Home from './Home';
 
 const Tab = createBottomTabNavigator();
 

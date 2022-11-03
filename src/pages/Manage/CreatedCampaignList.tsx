@@ -1,4 +1,4 @@
-import { userAccessToken } from '@src/states';
+import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
@@ -12,6 +12,7 @@ import { useIsFocused } from '@react-navigation/native';
 const pageSize = 20;
 
 function CreatedCampaignList() {
+  const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
 
@@ -29,7 +30,8 @@ function CreatedCampaignList() {
   const loadData = async (page: number, size: number) => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/createByMe?status=RECRUITING&size=${size}&page=${page}&sort=createdDate&direction=DESC`;
+      const url = `${Config.API_URL}/campaign/campaigns?status=RECRUITING&size=${size}&page=${page}&sort=createdDate&direction=DESC&hostId=${userInfo.userId}`;
+
       const response = await axios.get(
         url,
         {

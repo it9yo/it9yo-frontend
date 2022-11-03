@@ -118,12 +118,26 @@ export interface CampaignData {
 }
 
 export interface ChatRoomData {
+  campaignCategory: string;
   campaignId: number;
-  campaignTitle: string;
-  thumbNail: string;
   campaignStatus: string;
-  campaignParticipatedPersonCnt: number;
-  hostId: number;
   chatRoomName: string;
   chatRoomParticipatedPersonCnt: number;
+  deadLine: string;
+  description: string;
+  detailAddress: string;
+  eupMyeonDong: string;
+  hostId: string;
+  hostNickName: string;
+  itemImageURLs: string[];
+  itemPrice: number;
+  maxQuantityPerPerson: number;
+  minQuantityPerPerson: number;
+  pageLinkUrl: string;
+  participatedPersonCnt: number;
+  siDo: string;
+  siGunGu: string;
+  tags: string[];
+  title: string;
+  totalOrderedItemCnt: number;
 }

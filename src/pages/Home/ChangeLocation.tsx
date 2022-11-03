@@ -3,12 +3,12 @@ import {
   SafeAreaView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
-import { useRecoilState } from 'recoil';
-import { location } from '@src/states';
+import { useRecoilValue } from 'recoil';
+import { locationState } from '@src/states';
 import AddressList from '@constants/address';
 
 function ChangeLocation({ navigation }) {
-  const currentLocation = useRecoilState(location)[0];
+  const currentLocation = useRecoilValue(locationState);
 
   const [sido, setSido] = useState(currentLocation.siDo);
   const [sigungu, setSigungu] = useState(currentLocation.siGunGu);

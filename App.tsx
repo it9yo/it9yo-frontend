@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert, Pressable, Text } from 'react-native';
+import { Alert } from 'react-native';
 
 import SplashScreen from 'react-native-splash-screen';
 
@@ -11,7 +11,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import SignIn from '@pages/SignIn';
 import SignUp from '@pages/SignUp';
@@ -25,10 +25,9 @@ import ChangeLocation from '@pages/Home/ChangeLocation';
 import ChangeLocationCert from '@pages/Home/ChangeLocationCert';
 import CreateCampaign from '@pages/Home/CreateCampaign';
 import SearchAddress from '@pages/Home/SearchAddress';
+import WishList from '@src/pages/Mypage/WishList';
 
-import {
-  userState, userAccessToken, userFcmToken, location,
-} from '@src/states';
+import { userState, userAccessToken } from '@src/states';
 
 import BackButton from '@src/components/Header/BackButton';
 import CloseButton from '@components/Header/CloseButton';
@@ -38,14 +37,14 @@ const Stack = createNativeStackNavigator();
 function App() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
-  const setFcmToken = useSetRecoilState(userFcmToken);
-  const setLocation = useSetRecoilState(location);
 
   const isLoggedIn = !!userInfo.userId;
 
+  // 메시지 전송 받기
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      console.log('remoteMessage', remoteMessage);
     });
 
     return unsubscribe;
@@ -53,24 +52,7 @@ function App() {
 
   useEffect(() => {
     SplashScreen.hide();
-  }, []);
-
-  useEffect(() => {
-    const getPushPermissions = async () => {
-      let authorized;
-      const enabled = await messaging().hasPermission();
-
-      if (!enabled) {
-        authorized = await messaging().requestPermission();
-      }
-
-      if (enabled || authorized) {
-        const token = await messaging().getToken();
-        setFcmToken(token);
-      }
-    };
-
-    getPushPermissions();
+    console.log('user info', userInfo);
   }, []);
 
   useEffect(() => {
@@ -101,10 +83,6 @@ function App() {
           },
         );
         setUserInfo(userResponseData.data.data);
-        setLocation({
-          siDo: userResponseData.data.data.siDo,
-          siGunGu: userResponseData.data.data.siGunGu,
-        });
       } catch (error) {
         console.error(error);
       }
@@ -143,6 +121,10 @@ function App() {
     );
   }, []);
 
+  // const setMessage = async ({ userId, campaignId, body }) => {
+  //   const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+  // };
+
   return (
     <NavigationContainer>
       {isLoggedIn ? (
@@ -153,7 +135,6 @@ function App() {
             name="ChatRoom"
             component={ChatRoom}
             options={({ navigation }) => ({
-              title: '',
               headerLeft: () => <BackButton onPress={navigation.goBack} />,
             })}
           />
@@ -197,6 +178,11 @@ function App() {
               name="SearchAddress"
               component={SearchAddress}
               options={{ title: '주소 검색' }}
+            />
+            <Stack.Screen
+              name="WishList"
+              component={WishList}
+              options={{ title: '찜 목록' }}
             />
           </Stack.Group>
         </Stack.Navigator>

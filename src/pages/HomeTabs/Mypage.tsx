@@ -19,11 +19,6 @@ function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
 
-  useEffect(() => {
-    console.log(userInfo);
-    console.log(accessToken);
-  }, []);
-
   const onChangeProfilePhoto = async () => {
     try {
       const result: ImagePickerResponse = await launchImageLibrary({
@@ -96,6 +91,8 @@ function Mypage({ navigation }) {
   <SafeAreaView style={styles.container}>
     <ScrollView scrollToOverflowEnabled={false} style={{ height: '100%' }}>
       <View style={styles.mainContent}>
+
+        {/* 프로필 */}
         <View style={styles.contentBlock}>
           <View style={{ alignItems: 'center' }}>
             {userInfo.profileImageUrl
@@ -107,9 +104,11 @@ function Mypage({ navigation }) {
               <Icon name='camera-outline' size={30} color='gray' />
             </Pressable>
           </View>
+
           <Text style={{ color: 'black', fontSize: 18 }}>
             {userInfo.nickName}
           </Text>
+
           <View style={{ alignItems: 'center' }}>
             <Pressable onPress={() => navigation.navigate('EditProfile')}>
               <View style={styles.button}>
@@ -121,13 +120,18 @@ function Mypage({ navigation }) {
             </Pressable>
           </View>
         </View>
+
         <View style={styles.horizenLine} />
+
         <View style={styles.contentBlock}>
+
+          {/* 잇구요 페이 */}
           <Pressable onPress={() => navigation.navigate('It9yoPay')}>
             <View style={styles.button}>
               <Text style={{ color: 'white', fontSize: 16 }}>잇구요 페이</Text>
             </View>
           </Pressable>
+
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Text style={{ color: 'black', fontSize: 18 }}>
               {'잔여 포인트: '}
@@ -136,44 +140,62 @@ function Mypage({ navigation }) {
               {`${numberWithCommas(userInfo.point)} P`}
             </Text>
           </View>
+
         </View>
       </View>
 
       <View style={styles.mainContent}>
+
+        {/* 완료한 공동구매 내역 */}
         <View style={styles.menuBlock}>
           <Text style={styles.menuText}>
             완료한 공동구매 내역
           </Text>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
+
         <View style={styles.horizenLine} />
+
+        {/* 후기 남기기 */}
         <View style={styles.menuBlock}>
           <Text style={styles.menuText}>
             후기 남기기
           </Text>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
+
         <View style={styles.horizenLine} />
+
+        {/* 신고하기 */}
         <View style={styles.menuBlock}>
           <Text style={styles.menuText}>
             신고하기
           </Text>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
+
         <View style={styles.horizenLine} />
-        <View style={styles.menuBlock}>
-          <Text style={styles.menuText}>
-            찜한 공동구매 목록
-          </Text>
-          <Icon name='ios-chevron-forward' size={24} color='black' />
-        </View>
+
+        {/* 찜한 공동구매 목록 */}
+        <Pressable onPress={() => navigation.navigate('WishList')}>
+          <View style={styles.menuBlock}>
+            <Text style={styles.menuText}>
+              찜한 공동구매 목록
+            </Text>
+            <Icon name='ios-chevron-forward' size={24} color='black' />
+          </View>
+        </Pressable>
+
         <View style={styles.horizenLine} />
+
+        {/* 문의하기 */}
         <View style={styles.menuBlock}>
           <Text style={styles.menuText}>
             문의하기
           </Text>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
+
       </View>
       </ScrollView>
   </SafeAreaView>);

@@ -6,44 +6,38 @@ import {
 
 import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@states/user';
-import EachCampaign from '@components/EachCampaign';
 
-import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import Config from 'react-native-config';
+import EachCampaign from '@components/Campaign/EachCampaign';
 import { useIsFocused } from '@react-navigation/native';
+import { CampaignData } from '../../@types/index.d';
 
 const pageSize = 20;
 
-interface WishListData {
-  id : number;
-  userId : number;
-  campaignId : number;
-}
-
 export function WishList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [wishList, setWishList] = useState<WishListData[]>([]); // TODO
+  const [wishList, setWishList] = useState<CampaignData[]>([]); // TODO
 
-  const [currentPage, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [noMoreData, setNoMoreData] = useState(false);
+
   const [loading, setLoading] = useState(false);
-
+  const [refreshing, setRefreshing] = useState(false);
   const isFocused = useIsFocused();
 
   useLayoutEffect(() => {
-    console.log('wishlist start');
-    loadWishList(0, pageSize);
+    loadWishList();
 
     return setWishList([]);
   }, [isFocused]);
 
-  // if (!campaignList.length || campaignList.length >= page * pageSize) {
-
-  const loadWishList = async (page: number, size: number) => {
+  const loadWishList = async () => {
+    if (noMoreData) return;
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/findAll?size=${size}&page=${page}&sort=createdDate&direction=DESC&title=&siDo=${currentLocation.siDo}&siGunGu=${currentLocation.siGunGu}`;
-      console.log(`url: ${url}`);
+      const url = `${Config.API_URL}/campaign/wish/wishes?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
+
       const response = await axios.get(
         url,
         {
@@ -52,10 +46,23 @@ export function WishList({ navigation }) {
           },
         },
       );
-      console.log(response.data.data.content);
-      if (response.status === 200 && response.data.data.numberOfElements > 0) {
-        const { content } = response.data.data;
-        content.map((item: WishListData) => setWishList((prev) => [...prev, item]));
+      if (response.status === 200) {
+        console.log(response.data.data);
+        const {
+          content, first, last, number, empty,
+        } = response.data.data;
+        if (empty) return;
+        if (first) {
+          setWishList([...content]);
+        } else {
+          setWishList((prev) => [...prev, ...content]);
+        }
+        setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -64,99 +71,69 @@ export function WishList({ navigation }) {
     }
   };
 
-  // const onEndReached = () => {
-  //   if (!loading) {
-  //     loadCampaignData();
-  //   }
-  // };
+  const getRefreshData = async () => {
+    try {
+      setRefreshing(true);
+      const url = `${Config.API_URL}/campaign/wish/wishes?size=${pageSize}&page=${0}&sort=createdDate&direction=DESC`;
 
-  const renderItem = ({ item }: { item: WishListData }) => (
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        console.log(response.data.data);
+        const {
+          content, first, last, number, empty,
+        } = response.data.data;
+        setWishList([...content]);
+        if (first) {
+          setCurrentPage(1);
+        }
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = () => {
+    if (!refreshing) {
+      getRefreshData();
+    }
+  };
+
+  const onEndReached = () => {
+    if (!noMoreData || !loading) {
+      loadWishList();
+    }
+  };
+
+  const renderItem = ({ item }: { item: CampaignData }) => (
     <EachCampaign item={item}/>
   );
 
-  return <SafeAreaView style={styles.container}>
-    <View style={styles.navContainer}>
-     <Pressable onPress={() => navigation.navigate('ChangeLocation')}>
-      <View style={styles.locationZone}>
-        <Text style={styles.locationText}>
-          {currentLocation.siGunGu ? currentLocation.siGunGu : currentLocation.siDo}
-        </Text>
-        <Icon style={{ paddingLeft: 2 }} name="chevron-down" size={24} color="#000" />
-      </View>
-     </Pressable>
-     <View style={styles.navButtonZone}>
-      <Pressable>
-        <Icon name="filter" size={28} color="#000" />
-      </Pressable>
-      <Pressable style={{ marginLeft: 5 }} onPress={() => navigation.navigate('Search')}>
-        <Icon name="search" size={24} color="#000" />
-      </Pressable>
-     </View>
-    </View>
-
-    <FlatList
+  return <SafeAreaView>
+    {wishList.length > 0 ? <FlatList
       data={wishList}
       keyExtractor={(item) => item.campaignId.toString()}
       renderItem={renderItem}
-      // onEndReached={onEndReached}
-      // onEndReachedThreshold={0.6}
-      // ListFooterComponent={loading && <ActivityIndicator />}
-    />
-
-    <TouchableOpacity
-      activeOpacity={0.7}
-      onPress={() => navigation.navigate('CreateCampaign')}
-      style={styles.floatingButtonStyle}>
-      <Icon name='add-circle' size={60}/>
-    </TouchableOpacity>
+      onEndReached={onEndReached}
+      onEndReachedThreshold={1}
+      ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
+    /> : <Text>no data</Text>}
   </SafeAreaView>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    flex: 1,
-  },
-  navContainer: {
-    // zIndex: 1,
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 25,
-    borderBottom: 1,
-    borderBottomColor: 'black',
-    height: 56,
-  },
-  navButtonZone: {
-    position: 'absolute',
-    right: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  locationText: {
-    fontWeight: '500',
-    fontSize: 25,
-    color: 'black',
-  },
-  locationZone: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  floatingButtonStyle: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1,
-    right: 30,
-    bottom: 80,
-  },
-});
 
 export default WishList;

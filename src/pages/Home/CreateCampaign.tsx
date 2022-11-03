@@ -94,7 +94,7 @@ function CreateCampaign({ navigation, route }) {
       setLoading(true);
       try {
         const formData = new FormData();
-        const metaData = {
+        const request = {
           title,
           tags,
           description,
@@ -108,13 +108,13 @@ function CreateCampaign({ navigation, route }) {
           minQuantityPerPerson: Number(minQuantityPerPerson),
           campaignCategory,
         };
-        formData.append('metaData', JSON.stringify(metaData));
+
+        formData.append('request', JSON.stringify(request));
+
         images.map((image) => {
           const { name, type, uri } = image;
           return formData.append('files', { name, type, uri });
         });
-
-        console.log(formData);
 
         const response = await axios.post(
           `${Config.API_URL}/campaign/add/v2`,
@@ -128,7 +128,6 @@ function CreateCampaign({ navigation, route }) {
         );
 
         if (response.status === 200) {
-          console.log('imageResponse', response);
           Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
           navigation.dispatch(CommonActions.goBack());
           // navigation.navigate('Home');
@@ -461,17 +460,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
-  // button: {
-  //   maxWidth: 100,
-  //   paddingVertical: 5,
-  //   paddingHorizontal: 8,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   backgroundColor: '#E2B950',
-  //   borderColor: 'black',
-  //   borderWidth: StyleSheet.hairlineWidth,
-  //   borderRadius: 5,
-  // },
   imageAddButton: {
     alignItems: 'center',
     justifyContent: 'center',

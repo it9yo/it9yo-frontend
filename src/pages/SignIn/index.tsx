@@ -13,6 +13,8 @@ import {
 import Config from 'react-native-config';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
+import messaging from '@react-native-firebase/messaging';
+
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   getProfile as getKakaoProfile, KakaoProfile,
@@ -30,8 +32,7 @@ import NaverBtn from '@assets/images/naverBtn.png';
 import KakaoBtn from '@assets/images/kakaoBtn.png';
 import GoogleBtn from '@assets/images/googleBtn.png';
 import {
-  location,
-  signupState, userAccessToken, userFcmToken, userState,
+  signupState, userAccessToken, userState,
 } from '@src/states';
 import {
   NaverKeyProps, RootStackParamList,
@@ -69,8 +70,7 @@ function SignIn({ navigation }: SignInScreenProps) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);
   const setUserInfo = useSetRecoilState(userState);
   const setAccessToken = useSetRecoilState(userAccessToken);
-  const setLocation = useSetRecoilState(location);
-  const fcmToken = useRecoilState(userFcmToken);
+  // const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -80,9 +80,23 @@ function SignIn({ navigation }: SignInScreenProps) {
     });
   }, []);
 
+  const getPushPermissions = async () => {
+    let authorized;
+    const enabled = await messaging().hasPermission();
+
+    if (!enabled) {
+      authorized = await messaging().requestPermission();
+    }
+
+    if (enabled || authorized) {
+      const token = await messaging().getToken();
+      return token;
+    }
+  };
+
   const authenticateUser = useCallback(async ({ id, providerType }: UserAuthenticationProps) => {
     try {
-      const mobileToken = fcmToken[0];
+      const mobileToken = await getPushPermissions();
       console.log({
         id,
         providerType,
@@ -114,11 +128,6 @@ function SignIn({ navigation }: SignInScreenProps) {
           },
         );
         console.log('userResponseData', userResponseData);
-        const { siDo, siGunGu } = userResponseData.data.data;
-        setLocation({
-          siDo,
-          siGunGu,
-        });
         setUserInfo(userResponseData.data.data);
       }
     } catch (error) {

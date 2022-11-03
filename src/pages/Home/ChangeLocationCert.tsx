@@ -9,18 +9,16 @@ import Geolocation from '@react-native-community/geolocation';
 import Config from 'react-native-config';
 import axios, { AxiosResponse } from 'axios';
 
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import RedDot from '@assets/images/red-dot.png';
 import { userAccessToken, userState } from '@states/user';
-import { location } from '@states/location';
 import { Coord } from '@src/@types';
 
 function ChangeLocationCert({ navigation, route }) {
   const changedLocation = route.params;
   const accessToken = useRecoilState(userAccessToken)[0];
   const [userInfo, setUserInfo] = useRecoilState(userState);
-  const setLocation = useSetRecoilState(location);
 
   const [myPosition, setMyPosition] = useState<Coord | null>(null);
 
@@ -105,10 +103,7 @@ function ChangeLocationCert({ navigation, route }) {
           siGunGu,
           locationAuth,
         });
-        setLocation({
-          siDo,
-          siGunGu,
-        });
+        // TODO
         Alert.alert('알림', '지역 변경이 완료되었습니다.');
         navigation.navigate('Home');
       }

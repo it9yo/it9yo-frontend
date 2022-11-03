@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { GiftedChat, type IMessage } from 'react-native-gifted-chat';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
+import axios from 'axios';
+import Config from 'react-native-config';
 
 function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
@@ -15,7 +17,7 @@ function ChatRoom({ navigation, route }) {
   const [messages, setMessages] = useState<IMessage[] | undefined>();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ headerTitle: route.params.campaignTitle });
+    navigation.setOptions({ headerTitle: route.params.title });
   }, [navigation, route]);
 
   useEffect(() => {
@@ -36,7 +38,6 @@ function ChatRoom({ navigation, route }) {
           user: {
             _id: 0,
             name: 'React Native',
-            // avatar: 'https://placeimg.com/140/140/any',
           },
           system: true,
         }];
@@ -48,12 +49,32 @@ function ChatRoom({ navigation, route }) {
     }
   };
 
+  const sendMessage = async (text: string) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/chat/publish/${campaignId}`,
+        {
+          body: text,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const onSend = useCallback((message: IMessage[]) => {
-    setMessages((previousMessages) => {
-      const msgs = GiftedChat.append(previousMessages, message);
-      AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(msgs));
-      return msgs;
-    });
+    console.log(message);
+    sendMessage(message[0].text);
+    // setMessages((previousMessages) => {
+    //   const msgs = GiftedChat.append(previousMessages, message);
+    //   AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(msgs));
+    //   return msgs;
+    // });
   }, []);
 
   return (
@@ -61,7 +82,7 @@ function ChatRoom({ navigation, route }) {
       messages={messages}
       onSend={(message) => onSend(message)}
       user={{
-        _id: 7,
+        _id: userInfo.userId,
       }}
     />
   );
