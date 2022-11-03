@@ -50,29 +50,28 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
   }, []);
 
   const handleWish = async () => {
-    if (!isWish) {
-      // 찜하기
-      try {
-        const response = await axios.post(
-          `${Config.API_URL}/campaign/wish/add/${campaignId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+    try {
+      const url = isWish ? `${Config.API_URL}/campaign/wish/cancel/${campaignId}` : `${Config.API_URL}/campaign/wish/add/${campaignId}`;
+      const response = await axios.post(
+        url,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
-        );
-        if (response.status === 200) {
-          console.log(response);
-          Alert.alert('알림', '찜 목록 추가 완료되었습니다.');
-          setWish(true);
+        },
+      );
+      if (response.status === 200) {
+        console.log(response);
+        if (!isWish) {
+          Alert.alert('알림', '찜 목록 추가가 완료되었습니다.');
+        } else {
+          Alert.alert('알림', '찜 목록에서 삭제되었습니다.');
         }
-      } catch (error) {
-        console.error(error);
+        setWish((prev) => !prev);
       }
-    } else {
-      // 찜 취소
-      setWish(false);
+    } catch (error) {
+      console.error(error);
     }
   };
 

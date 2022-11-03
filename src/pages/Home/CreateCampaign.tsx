@@ -108,17 +108,16 @@ function CreateCampaign({ navigation, route }) {
           minQuantityPerPerson: Number(minQuantityPerPerson),
           campaignCategory,
         };
-        formData.append('request', new Blob([JSON.stringify(request, null, 2)], { type: 'application/json' }));
+
+        formData.append('request', JSON.stringify(request));
 
         images.map((image) => {
           const { name, type, uri } = image;
           return formData.append('files', { name, type, uri });
         });
-        console.log(accessToken);
-        console.log(new Blob([JSON.stringify(request)]));
 
         const response = await axios.post(
-          `${Config.API_URL}/campaign/add`,
+          `${Config.API_URL}/campaign/add/v2`,
           formData,
           {
             headers: {
@@ -129,7 +128,6 @@ function CreateCampaign({ navigation, route }) {
         );
 
         if (response.status === 200) {
-          console.log('imageResponse', response);
           Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
           navigation.dispatch(CommonActions.goBack());
           // navigation.navigate('Home');

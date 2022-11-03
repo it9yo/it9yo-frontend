@@ -41,8 +41,6 @@ export function CampaignList() {
     try {
       setLoading(true);
       const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&siDo=${siDo}&siGunGu=${siGunGu}`;
-
-      console.log(`url: ${url}`);
       const response = await axios.get(
         url,
         {
@@ -51,8 +49,8 @@ export function CampaignList() {
           },
         },
       );
+      console.log('currentLocation', currentLocation, 'response', response.data.data);
       if (response.status === 200) {
-        console.log(response.data.data);
         const {
           content, first, last, number, empty,
         } = response.data.data;

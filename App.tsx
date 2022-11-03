@@ -40,9 +40,11 @@ function App() {
 
   const isLoggedIn = !!userInfo.userId;
 
+  // 메시지 전송 받기
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      console.log('remoteMessage', remoteMessage);
     });
 
     return unsubscribe;
@@ -118,6 +120,10 @@ function App() {
       },
     );
   }, []);
+
+  // const setMessage = async ({ userId, campaignId, body }) => {
+  //   const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+  // };
 
   return (
     <NavigationContainer>

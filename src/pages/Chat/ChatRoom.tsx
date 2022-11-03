@@ -38,7 +38,6 @@ function ChatRoom({ navigation, route }) {
           user: {
             _id: 0,
             name: 'React Native',
-            // avatar: 'https://placeimg.com/140/140/any',
           },
           system: true,
         }];

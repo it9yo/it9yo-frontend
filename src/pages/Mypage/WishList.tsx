@@ -10,16 +10,10 @@ import { userAccessToken } from '@states/user';
 import axios from 'axios';
 import Config from 'react-native-config';
 import EachCampaign from '@components/Campaign/EachCampaign';
+import { useIsFocused } from '@react-navigation/native';
 import { CampaignData } from '../../@types/index.d';
 
 const pageSize = 20;
-
-// TODO: 찜 목록 데이터
-// interface WishListData {
-//   id : number;
-//   userId : number;
-//   campaignId : number;
-// }
 
 export function WishList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
@@ -30,12 +24,13 @@ export function WishList({ navigation }) {
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const isFocused = useIsFocused();
 
   useLayoutEffect(() => {
     loadWishList();
 
     return setWishList([]);
-  }, []);
+  }, [isFocused]);
 
   const loadWishList = async () => {
     if (noMoreData) return;
