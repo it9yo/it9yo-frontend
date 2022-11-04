@@ -141,3 +141,11 @@ export interface ChatRoomData {
   title: string;
   totalOrderedItemCnt: number;
 }
+
+export interface ReceivedMessageData {
+  userId: number;
+  campaignId?: number;
+  body: string;
+  messageId: string | undefined;
+  sentTime: number | undefined;
+}

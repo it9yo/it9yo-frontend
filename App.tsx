@@ -31,6 +31,9 @@ import { userState, userAccessToken } from '@src/states';
 
 import BackButton from '@src/components/Header/BackButton';
 import CloseButton from '@components/Header/CloseButton';
+import AsyncStorage from '@react-native-community/async-storage';
+import { ReceivedMessageData } from '@src/@types';
+import { IMessage } from 'react-native-gifted-chat';
 
 const Stack = createNativeStackNavigator();
 
@@ -43,8 +46,20 @@ function App() {
   // 메시지 전송 받기
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      console.log('remoteMessage', remoteMessage);
+      console.log('remoteMessage received on App.tsx');
+      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage, null, 4));
+      // const { messageId, notification, sentTime } = remoteMessage;
+      // if (!notification || !notification.body) return;
+
+      // const { userId, campaignId, body } = JSON.parse(notification.body);
+      // const messageData: ReceivedMessageData = {
+      //   userId,
+      //   campaignId,
+      //   body,
+      //   messageId,
+      //   sentTime,
+      // };
+      // setReceivedMessage(messageData);
     });
 
     return unsubscribe;
@@ -121,9 +136,27 @@ function App() {
     );
   }, []);
 
-  // const setMessage = async ({ userId, campaignId, body }) => {
-  //   const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-  // };
+  const setReceivedMessage = async ({
+    userId, campaignId, body, messageId, sentTime,
+  }: ReceivedMessageData) => {
+    if (!sentTime || !messageId) return;
+    console.log(new Date(sentTime));
+    const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+    if (!prevMessages) return;
+    const messageList: IMessage[] = JSON.parse(prevMessages);
+    const newMessage: IMessage = {
+      _id: messageId,
+      text: body,
+      createdAt: new Date(sentTime),
+      user: {
+        _id: userId,
+        name: 'test', // TODO
+      },
+    };
+
+    const newMessageList: IMessage[] = [...messageList, newMessage];
+    AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessageList));
+  };
 
   return (
     <NavigationContainer>
