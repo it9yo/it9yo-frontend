@@ -54,7 +54,7 @@ function JoinButton({ campaignDetail }: { campaignDetail:CampaignData }) {
     try {
       const initMsg: IMessage[] = [{
         _id: 0,
-        text: `${userInfo.nickName}님이 입장하셨습니다.`,
+        text: `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`,
         createdAt: new Date(),
         user: {
           _id: 0,

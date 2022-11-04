@@ -60,6 +60,19 @@ function ChatRoom({ navigation, route }) {
       const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
       if (list !== null) {
         setMessages(JSON.parse(list));
+      } else {
+        const initMsg: IMessage[] = [{
+          _id: 0,
+          text: `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`,
+          createdAt: new Date(),
+          user: {
+            _id: 0,
+            name: 'React Native',
+          },
+          system: true,
+        }];
+        AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(initMsg));
+        setMessages(initMsg);
       }
     } catch (err) {
       console.log(err);
