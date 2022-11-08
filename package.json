@@ -38,7 +38,6 @@
     "react-native-image-picker": "^4.10.0",
     "react-native-image-resizer": "^1.4.5",
     "react-native-image-slider-box": "megamaxs1234/react-native-image-slider-box",
-    "react-native-modal": "^13.0.1",
     "react-native-modal-datetime-picker": "^14.0.0",
     "react-native-nmap": "^0.0.66",
     "react-native-pager-view": "^6.0.0",
@@ -48,6 +47,7 @@
     "react-native-screens": "^3.15.0",
     "react-native-splash-screen": "^3.3.0",
     "react-native-tab-view": "^3.2.1",
+    "react-native-toast-message": "^2.1.5",
     "react-native-vector-icons": "^9.2.0",
     "react-native-webview": "^11.23.1",
     "recoil": "^0.7.5"

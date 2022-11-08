@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
-import { Alert } from 'react-native';
 
 import SplashScreen from 'react-native-splash-screen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
 
 import Config from 'react-native-config';
@@ -25,15 +23,12 @@ import ChangeLocation from '@pages/Home/ChangeLocation';
 import ChangeLocationCert from '@pages/Home/ChangeLocationCert';
 import CreateCampaign from '@pages/Home/CreateCampaign';
 import SearchAddress from '@pages/Home/SearchAddress';
-import WishList from '@src/pages/Mypage/WishList';
+import WishList from '@pages/Mypage/WishList';
 
 import { userState, userAccessToken } from '@src/states';
 
-import BackButton from '@src/components/Header/BackButton';
+import BackButton from '@components/Header/BackButton';
 import CloseButton from '@components/Header/CloseButton';
-import AsyncStorage from '@react-native-community/async-storage';
-import { ReceivedMessageData } from '@src/@types';
-import { IMessage } from 'react-native-gifted-chat';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,28 +37,6 @@ function App() {
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
 
   const isLoggedIn = !!userInfo.userId;
-
-  // 메시지 전송 받기
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      console.log('remoteMessage received on App.tsx');
-      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage, null, 4));
-      // const { messageId, notification, sentTime } = remoteMessage;
-      // if (!notification || !notification.body) return;
-
-      // const { userId, campaignId, body } = JSON.parse(notification.body);
-      // const messageData: ReceivedMessageData = {
-      //   userId,
-      //   campaignId,
-      //   body,
-      //   messageId,
-      //   sentTime,
-      // };
-      // setReceivedMessage(messageData);
-    });
-
-    return unsubscribe;
-  }, []);
 
   useEffect(() => {
     SplashScreen.hide();
@@ -136,28 +109,6 @@ function App() {
     );
   }, []);
 
-  const setReceivedMessage = async ({
-    userId, campaignId, body, messageId, sentTime,
-  }: ReceivedMessageData) => {
-    if (!sentTime || !messageId) return;
-    console.log(new Date(sentTime));
-    const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-    if (!prevMessages) return;
-    const messageList: IMessage[] = JSON.parse(prevMessages);
-    const newMessage: IMessage = {
-      _id: messageId,
-      text: body,
-      createdAt: new Date(sentTime),
-      user: {
-        _id: userId,
-        name: 'test', // TODO
-      },
-    };
-
-    const newMessageList: IMessage[] = [...messageList, newMessage];
-    AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessageList));
-  };
-
   return (
     <NavigationContainer>
       {isLoggedIn ? (
@@ -219,7 +170,6 @@ function App() {
             />
           </Stack.Group>
         </Stack.Navigator>
-
       ) : (
         <Stack.Navigator initialRouteName='SignIn'>
           <Stack.Screen

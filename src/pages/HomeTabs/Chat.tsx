@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
+import Toast from 'react-native-toast-message';
+
 import { ReceivedMessageData } from '@src/@types';
 
 import { TabView, SceneMap } from 'react-native-tab-view';
@@ -42,6 +44,12 @@ function Chat() {
         messageId,
         sentTime,
       };
+
+      // TODO: 로그아웃 상태일때 오는지 확인
+      Toast.show({
+        text1: userId,
+        text2: body,
+      });
 
       setReceivedMessage(messageData);
     });
