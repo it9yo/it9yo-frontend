@@ -143,9 +143,12 @@ export interface ChatRoomData {
 }
 
 export interface ReceivedMessageData {
-  userId: number;
-  campaignId?: number;
-  body: string;
   messageId: string | undefined;
   sentTime: number | undefined;
+  campaignId?: number;
+  userId: number;
+  nickName: string;
+  content: string;
+  userChat: boolean;
+  profileImageUrl: string;
 }

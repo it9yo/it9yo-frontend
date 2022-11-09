@@ -34,21 +34,28 @@ function Chat() {
       const { messageId, notification, sentTime } = remoteMessage;
       if (!notification || !notification.body) return;
 
-      const { userId, campaignId, body } = JSON.parse(notification.body);
-      if (chatRoomId && chatRoomId === campaignId) return;
+      const receivedMessage = JSON.parse(notification.body);
+      if (chatRoomId && chatRoomId === receivedMessage.campaignId) return;
+
+      const {
+        campaignId, userId, nickName, content, profileImageUrl, userChat,
+      } = receivedMessage;
 
       const messageData: ReceivedMessageData = {
-        userId,
         campaignId,
-        body,
         messageId,
         sentTime,
+        userId,
+        nickName,
+        content,
+        profileImageUrl,
+        userChat,
       };
 
       // TODO: 로그아웃 상태일때 오는지 확인
       Toast.show({
-        text1: userId,
-        text2: body,
+        text1: nickName,
+        text2: content,
       });
 
       setReceivedMessage(messageData);
@@ -58,21 +65,28 @@ function Chat() {
   }, []);
 
   const setReceivedMessage = async ({
-    userId, campaignId, body, messageId, sentTime,
+    campaignId,
+    messageId,
+    sentTime,
+    userId,
+    nickName,
+    content,
+    profileImageUrl,
+    userChat,
   }: ReceivedMessageData) => {
     if (!sentTime || !messageId) return;
     const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
     if (!prevMessages) return;
     const messageList: IMessage[] = JSON.parse(prevMessages);
+
     const newMessage: IMessage = {
       _id: messageId,
-      text: body,
+      text: content,
       createdAt: new Date(sentTime),
       user: {
         _id: userId,
-        name: 'test',
-        // TODO: name setting
-        // TODO: system message control
+        name: nickName,
+        avatar: profileImageUrl,
       },
     };
 

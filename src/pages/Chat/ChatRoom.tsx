@@ -12,6 +12,9 @@ import { currentChatRoomId, userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 
+// test
+import Toast from 'react-native-toast-message';
+
 function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
@@ -41,14 +44,27 @@ function ChatRoom({ navigation, route }) {
       const receivedMessage = JSON.parse(notification.body);
       if (receivedMessage.campaignId !== campaignId) return;
 
-      const { userId, body } = receivedMessage;
+      console.log('receivedMessage', receivedMessage);
+      const {
+        userId, nickName, content, profileImageUrl, userChat,
+      } = receivedMessage;
 
       const messageData: ReceivedMessageData = {
-        userId,
-        body,
         messageId,
         sentTime,
+        userId,
+        nickName,
+        content,
+        profileImageUrl,
+        userChat,
       };
+
+      // test
+      Toast.show({
+        text1: nickName,
+        text2: content,
+      });
+
       receiveMessage(messageData);
     });
 
@@ -80,17 +96,24 @@ function ChatRoom({ navigation, route }) {
   };
 
   const receiveMessage = async ({
-    userId, body, messageId, sentTime,
+    messageId,
+    sentTime,
+    userId,
+    nickName,
+    content,
+    profileImageUrl,
+    userChat,
   }: ReceivedMessageData) => {
     if (!sentTime || !messageId) return;
 
     const newMessage: IMessage = {
       _id: messageId,
-      text: body,
+      text: content,
       createdAt: new Date(sentTime),
       user: {
         _id: userId,
-        name: 'test', // TODO
+        name: nickName,
+        avatar: profileImageUrl,
       },
     };
     AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify([newMessage, ...messages]));
