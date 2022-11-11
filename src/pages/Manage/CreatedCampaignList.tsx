@@ -1,37 +1,42 @@
 import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import {
+  ActivityIndicator, FlatList, Text, View,
+} from 'react-native';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 
 import EachCampaign from '@components/Campaign/EachCampaign';
 import { CampaignData } from '@src/@types';
-import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
 function CreatedCampaignList() {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [campaignList, setCampaignList] = useState<CampaignData[]>([]); // TODO
 
-  const [currentPage, setPage] = useState(1);
+  const [campaignList, setCampaignList] = useState<CampaignData[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [noMoreData, setNoMoreData] = useState(false);
+
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const isFocused = useIsFocused();
+  useLayoutEffect(() => {
+    loadData();
+    return () => {
+      setCampaignList([]);
+      setCurrentPage(0);
+      setNoMoreData(false);
+    };
+  }, []);
 
-  useEffect(() => {
-    loadData(0, pageSize);
-
-    return setCampaignList([]);
-  }, [isFocused]);
-
-  const loadData = async (page: number, size: number) => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?status=RECRUITING&size=${size}&page=${page}&sort=createdDate&direction=DESC&hostId=${userInfo.userId}`;
-
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -40,11 +45,23 @@ function CreatedCampaignList() {
           },
         },
       );
-      console.log(response);
-      console.log(response.data.data);
-      if (response.status === 200 && response.data.data.numberOfElements > 0) {
-        const { content } = response.data.data;
-        content.map((item: CampaignData) => setCampaignList((prev) => [...prev, item]));
+
+      if (response.status === 200) {
+        const {
+          content, first, last, number, empty,
+        } = response.data.data;
+        if (empty) return;
+        if (first) {
+          setCampaignList([...content]);
+        } else {
+          setCampaignList((prev) => [...prev, ...content]);
+        }
+        setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -53,25 +70,67 @@ function CreatedCampaignList() {
     }
   };
 
-  // const onEndReached = () => {
-  //   if (!loading) {
-  //     loadData();
-  //   }
-  // };
+  const getRefreshData = async () => {
+    try {
+      setRefreshing(true);
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        console.log(response.data.data);
+        const {
+          content, first, last, number, empty,
+        } = response.data.data;
+        setCampaignList([...content]);
+        if (first) {
+          setCurrentPage(1);
+        }
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = () => {
+    if (!refreshing) {
+      getRefreshData();
+    }
+  };
+
+  const onEndReached = () => {
+    if (!noMoreData || !loading) {
+      loadData();
+    }
+  };
 
   const renderItem = ({ item }: { item: CampaignData }) => (
     <EachCampaign item={item}/>
   );
 
-  return <View style={{ flex: 1 }}>
-    <FlatList
+  return <View>
+    {campaignList.length > 0 ? <FlatList
       data={campaignList}
       keyExtractor={(item) => item.campaignId.toString()}
       renderItem={renderItem}
-      // onEndReached={onEndReached}
-      // onEndReachedThreshold={0.6}
-      // ListFooterComponent={loading && <ActivityIndicator />}
-    />
+      onEndReached={onEndReached}
+      onEndReachedThreshold={1}
+      ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+      onRefresh={onRefresh}
+      refreshing={refreshing}
+    /> : <Text>no data</Text>}
   </View>;
 }
 

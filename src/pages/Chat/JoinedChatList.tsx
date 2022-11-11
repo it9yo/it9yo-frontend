@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator, FlatList, StyleSheet,
-} from 'react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import { userAccessToken } from '@src/states';
@@ -11,7 +9,7 @@ import { useRecoilState } from 'recoil';
 import { ChatRoomData } from '@src/@types';
 import EachChat from '@src/components/EachChat';
 
-const pageSize = 10;
+const pageSize = 20;
 
 function JoinedChatList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
@@ -77,12 +75,5 @@ function JoinedChatList({ navigation }) {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
     />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: StyleSheet.hairlineWidth,
-    height: '100%',
-  },
-});
 
 export default JoinedChatList;

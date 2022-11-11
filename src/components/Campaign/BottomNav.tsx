@@ -42,6 +42,7 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
           }
         }
       } catch (error) {
+        if (error.response.data.code === 'wishNotFoundException') return;
         console.error(error);
       }
     };

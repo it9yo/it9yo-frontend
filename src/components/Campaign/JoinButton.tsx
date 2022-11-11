@@ -7,13 +7,15 @@ import {
 import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
+import AsyncStorage from '@react-native-community/async-storage';
+import { IMessage } from 'react-native-gifted-chat';
 import BottomSheet from './BottomSheet';
 
 function JoinButton({ campaignDetail }: { campaignDetail:CampaignData }) {
   const { campaignId } = campaignDetail;
-  const setUserInfo = useSetRecoilState(userState);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
   const accessToken = useRecoilState(userAccessToken)[0];
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -41,9 +43,28 @@ function JoinButton({ campaignDetail }: { campaignDetail:CampaignData }) {
         );
         setUserInfo(changedUserInfo.data.data);
         Alert.alert('알림', '캠페인 참여가 완료되었습니다.');
+        initChat(campaignId);
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const initChat = (id: number) => {
+    try {
+      const initMsg: IMessage[] = [{
+        _id: 0,
+        text: `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`,
+        createdAt: new Date(),
+        user: {
+          _id: 0,
+          name: 'React Native',
+        },
+        system: true,
+      }];
+      AsyncStorage.setItem(`chatMessages_${id}`, JSON.stringify(initMsg));
+    } catch (err) {
+      console.log(err);
     }
   };
 

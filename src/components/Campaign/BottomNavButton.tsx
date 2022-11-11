@@ -16,7 +16,9 @@ interface BottomNavProps {
 }
 
 function BottomNavButton({ campaignDetail, setCampaignDetail }: BottomNavProps) {
-  const { hostId, campaignId, campaignStatus } = campaignDetail;
+  const {
+    hostId, campaignId, campaignStatus, title,
+  } = campaignDetail;
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
 
@@ -57,7 +59,7 @@ function BottomNavButton({ campaignDetail, setCampaignDetail }: BottomNavProps) 
     if (campaignStatus === 'DELIVERED' || campaignStatus === 'DISTRIBUTING') {
       return <ToCompleteButton />;
     }
-    return <IngButton status={campaignStatus} />;
+    return <IngButton status={campaignStatus} campaignId={campaignId} title={title}/>;
   }
 
   return <JoinButton campaignDetail={campaignDetail} />;

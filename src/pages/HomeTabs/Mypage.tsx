@@ -32,7 +32,7 @@ function Mypage({ navigation }) {
       }
       const { uri, type, fileName } = result.assets[0];
       const formData = new FormData();
-      formData.append('file', {
+      formData.append('files', {
         name: fileName,
         type,
         uri,
