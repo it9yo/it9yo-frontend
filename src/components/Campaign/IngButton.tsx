@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import StatusNameList from '@src/constants/statusname';
 import React from 'react';
 import {
@@ -5,14 +6,17 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-function IngButton({ status } : { status: string }) {
+function IngButton({ status, campaignId, title }:
+{ status: string; campaignId: string; title: string; }) {
+  const navigation = useNavigation();
+
   return <View style={{
     flex: 2, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingRight: 10,
   }}>
     <Text style={{ fontSize: 18, marginRight: 10 }}>
       {status === 'RECRUITING' ? '참여중' : StatusNameList[status]}
     </Text>
-    <TouchableOpacity style={styles.button}>
+    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChatRoom', { campaignId, title })}>
       <Icon name="ios-chatbubble-ellipses-outline" size={28} color="white" />
     </TouchableOpacity>
     {status === 'RECRUITING' && (<TouchableOpacity style={styles.button}>

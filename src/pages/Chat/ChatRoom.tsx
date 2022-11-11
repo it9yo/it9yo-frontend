@@ -125,7 +125,8 @@ function ChatRoom({ navigation, route }) {
       const response = await axios.post(
         `${Config.API_URL}/chat/publish/${campaignId}`,
         {
-          body: text,
+          content: text,
+          userChat: true,
         },
         {
           headers: {

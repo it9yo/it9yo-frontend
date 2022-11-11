@@ -10,6 +10,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
+import { useNavigation } from '@react-navigation/native';
 
 interface BottomNavProps {
   campaignDetail: CampaignData;
@@ -17,7 +18,8 @@ interface BottomNavProps {
 }
 
 function StatusChangeButton({ campaignDetail, setCampaignDetail }: BottomNavProps) {
-  const { campaignId, campaignStatus } = campaignDetail;
+  const navigation = useNavigation();
+  const { campaignId, campaignStatus, title } = campaignDetail;
   const accessToken = useRecoilState(userAccessToken)[0];
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -95,7 +97,8 @@ function StatusChangeButton({ campaignDetail, setCampaignDetail }: BottomNavProp
     flex: 2, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingRight: 10,
   }}>
     <Text style={{ fontSize: 18, marginRight: 10 }}>{StatusNameList[campaignStatus]}</Text>
-    <TouchableOpacity style={styles.button}>
+
+    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChatRoom', { campaignId, title })}>
       <Icon name="ios-chatbubble-ellipses-outline" size={28} color="white" />
     </TouchableOpacity>
 
