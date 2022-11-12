@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Alert,
-  StyleSheet, Text, TouchableOpacity, View,
+  Alert, StyleSheet, Text, TouchableOpacity,
 } from 'react-native';
 
 import { CampaignData } from '@src/@types';
@@ -13,10 +12,10 @@ import BottomSheet from './BottomSheet';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
-  sendMessage: any;
+  type?: string;
 }
 
-function JoinButton({ campaignDetail, sendMessage }: ButtonParams) {
+function JoinButton({ campaignDetail, type }: ButtonParams) {
   const { campaignId } = campaignDetail;
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const accessToken = useRecoilState(userAccessToken)[0];
@@ -55,6 +54,26 @@ function JoinButton({ campaignDetail, sendMessage }: ButtonParams) {
     }
   };
 
+  const sendMessage = async (text: string) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/chat/publish/${campaignId}`,
+        {
+          content: text,
+          userChat: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // const initChat = (id: number) => {
   //   try {
   //     const initMsg: IMessage[] = [{
@@ -73,11 +92,9 @@ function JoinButton({ campaignDetail, sendMessage }: ButtonParams) {
   //   }
   // };
 
-  return <View style={{
-    flex: 2, flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', paddingRight: 10,
-  }}>
-    <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)} >
-      <Text style={styles.buttonText}>        공동구매 참여하기        </Text>
+  return <>
+    <TouchableOpacity style={type === 'middle' ? styles.middleButton : styles.button} onPress={() => setModalVisible(true)}>
+      <Text style={styles.buttonText}>참가하기</Text>
     </TouchableOpacity>
 
     <BottomSheet
@@ -86,55 +103,31 @@ function JoinButton({ campaignDetail, sendMessage }: ButtonParams) {
       campaignDetail={campaignDetail}
       onJoinCampaign={onJoinCampaign}
     />
-  </View>;
+  </>;
 }
 const styles = StyleSheet.create({
   button: {
-    height: 40,
+    flex: 1,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
-    borderRadius: 5,
-    paddingHorizontal: 15,
+    backgroundColor: '#ff9e3e',
+  },
+  middleButton: {
+    width: 160,
+    height: 48,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // marginTop: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  },
-  modalView: {
-    // margin: 20,
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 500,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalButton: {
-    height: 40,
-    width: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    borderRadius: 5,
-    paddingHorizontal: 15,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#f5f8fa',
   },
 });
 

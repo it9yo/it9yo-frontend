@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, Text, View,
+  ActivityIndicator, FlatList, StyleSheet, Text, View,
 } from 'react-native';
 
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -126,7 +126,7 @@ export function CampaignList() {
     <EachCampaign item={item}/>
   );
 
-  return <View>
+  return <View style={styles.container}>
     {campaignList.length > 0 ? <FlatList
       data={campaignList}
       keyExtractor={(item) => `campaign_${item.campaignId.toString()}`}
@@ -139,5 +139,11 @@ export function CampaignList() {
     /> : <Text>no data</Text>}
   </View>;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 60,
+  },
+});
 
 export default CampaignList;

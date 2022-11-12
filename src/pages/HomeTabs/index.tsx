@@ -25,32 +25,30 @@ function HomeTabs() {
       screenOptions={({ route }) => ({
         tabBarStyle: {
           height: 60,
-          fontSize: 12,
           paddingBottom: 8,
+        },
+        tabBarLabelStyle: {
+          fontSize: 14,
         },
         tabBarIcon: ({ focused, color, size }) => {
           if (route.name === 'Home') {
             return <Image
-              style={focused ? styles.tabIcon
-                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
               source={HomeIcon}
             />;
           } if (route.name === 'Manage') {
             return <Image
-              style={focused ? styles.tabIcon
-                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
               source={PeopleIcon}
             />;
           } if (route.name === 'Chat') {
             return <Image
-              style={focused ? styles.tabIcon
-                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
               source={MessageIcon}
             />;
           } if (route.name === 'Mypage') {
             return <Image
-              style={focused ? styles.tabIcon
-                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
               source={ProfileIcon}
             />;
           }
@@ -64,8 +62,6 @@ function HomeTabs() {
         options={{
           headerShown: false,
           tabBarLabel: '홈',
-          tabBarLabelStyle: {
-          },
         }}
       />
       <Tab.Screen

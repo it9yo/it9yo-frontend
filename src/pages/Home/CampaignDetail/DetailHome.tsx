@@ -16,6 +16,8 @@ import StatusNameList from '@constants/statusname';
 import BottomNav from '@src/components/Campaign/BottomNav';
 
 import GPSIcon from '@assets/images/gps.png';
+import HostIcon from '@assets/images/host.png';
+import JoinButton from '@src/components/Campaign/JoinButton';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -23,7 +25,6 @@ function numberWithCommas(x: number) {
 
 function DetailHome({ navigation, route }) {
   const { campaignId } = route.params;
-  const screenWidth = Dimensions.get('screen').width;
 
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignDetail, setCampaignDetail] = useState<CampaignData | undefined>();
@@ -55,14 +56,15 @@ function DetailHome({ navigation, route }) {
       <SafeAreaView>
         <ScrollView style={styles.container}>
 
-            <SliderBox
-              images={campaignDetail.itemImageURLs}
-              ImageComponentStyle={{
-                height: 320,
-              }}
-              circleLoop
-            />
+          <SliderBox
+            images={campaignDetail.itemImageURLs}
+            ImageComponentStyle={{
+              height: 320,
+            }}
+            circleLoop
+          />
 
+          {/* 제목 및 정보 */}
           <View style={styles.infoBlock}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
               <View style={styles.badge}>
@@ -79,23 +81,26 @@ function DetailHome({ navigation, route }) {
               {campaignDetail.title}
             </Text>
 
-            <View style={styles.locationInfo}>
+            <View style={styles.hostInfoZone}>
               <Image style={styles.infoIcon} source={GPSIcon} />
 
-              <Text style={styles.addressText}>{campaignDetail.eupMyeonDong}</Text>
+              <Text style={styles.hostInfoText}>{campaignDetail.eupMyeonDong}</Text>
 
-              <Pressable onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}>
-                <Text style={StyleSheet.compose(styles.addressText, { color: '#306fe1' })}>
+              <Pressable
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+                onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}
+              >
+                <Text style={StyleSheet.compose(styles.hostInfoText, { color: '#306fe1', marginRight: 2 })}>
                   지도보기
                 </Text>
+                <Icon name='md-chevron-forward-sharp' size={20} color='#A7A7A8' />
               </Pressable>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name="person-outline" size={15} color="#000" />
-              <Text style={{
-                fontWeight: '600', fontSize: 15, color: 'orange', marginLeft: 2,
-              }}>
+            <View style={styles.hostInfoZone}>
+              <Image style={styles.infoIcon} source={HostIcon} />
+
+              <Text style={styles.hostInfoText}>
                 {campaignDetail.hostNickName}
               </Text>
             </View>
@@ -103,33 +108,36 @@ function DetailHome({ navigation, route }) {
 
           <View style={styles.horizenLine} />
 
-          <View style={{
-            paddingVertical: 10,
-            paddingHorizontal: 25,
-            alignItems: 'flex-end',
-          }}>
-            <Text style={{
-              fontWeight: '500', fontSize: 30, color: 'black',
-            }}>
-              {`${numberWithCommas(campaignDetail.itemPrice)}원`}
-            </Text>
+          {/* 가격 및 참가하기 */}
+          <View style={styles.infoBlock}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View>
+                <Text style={styles.priceText}>공동구매 가격</Text>
+                <Text style={styles.price}>
+                  {`${numberWithCommas(campaignDetail.itemPrice)}원`}
+                </Text>
+              </View>
+              {/* TODO: 상태에 따라 버튼 변경 */}
+
+              <JoinButton campaignDetail={campaignDetail} type="middle" />
+            </View>
           </View>
 
           <View style={styles.horizenLine} />
 
-          <View style={{
-            paddingVertical: 10,
-            paddingHorizontal: 25,
-          }}>
-            <Text style={{ color: 'black', fontSize: 18 }}>
+          {/* 상품 설명 및 태그 */}
+          <View style={styles.infoBlock}>
+            <Text style={styles.contentText}>
               {campaignDetail.description}
             </Text>
-            <View style={styles.tagZone}>
-              {campaignDetail.tags.map((tag) => (
-                <View key={tag} style={styles.tag}>
-                  <Text style={{ color: 'black', fontSize: 16 }}># {tag}</Text>
+
+            {campaignDetail.tags.length > 0
+              && (<View style={styles.tagZone}>
+              {campaignDetail.tags.map((tag, idx) => (
+                <View key={idx.toString()} style={styles.tag}>
+                  <Text style={{ color: '#fff', fontSize: 14 }}># {tag}</Text>
                 </View>))}
-            </View>
+            </View>)}
           </View>
 
         </ScrollView>
@@ -146,10 +154,10 @@ function DetailHome({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    marginBottom: 100,
+    marginBottom: 60,
   },
   infoBlock: {
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: 25,
   },
   badge: {
@@ -179,6 +187,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     marginTop: 10,
+    marginBottom: 20,
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 24,
     fontWeight: 'bold',
@@ -187,8 +196,8 @@ const styles = StyleSheet.create({
     letterSpacing: -0.48,
     color: '#121212',
   },
-  locationInfo: {
-    marginTop: 20,
+  hostInfoZone: {
+    marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -197,7 +206,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  addressText: {
+  hostInfoText: {
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
     fontWeight: 'normal',
@@ -206,26 +215,38 @@ const styles = StyleSheet.create({
     color: '#1f1f1f',
     marginLeft: 6,
   },
-  rightArrow: {
-    width: 15,
-    height: 15,
-    opacity: 0.4,
+  priceText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 13,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    lineHeight: 15.6,
+    letterSpacing: -0.13,
+    color: '#828282',
+    marginBottom: 5,
   },
-
-  contentBlock: {
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  price: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    lineHeight: 21.6,
+    letterSpacing: -0.18,
+    textAlign: 'left',
+    color: '#121212',
   },
-  horizenLine: {
-    borderBottomColor: 'gray',
-    borderBottomWidth: 1,
+  contentText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 15,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#282828',
+    marginBottom: 20,
   },
   tagZone: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginBottom: 20,
   },
   tag: {
     backgroundColor: 'orange',
@@ -234,42 +255,9 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 6,
   },
-  navContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    height: 80,
-    position: 'absolute',
-    bottom: 0,
-    borderTopWidth: 1,
-    borderColor: 'gray',
-    backgroundColor: '#F5F5F5',
-    justifyContent: 'center',
-    // alignItems: 'flex-start',
-    paddingTop: 10,
-    paddingBottom: 30,
-    // paddingHorizontal: 25,
-  },
-  navButtonZone: {
-    flexDirection: 'row',
-  },
-  buttonZone: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '80%',
-    marginHorizontal: 10,
-  },
-  button: {
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    borderRadius: 5,
-    paddingHorizontal: 15,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
+  horizenLine: {
+    height: 6,
+    backgroundColor: '#f6f6f6',
   },
 });
 

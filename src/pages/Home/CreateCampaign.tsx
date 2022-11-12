@@ -21,6 +21,8 @@ import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
 import { CommonActions } from '@react-navigation/native';
 
+import ImageDelBtn from '@assets/images/imageDelBtn.png';
+
 interface Preview {
   key: string | undefined;
   uri: string;
@@ -158,7 +160,7 @@ function CreateCampaign({ navigation, route }) {
         mediaType: 'photo',
         cropping: true,
         multiple: true,
-        maxFiles: 10,
+        maxFiles: 5 - previews.length,
         includeExif: true,
         includeBase64: true,
         compressImageMaxWidth: 300,
@@ -182,7 +184,7 @@ function CreateCampaign({ navigation, route }) {
             console.log(item);
             console.log(resizedImage);
             setImages((prev) => [...prev, {
-              key: item.localIdentifier,
+              key: priviewUri,
               name: resizedImage.name,
               type: item.mime,
               uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
@@ -203,7 +205,7 @@ function CreateCampaign({ navigation, route }) {
         {
           text: '예',
           onPress: () => {
-            setPreviews((prevPreviews) => prevPreviews.filter((preview) => preview.key !== key));
+            setPreviews((prevPreviews) => prevPreviews.filter((preview) => preview.uri !== key));
             setImages((prevImages) => prevImages.filter((image) => image.key !== key));
           },
         },
@@ -227,20 +229,21 @@ function CreateCampaign({ navigation, route }) {
 
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>대표사진</Text>
-          <View style={styles.images}>
-            <ScrollView horizontal={true}>
-              {previews && previews.map((preview) => {
-                const { key, uri } = preview;
-                return <Pressable key={key} onPress={() => onDeleteImage(key)}>
-                  <Image style={styles.image} source={{ uri }}/>
-                </Pressable>;
-              })}
-              <Pressable onPress={onAddImage} style={styles.imageAddButton}>
-                <Text style={styles.add}>+</Text>
-                <Text style={styles.addText}>사진(0/5)</Text>
-              </Pressable>
-            </ScrollView>
-          </View>
+          <ScrollView style={styles.imageScroll} horizontal={true}>
+            {previews && previews.map((preview) => {
+              const { uri } = preview;
+              return <View key={uri} style={{ marginRight: 20, marginTop: 15 }} >
+                <Image style={styles.image} source={{ uri }}/>
+                <Pressable style={styles.deleteBadge} onPress={() => onDeleteImage(uri)}>
+                  <Image style={styles.imageDeleteButton} source={ImageDelBtn} />
+                </Pressable>
+              </View>;
+            })}
+            <Pressable onPress={onAddImage} style={styles.imageAddButton}>
+              <Text style={styles.add}>+</Text>
+              <Text style={styles.addText}>사진({previews.length}/5)</Text>
+            </Pressable>
+          </ScrollView>
         </View>
 
         <View style={styles.inputWrapper}>
@@ -372,6 +375,8 @@ function CreateCampaign({ navigation, route }) {
           />
         </View>
 
+        <View style={{ height: 40 }} />
+
       </ScrollView>
 
       <Pressable
@@ -390,33 +395,44 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 100,
+    paddingHorizontal: 30,
+    marginBottom: 60,
   },
   inputWrapper: {
     marginTop: 20,
   },
-  images: {
-    flexDirection: 'row',
-    marginTop: 20,
-    height: 100,
-    alignItems: 'center',
+  imageScroll: {
+    paddingVertical: 20,
   },
   image: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+  },
+  deleteBadge: {
+    position: 'absolute',
+    top: -14,
+    right: -14,
+    zIndex: 1,
+  },
+  imageDeleteButton: {
+    width: 32,
+    height: 32,
+  },
+  imageAddButton: {
+    marginTop: 15,
     justifyContent: 'center',
     alignItems: 'center',
     width: 100,
     height: 100,
-    backgroundColor: 'gray',
+    backgroundColor: '#f6f6f6',
   },
   add: {
     fontFamily: 'NotoSansKR',
     fontSize: 20,
     fontWeight: '500',
     fontStyle: 'normal',
-    lineHeight: 27.5,
     letterSpacing: -1,
-    textAlign: 'left',
     color: '#404040',
   },
   addText: {
@@ -424,9 +440,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     fontStyle: 'normal',
-    lineHeight: 16.5,
     letterSpacing: -1,
-    textAlign: 'center',
     color: '#404040',
   },
   label: {
@@ -494,13 +508,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#ffffff',
   },
-  imageAddButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 100,
-    height: 100,
-    backgroundColor: '#f6f6f6',
-  },
+
   separator: {
     width: 3,
   },
