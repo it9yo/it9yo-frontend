@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Image, Pressable, SafeAreaView, StyleSheet, Text, View,
+  Image, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 
 import axios from 'axios';
@@ -59,15 +59,17 @@ function SignupComplete() {
       <Image style={styles.logo}
         source={Congraturation}
       />
-      <View style={styles.buttonZone}>
-        <Pressable
-          style={styles.loginButton}
-          onPress={onLogin}
-        >
-          <Text style={styles.loginButtonText}>홈으로 이동</Text>
-        </Pressable>
+      <Text style={styles.title}>회원가입을 환영합니다</Text>
+      <Text style={styles.subTitle}>홍길동 님의 회원가입을 축하합니다.</Text>
+      <Text style={styles.subTitle}>5초 후 자동으로 홈 화면으로 이동합니다.</Text>
 
-      </View>
+      <TouchableOpacity
+        style={StyleSheet.compose(styles.button, styles.buttonActive)}
+        onPress={onLogin}
+      >
+        <Text style={styles.buttonText}>홈으로</Text>
+      </TouchableOpacity>
+
     </SafeAreaView>
   );
 }
@@ -77,41 +79,59 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 100,
   },
   logo: {
-    width: 250,
-    height: 250,
+    width: 100,
+    height: 100,
   },
-  logoTitle: {
-    width: 120,
-    height: 40,
-    marginBottom: 30,
+  title: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 24,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#121212',
+    marginVertical: 25,
+  },
+  subTitle: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 15,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    lineHeight: 19.5,
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#3b3b3b',
   },
   buttonZone: {
     alignItems: 'center',
     marginTop: 20,
   },
-  loginButton: {
-    flexDirection: 'row',
+  button: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 250,
-    marginTop: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderColor: 'black',
-    borderRadius: 5,
-    borderWidth: 1,
+    backgroundColor: '#ababab',
   },
-  loginButtonLogo: {
-    width: 25,
-    height: 25,
-    marginRight: 5,
+  buttonActive: {
+    backgroundColor: '#ff9e3e',
   },
-  loginButtonText: {
-    color: 'black',
+  buttonText: {
+    width: 180,
+    height: 20,
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 

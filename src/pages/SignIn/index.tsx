@@ -214,21 +214,17 @@ function SignIn({ navigation }: SignInScreenProps) {
       <Image style={styles.logo}
         source={Logo}
       />
-      <Image style={styles.logoTitle}
-        source={LogoTitle}
-      />
+
+      <View style={styles.logoTitle}>
+        <Text style={styles.logoText}>
+          잇구요
+        </Text>
+      </View>
+
       <View style={styles.buttonZone}>
+
         <Pressable
-          style={styles.loginButton}
-          onPress={signInWithNaver}
-        >
-          <Image style={styles.loginButtonLogo}
-            source={NaverBtn}
-          />
-          <Text style={styles.loginButtonText}>네이버로 계속하기</Text>
-        </Pressable>
-        <Pressable
-          style={styles.loginButton}
+          style={StyleSheet.compose(styles.loginButton, { backgroundColor: '#ffea0f' })}
           onPress={signInWithKakao}
         >
           <Image style={styles.loginButtonLogo}
@@ -236,14 +232,27 @@ function SignIn({ navigation }: SignInScreenProps) {
           />
           <Text style={styles.loginButtonText}>카카오로 계속하기</Text>
         </Pressable>
+
         <Pressable
-          style={styles.loginButton}
+          style={StyleSheet.compose(styles.loginButton, { backgroundColor: '#eeeeee' })}
           onPress={signInWithGoogle}
         >
           <Image style={styles.loginButtonLogo}
             source={GoogleBtn}
           />
           <Text style={styles.loginButtonText}>구글로 계속하기</Text>
+        </Pressable>
+
+        <Pressable
+          style={StyleSheet.compose(styles.loginButton, { backgroundColor: '#71c65c' })}
+          onPress={signInWithNaver}
+        >
+          <Image style={styles.loginButtonLogo}
+            source={NaverBtn}
+          />
+          <Text style={StyleSheet.compose(styles.loginButtonText, { color: '#ffffff' })}>
+            네이버로 계속하기
+          </Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -258,38 +267,54 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 250,
-    height: 250,
+    width: 180,
+    height: 180,
   },
   logoTitle: {
-    width: 120,
-    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 30,
+    width: 300,
+  },
+  logoText: {
+    // width: 79,
+    height: 45,
+    fontFamily: 'NEXONLv2Gothic',
+    fontSize: 30,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 45,
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#e27919',
   },
   buttonZone: {
     alignItems: 'center',
     marginTop: 20,
   },
   loginButton: {
-    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 250,
     marginTop: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderColor: 'black',
-    borderRadius: 5,
-    borderWidth: 1,
+    width: 320,
+    height: 48,
+    borderRadius: 8,
   },
   loginButtonLogo: {
+    position: 'absolute',
+    left: 20,
     width: 25,
     height: 25,
-    marginRight: 5,
+    // marginRight: 5,
   },
   loginButtonText: {
-    color: 'black',
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#1f1f1f',
   },
 });
 

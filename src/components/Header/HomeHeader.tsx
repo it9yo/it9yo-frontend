@@ -2,10 +2,14 @@ import { useNavigation } from '@react-navigation/native';
 import { locationState } from '@src/states/user';
 import React from 'react';
 import {
+  Image,
   Pressable, StyleSheet, Text, View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilValue } from 'recoil';
+import Filter from '@assets/images/filter.png';
+import Search from '@assets/images/search.png';
+import ArrowDown from '@assets/images/arrowDown.png';
 
 function HomeHeader() {
   const navigation = useNavigation();
@@ -14,21 +18,21 @@ function HomeHeader() {
   return <View style={styles.navContainer}>
 
     <Pressable onPress={() => navigation.navigate('ChangeLocation')}>
-    <View style={styles.locationZone}>
-      <Text style={styles.locationText}>
-        {currentLocation.siGunGu ? currentLocation.siGunGu : currentLocation.siDo}
-      </Text>
-      <Icon style={{ paddingLeft: 2 }} name="chevron-down" size={24} color="#000" />
-    </View>
+      <View style={styles.locationZone}>
+        <Text style={styles.locationText}>
+          {currentLocation.siGunGu ? currentLocation.siGunGu : currentLocation.siDo}
+        </Text>
+        <Image style={styles.icon} source={ArrowDown}/>
+      </View>
     </Pressable>
 
     <View style={styles.navButtonZone}>
-    <Pressable>
-      <Icon name="filter" size={28} color="#000" />
-    </Pressable>
-    <Pressable style={{ marginLeft: 5 }} onPress={() => navigation.navigate('Search')}>
-      <Icon name="search" size={24} color="#000" />
-    </Pressable>
+      <Pressable style={{ marginRight: 18 }}>
+        <Image style={styles.icon} source={Filter}/>
+      </Pressable>
+      <Pressable style={{ marginRight: 18 }} onPress={() => navigation.navigate('Search')}>
+        <Image style={styles.icon} source={Search}/>
+      </Pressable>
     </View>
 
  </View>;
@@ -47,7 +51,7 @@ const styles = StyleSheet.create({
   },
   navButtonZone: {
     position: 'absolute',
-    right: 15,
+    right: 0,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -55,9 +59,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 25,
     color: 'black',
+    marginRight: 10,
   },
   locationZone: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 28,
+    height: 28,
   },
 });

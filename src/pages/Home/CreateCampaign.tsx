@@ -14,7 +14,6 @@ import ImageResizer from 'react-native-image-resizer';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 
-import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import Config from 'react-native-config';
 
@@ -224,9 +223,10 @@ function CreateCampaign({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView style={styles.scrollContainer}>
+
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>상품 이미지</Text>
+          <Text style={styles.label}>대표사진</Text>
           <View style={styles.images}>
             <ScrollView horizontal={true}>
               {previews && previews.map((preview) => {
@@ -236,45 +236,33 @@ function CreateCampaign({ navigation, route }) {
                 </Pressable>;
               })}
               <Pressable onPress={onAddImage} style={styles.imageAddButton}>
-                <Icon name='add-circle' size={60} color={'orange'}/>
+                <Text style={styles.add}>+</Text>
+                <Text style={styles.addText}>사진(0/5)</Text>
               </Pressable>
             </ScrollView>
           </View>
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>상품명</Text>
+          <Text style={styles.label}>제목</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={setTitle}
-            placeholder="상품명을 입력해주세요"
-            placeholderTextColor="#666"
+            placeholder="제목 입력"
+            placeholderTextColor="#c2c2c2"
             value={title}
             clearButtonMode="while-editing"
             blurOnSubmit={false}
-          />
+            />
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>상품 설명</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setDescription}
-            placeholder="상품 설명을 입력해주세요"
-            placeholderTextColor="#666"
-            value={description}
-            clearButtonMode="while-editing"
-            blurOnSubmit={false}
-          />
-        </View>
-
-        <View style={styles.inputWrapper}>
-          <Text style={styles.label}>가격(1개당)</Text>
+          <Text style={styles.label}>가격</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={setItemPrice}
             placeholder="가격을 입력해주세요"
-            placeholderTextColor="#666"
+            placeholderTextColor="#c2c2c2"
             value={itemPrice}
             clearButtonMode="while-editing"
             blurOnSubmit={false}
@@ -321,19 +309,6 @@ function CreateCampaign({ navigation, route }) {
           date={deadLine} />
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>인당 최소 구매 개수(기본 1)</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setMinQuantity}
-            placeholder="최소 구매 개수를 입력해주세요"
-            placeholderTextColor="#666"
-            value={minQuantityPerPerson}
-            clearButtonMode="while-editing"
-            blurOnSubmit={false}
-            keyboardType="numeric"
-          />
-        </View>
-        <View style={styles.inputWrapper}>
           <Text style={styles.label}>인당 최대 구매 개수</Text>
           <TextInput
             style={styles.textInput}
@@ -373,20 +348,38 @@ function CreateCampaign({ navigation, route }) {
             clearButtonMode="while-editing"
             blurOnSubmit={false}
           />
-          {tag
+          {/* TODO */}
+          {/* {tag
             ? <Pressable style={styles.buttonActive} onPress={onAddTag}>
             <Text style={styles.buttonText}>태그 추가</Text>
           </Pressable>
             : <Pressable style={styles.button}>
           <Text style={styles.buttonText}>태그 추가</Text>
-          </Pressable>}
+          </Pressable>} */}
         </View>
 
-        <Pressable style={styles.buttonActive} onPress={onCreateCampaign}>
-          <Text style={styles.buttonText}>캠페인 등록하기</Text>
-        </Pressable>
+        <View style={styles.inputWrapper}>
+          <Text style={styles.label}>상품 설명</Text>
+          <TextInput
+            style={styles.introduceInput}
+            onChangeText={setDescription}
+            placeholder="상품 설명 입력"
+            placeholderTextColor="#c2c2c2"
+            value={description}
+            clearButtonMode="while-editing"
+            blurOnSubmit={false}
+            multiline={true}
+          />
+        </View>
 
       </ScrollView>
+
+      <Pressable
+        style={StyleSheet.compose(styles.button, styles.buttonActive)}
+        onPress={onCreateCampaign}
+      >
+        <Text style={styles.buttonText}>공동구매 등록</Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -394,15 +387,19 @@ function CreateCampaign({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
+  },
+  scrollContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 100,
+  },
+  inputWrapper: {
+    marginTop: 20,
   },
   images: {
     flexDirection: 'row',
+    marginTop: 20,
     height: 100,
-    // backgroundColor: 'white',
-    // justifyContent: 'center',
     alignItems: 'center',
   },
   image: {
@@ -412,24 +409,58 @@ const styles = StyleSheet.create({
     height: 100,
     backgroundColor: 'gray',
   },
-  inputWrapper: {
-    padding: 20,
+  add: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 20,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 27.5,
+    letterSpacing: -1,
+    textAlign: 'left',
+    color: '#404040',
+  },
+  addText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 12,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    lineHeight: 16.5,
+    letterSpacing: -1,
+    textAlign: 'center',
+    color: '#404040',
   },
   label: {
-    marginVertical: 5,
-    fontSize: 16,
-    color: 'black',
-  },
-  introduceInput: {
-    // lineHeight: 100,
-    // borderWidth: StyleSheet.hairlineWidth,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 13,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#3b3b3b',
   },
   textInput: {
-    width: 300,
-    padding: 5,
-    marginTop: 5,
-    marginRight: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    flex: 1,
+    height: 48,
+    marginTop: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#d3d3d3',
+  },
+  introduceInput: {
+    flex: 1,
+    minHeight: 126,
+    marginTop: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#d3d3d3',
+    textAlignVertical: 'top',
+    paddingVertical: 20,
   },
   buttonZone: {
     position: 'absolute',
@@ -441,28 +472,34 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   button: {
-    height: 40,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: '#ababab',
   },
   buttonActive: {
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
+    width: 180,
+    height: 20,
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
   },
   imageAddButton: {
     alignItems: 'center',
     justifyContent: 'center',
+    width: 100,
+    height: 100,
+    backgroundColor: '#f6f6f6',
   },
   separator: {
     width: 3,

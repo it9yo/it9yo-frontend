@@ -1,12 +1,16 @@
 import React from 'react';
 
 import CampaignList from '@pages/Home/CampaignList';
-import { SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Image, SafeAreaView, StyleSheet, TouchableOpacity,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeHeader from '@src/components/Header/HomeHeader';
 import { useNavigation } from '@react-navigation/native';
 import { location } from '@src/states';
 import { useRecoilState } from 'recoil';
+
+import Plus from '@assets/images/plus.png';
 
 function Home() {
   const navigation = useNavigation();
@@ -20,7 +24,7 @@ function Home() {
       activeOpacity={0.7}
       onPress={() => navigation.navigate('CreateCampaign')}
       style={styles.floatingButtonStyle}>
-      <Icon name='add-circle' size={60}/>
+      <Image style={{ width: 24, height: 24 }} source={Plus} />
     </TouchableOpacity>
   </SafeAreaView>;
 }
@@ -33,11 +37,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   floatingButtonStyle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#ff9e3e',
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
-    right: 30,
-    bottom: 40,
+    elevation: 8,
+    right: 22,
+    bottom: 22,
   },
 });
