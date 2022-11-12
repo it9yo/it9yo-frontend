@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   Alert,
+  Dimensions,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -79,12 +80,13 @@ function PhoneCertification({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>휴대폰 인증</Text>
       <View style={styles.inputWrapper}>
         <TextInput
           style={styles.textInput}
           onChangeText={onChangePhoneNumber}
-          placeholder="전화번호 입력('-' 제외)"
-          placeholderTextColor="#666"
+          placeholder="휴대폰 번호"
+          placeholderTextColor="#c2c2c2"
           textContentType="telephoneNumber"
           value={phoneNumber}
           clearButtonMode="while-editing"
@@ -98,60 +100,49 @@ function PhoneCertification({ navigation }: Props) {
           onPress={submitPhoneNumber}
           disabled={loading || authenticated}
         >
-          <Text style={styles.buttonText}>인증번호 전송</Text>
+          <Text style={styles.submitText}>인증번호 받기</Text>
         </Pressable>
       </View>
 
-      {certNumber && (
-        <View style={styles.inputWrapper}>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={onChangeUserCertNumber}
-            placeholder="인증번호 입력"
-            placeholderTextColor="#666"
-            value={userCertNumber}
-            clearButtonMode="while-editing"
-            blurOnSubmit={false}
-            editable={!authenticated}
-            selectTextOnFocus={!authenticated}
-            keyboardType="numeric"
-          />
-          <Pressable
-            style={styles.submitButton}
-            onPress={submitUserCertNumber}
-            disabled={loading || authenticated}
-          >
-            <Text style={styles.buttonText}>인증번호 제출</Text>
-          </Pressable>
-        </View>
-      )}
-
-      <View style={styles.buttonZone}>
-
-        <TouchableOpacity
-          style={StyleSheet.compose(styles.button, styles.buttonActive)}
-          onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>이  전</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={
-            authenticated
-              ? StyleSheet.compose(styles.button, styles.buttonActive)
-              : styles.button
-          }
-          disabled={!authenticated}
-          onPress={() => {
-            setSignupInfo({
-              ...signupInfo,
-              phoneNumber,
-            });
-            navigation.push('AdditionalInfo');
-          }}>
-          <Text style={styles.buttonText}>다음으로</Text>
-        </TouchableOpacity>
-
+      <View style={styles.inputWrapper}>
+        <TextInput
+          style={styles.textInput}
+          onChangeText={onChangeUserCertNumber}
+          placeholder="인증번호"
+          placeholderTextColor="#c2c2c2"
+          value={userCertNumber}
+          clearButtonMode="while-editing"
+          blurOnSubmit={false}
+          editable={!authenticated}
+          selectTextOnFocus={!authenticated}
+          keyboardType="numeric"
+        />
+        <Pressable
+          style={styles.submitButton}
+          onPress={submitUserCertNumber}
+          disabled={loading || authenticated}
+        >
+          <Text style={styles.submitText}>인증번호 제출</Text>
+        </Pressable>
       </View>
+
+      <TouchableOpacity
+        style={
+          authenticated
+            ? StyleSheet.compose(styles.button, styles.buttonActive)
+            : styles.button
+        }
+        disabled={!authenticated}
+        onPress={() => {
+          setSignupInfo({
+            ...signupInfo,
+            phoneNumber,
+          });
+          navigation.push('AdditionalInfo');
+        }}>
+        <Text style={styles.buttonText}>다음</Text>
+      </TouchableOpacity>
+
     </SafeAreaView>
   );
 }
@@ -160,50 +151,80 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  title: {
+    alignSelf: 'flex-start',
+    marginLeft: 20,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 24,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#282828',
+    marginTop: 20,
+    marginBottom: 40,
   },
   inputWrapper: {
-    padding: 20,
     flexDirection: 'row',
+    width: Dimensions.get('window').width - 40,
+    justifyContent: 'space-between',
   },
   textInput: {
-    width: 220,
-    padding: 5,
-    marginRight: 10,
-    borderRadius: 5,
-    borderWidth: StyleSheet.hairlineWidth,
+    flex: 1,
+    paddingLeft: 20,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#d3d3d3',
+    marginBottom: 10,
   },
   submitButton: {
-    width: 110,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
     paddingVertical: 10,
-    borderRadius: 5,
+    width: 117,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#fff7ef',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#f6aa63',
+    marginLeft: 10,
   },
-  buttonZone: {
-    position: 'absolute',
-    width: '90%',
-    bottom: 30,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginHorizontal: 5,
+  submitText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 13,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#e27919',
   },
   button: {
-    width: '45%',
-    height: 40,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: '#ababab',
   },
   buttonActive: {
-    backgroundColor: 'black',
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
+    width: 180,
+    height: 20,
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 

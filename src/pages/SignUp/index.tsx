@@ -1,5 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import BackButton from '@src/components/Header/BackButton';
 import AdditionalInfo from './AdditionalInfo';
 import Location from './Location';
 import LocationCertification from './LocationCertification';
@@ -11,66 +12,21 @@ const Stack = createNativeStackNavigator();
 
 function SignUp() {
   return <Stack.Navigator initialRouteName='Terms'>
-    <Stack.Screen
-    name="Terms"
-    component={Terms}
-    options={{
-      title: '약관 동의',
-      headerLeft: () => (
-        <></>
-      ),
-    }}
-    />
-    <Stack.Screen
-      name="AdditionalInfo"
-      component={AdditionalInfo}
-      options={{
-        title: '추가 정보 입력',
-        headerLeft: () => (
-        <></>
-        ),
-      }}
-    />
-    <Stack.Screen
-      name="PhoneCertification"
-      component={PhoneCertification}
-      options={{
-        title: '전화 번호 인증',
-        headerLeft: () => (
-        <></>
-        ),
-      }}
-    />
-    <Stack.Screen
-      name="Location"
-      component={Location}
-      options={{
-        title: '지역 설정',
-        headerLeft: () => (
-        <></>
-        ),
-      }}
-    />
-    <Stack.Screen
-      name="LocationCertification"
-      component={LocationCertification}
-      options={{
-        title: '지역 인증',
-        headerLeft: () => (
-        <></>
-        ),
-      }}
-    />
-    <Stack.Screen
-      name="SignupComplete"
-      component={SignupComplete}
-      options={{
-        title: '회원가입 완료',
-        headerLeft: () => (
-        <></>
-        ),
-      }}
-    />
+    <Stack.Group
+      screenOptions={({ navigation }) => ({
+        headerLeft: () => <BackButton onPress={navigation.goBack} />,
+        gestureDirection: 'vertical',
+        headerMode: 'float',
+        title: '',
+      })}
+    >
+      <Stack.Screen name="Terms" component={Terms} />
+      <Stack.Screen name="PhoneCertification" component={PhoneCertification} />
+      <Stack.Screen name="AdditionalInfo" component={AdditionalInfo} />
+      <Stack.Screen name="Location" component={Location} />
+      <Stack.Screen name="LocationCertification" component={LocationCertification} />
+      <Stack.Screen name="SignupComplete" component={SignupComplete} />
+    </Stack.Group>
   </Stack.Navigator>;
 }
 

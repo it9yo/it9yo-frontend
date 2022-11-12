@@ -5,10 +5,17 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CampaignList from '@pages/Home/CampaignList';
 import { useRecoilState } from 'recoil';
 import { location } from '@src/states';
-import Manage from './Manage';
-import Chat from './Chat';
-import Mypage from './Mypage';
+
+import HomeIcon from '@assets/images/home.png';
+import PeopleIcon from '@assets/images/people.png';
+import MessageIcon from '@assets/images/message.png';
+import ProfileIcon from '@assets/images/profile.png';
+
+import { Image, StyleSheet } from 'react-native';
 import Home from './Home';
+import Mypage from './Mypage';
+import Chat from './Chat';
+import Manage from './Manage';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,25 +23,40 @@ function HomeTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        tabBarStyle: {
+          height: 60,
+          fontSize: 12,
+          paddingBottom: 8,
+        },
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName = '';
-          const iconSize = route.name === 'Manage' ? 32 : size;
           if (route.name === 'Home') {
-            iconName = focused
-              ? 'home'
-              : 'home-outline';
-          } else if (route.name === 'Manage') {
-            iconName = focused ? 'cart' : 'cart-outline';
-          } else if (route.name === 'Chat') {
-            iconName = focused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
-          } else if (route.name === 'Mypage') {
-            iconName = focused ? 'person' : 'person-outline';
+            return <Image
+              style={focused ? styles.tabIcon
+                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              source={HomeIcon}
+            />;
+          } if (route.name === 'Manage') {
+            return <Image
+              style={focused ? styles.tabIcon
+                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              source={PeopleIcon}
+            />;
+          } if (route.name === 'Chat') {
+            return <Image
+              style={focused ? styles.tabIcon
+                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              source={MessageIcon}
+            />;
+          } if (route.name === 'Mypage') {
+            return <Image
+              style={focused ? styles.tabIcon
+                : StyleSheet.compose(styles.tabIcon, { opacity: 0.4 })}
+              source={ProfileIcon}
+            />;
           }
-
-          return <Icon name={iconName} size={iconSize} color={color} />;
         },
         tabBarActiveTintColor: 'black',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: '#ababab',
       })}>
       <Tab.Screen
         name="Home"
@@ -43,7 +65,6 @@ function HomeTabs() {
           headerShown: false,
           tabBarLabel: '홈',
           tabBarLabelStyle: {
-            fontSize: 14,
           },
         }}
       />
@@ -53,9 +74,6 @@ function HomeTabs() {
         options={{
           title: '캠페인관리',
           tabBarLabel: '캠페인관리',
-          tabBarLabelStyle: {
-            fontSize: 14,
-          },
         }}
         />
       <Tab.Screen
@@ -64,9 +82,6 @@ function HomeTabs() {
         options={{
           title: '채팅 목록',
           tabBarLabel: '채팅',
-          tabBarLabelStyle: {
-            fontSize: 14,
-          },
         }}
       />
       <Tab.Screen
@@ -75,12 +90,16 @@ function HomeTabs() {
         options={{
           title: '내 정보',
           tabBarLabel: '내정보',
-          tabBarLabelStyle: {
-            fontSize: 14,
-          },
         }}
       />
   </Tab.Navigator>);
 }
 
 export default HomeTabs;
+
+const styles = StyleSheet.create({
+  tabIcon: {
+    width: 24,
+    height: 24,
+  },
+});

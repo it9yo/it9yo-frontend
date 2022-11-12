@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import {
-  View, Image, Text, StyleSheet, Pressable,
+  View, Image, Text, StyleSheet, Pressable, Platform, Dimensions,
 } from 'react-native';
 
 import StatusNameList from '@constants/statusname';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CampaignData } from '@src/@types';
 import { useNavigation } from '@react-navigation/native';
+
+import UserIcon from '@assets/images/user.png';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -19,31 +21,44 @@ function EachCampaign({ item }: { item: CampaignData }) {
     campaignStatus, hostNickName, participatedPersonCnt, itemPrice,
   } = item;
 
-  return <Pressable onPress={() => navigation.navigate('CampaignDetail', {
-    screen: 'DetailHome',
-    params: { campaignId },
-  })
-  }>
+  return <Pressable
+    style={{ justifyContent: 'center' }}
+    onPress={() => navigation.navigate('CampaignDetail', {
+      screen: 'DetailHome',
+      params: { campaignId },
+    })}>
+
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
         source={{
           uri: itemImageURLs[0] || 'https://www.tibs.org.tw/images/default.jpg',
         }}
       />
+
       <View>
-        <Text style={styles.campaignTitleText}>{title}</Text>
-        <View style={styles.hostInfoZone}>
-          <Icon name="person-outline" size={16} color="#000" />
-          <Text style={styles.hostNameZone}>{hostNickName}</Text>
+        <View style={styles.statusBadge}>
+          <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
         </View>
+        <Text style={styles.campaignTitleText}>{title}</Text>
+
+        <View style={styles.hostInfoZone}>
+          <Image style={styles.userIcon} source={UserIcon} />
+          <Text style={styles.hostNameZone}>{hostNickName}</Text>
+          <View style={styles.ellipse} />
+          <Text style={styles.hostNameZone}>{eupMyeonDong}</Text>
+        </View>
+
         <Text style={styles.priceText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
       </View>
+
       <View style={styles.chatStateView}>
-        <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
-        <Text style={styles.userCntText}>{eupMyeonDong}</Text>
         <Text style={styles.userCntText}>{`${participatedPersonCnt}명 참여중`}</Text>
       </View>
+
     </View>
+
+    <View style={styles.horizonLine} />
+
   </Pressable>;
 }
 
@@ -53,38 +68,82 @@ const styles = StyleSheet.create({
   campaignListZone: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderColor: 'white',
   },
   campaignThumbnail: {
-    width: 120,
-    height: 80,
-    borderRadius: 80 / 2,
+    width: 100,
+    height: 100,
+    borderRadius: 8,
     marginRight: 10,
   },
+  statusBadge: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 52,
+    height: 20,
+    borderRadius: 17,
+    backgroundColor: '#fae5d2',
+  },
+  statusText: {
+    width: 34,
+    height: 18,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 12,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    lineHeight: 18,
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#e27919',
+  },
   campaignTitleText: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: 'black',
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 16,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    lineHeight: 24,
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#282828',
   },
   hostInfoZone: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 16,
+  },
+  userIcon: {
+    width: 12,
+    height: 12,
+    opacity: 0.7,
   },
   hostNameZone: {
-    color: 'orange',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 2,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 12,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#828282',
+  },
+  ellipse: {
+    width: 3,
+    height: 3,
+    marginHorizontal: 3,
+    borderRadius: 1.5,
+    backgroundColor: '#ababab',
   },
   priceText: {
-    fontWeight: '700',
-    fontSize: 24,
-    color: 'black',
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 16,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    lineHeight: 16,
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#282828',
   },
   chatStateView: {
     alignItems: 'flex-end',
@@ -94,17 +153,19 @@ const styles = StyleSheet.create({
     right: 15,
     fontSize: 14,
   },
-  statusText: {
-    color: 'red',
-    fontWeight: '700',
-    fontSize: 16,
-    marginTop: 5,
-    marginBottom: 8,
-  },
   userCntText: {
-    color: 'orange',
-    fontWeight: '600',
-    fontSize: 16,
-    paddingTop: 5,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 12,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#282828',
+  },
+  horizonLine: {
+    width: Dimensions.get('window').width - 40,
+    height: 1,
+    backgroundColor: '#eeeeee',
+    alignSelf: 'center',
   },
 });

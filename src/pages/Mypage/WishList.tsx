@@ -125,7 +125,7 @@ export function WishList({ navigation }) {
   return <SafeAreaView>
     {wishList.length > 0 ? <FlatList
       data={wishList}
-      keyExtractor={(item) => item.campaignId.toString()}
+      keyExtractor={(item) => `wishList_${item.campaignId.toString()}`}
       renderItem={renderItem}
       onEndReached={onEndReached}
       onEndReachedThreshold={1}

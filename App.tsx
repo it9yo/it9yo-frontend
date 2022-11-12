@@ -115,21 +115,35 @@ function App() {
         <Stack.Navigator>
           <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />
           <Stack.Screen name="CampaignDetail" options={{ headerShown: false }} component={CampaignDetail} />
-          <Stack.Screen
-            name="ChatRoom"
-            component={ChatRoom}
-            options={({ navigation }) => ({
+          <Stack.Group
+            screenOptions={({ navigation }) => ({
               headerLeft: () => <BackButton onPress={navigation.goBack} />,
+              gestureEnabled: false,
+              gestureDirection: 'vertical',
+              headerMode: 'float',
+              headerTitleStyle: {
+                fontFamily: 'SpoqaHanSansNeo',
+                fontSize: 18,
+                fontWeight: '700',
+                color: '#1f1f1f',
+              },
             })}
-          />
-          <Stack.Screen
-            name="ChangeLocationCert"
-            component={ChangeLocationCert}
-            options={({ navigation }) => ({
-              title: '지역 인증',
-              headerLeft: () => <BackButton onPress={navigation.goBack} />,
-            })}
-          />
+          >
+            <Stack.Screen
+              name="CreateCampaign"
+              component={CreateCampaign}
+              options={{ title: '캠페인 생성' }}
+            />
+            <Stack.Screen
+              name="ChatRoom"
+              component={ChatRoom}
+            />
+            <Stack.Screen
+              name="ChangeLocationCert"
+              component={ChangeLocationCert}
+              options={{ title: '지역 인증' }}
+              />
+          </Stack.Group>
           <Stack.Group
             screenOptions={({ navigation }) => ({
               headerLeft: () => <CloseButton onPress={navigation.goBack} />,
@@ -138,10 +152,6 @@ function App() {
               headerMode: 'float',
             })}
           >
-            <Stack.Screen
-              name="CreateCampaign"
-              component={CreateCampaign}
-            />
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen
               name="EditProfile"
@@ -175,10 +185,7 @@ function App() {
           <Stack.Screen
             name="SignIn"
             component={SignIn}
-            options={{
-              headerShown: false,
-              title: '로그인',
-            }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="SignUp"

@@ -45,10 +45,31 @@ function BottomNavButton({ campaignDetail, setCampaignDetail }: BottomNavProps) 
     setInfo();
   }, []);
 
+  const sendMessage = async (text: string) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/chat/publish/${campaignId}`,
+        {
+          content: text,
+          userChat: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (isHost) {
     return <StatusChangeButton
       campaignDetail={campaignDetail}
       setCampaignDetail={setCampaignDetail}
+      sendMessage={sendMessage}
     />;
   }
 
@@ -59,10 +80,15 @@ function BottomNavButton({ campaignDetail, setCampaignDetail }: BottomNavProps) 
     if (campaignStatus === 'DELIVERED' || campaignStatus === 'DISTRIBUTING') {
       return <ToCompleteButton />;
     }
-    return <IngButton status={campaignStatus} campaignId={campaignId} title={title}/>;
+    return <IngButton
+      status={campaignStatus}
+      campaignId={campaignId}
+      title={title}
+      sendMessage={sendMessage}
+    />;
   }
 
-  return <JoinButton campaignDetail={campaignDetail} />;
+  return <JoinButton campaignDetail={campaignDetail} sendMessage={sendMessage} />;
 }
 
 export default BottomNavButton;

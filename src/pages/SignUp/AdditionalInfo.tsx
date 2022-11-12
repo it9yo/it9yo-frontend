@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
+  Dimensions,
   SafeAreaView,
   StyleSheet,
   Text, TextInput, TouchableOpacity, View,
@@ -21,56 +22,48 @@ function AdditionalInfo({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>추가정보 입력</Text>
+
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>닉네임</Text>
         <TextInput
           style={styles.textInput}
           onChangeText={(text) => setNickName(text.trim())}
-          placeholder="닉네임을 입력해주세요"
-          placeholderTextColor="#666"
-          // textContentType="telephoneNumber"
+          placeholder="닉네임 입력"
+          placeholderTextColor="#c2c2c2"
           value={nickName}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
       </View>
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>자기소개</Text>
         <TextInput
           style={styles.textInput}
           onChangeText={setIntroduction}
-          placeholder="자기소개를 입력해주세요(선택)"
-          placeholderTextColor="#666"
+          placeholder="자기소개 입력"
+          placeholderTextColor="#c2c2c2"
           value={introduction}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
       </View>
 
-      <View style={styles.buttonZone}>
-        <TouchableOpacity
-          style={StyleSheet.compose(styles.button, styles.buttonActive)}
-          onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>이  전</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={
-            canGoNext
-              ? StyleSheet.compose(styles.button, styles.buttonActive)
-              : styles.button
-          }
-          disabled={!canGoNext}
-          onPress={() => {
-            setSignupInfo({
-              ...signupInfo,
-              nickName,
-              introduction,
-            });
-            navigation.push('Location');
-          }}>
-          <Text style={styles.buttonText}>다음으로</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={
+          canGoNext
+            ? StyleSheet.compose(styles.button, styles.buttonActive)
+            : styles.button
+        }
+        disabled={!canGoNext}
+        onPress={() => {
+          setSignupInfo({
+            ...signupInfo,
+            nickName,
+            introduction,
+          });
+          navigation.push('Location');
+        }}>
+        <Text style={styles.buttonText}>다음</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -79,49 +72,59 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  title: {
+    alignSelf: 'flex-start',
+    marginLeft: 20,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 24,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#282828',
+    marginTop: 20,
+    marginBottom: 40,
   },
   inputWrapper: {
-    padding: 20,
-  },
-  label: {
-    marginVertical: 5,
-    fontSize: 16,
-  },
-  introduceInput: {
-    // lineHeight: 100,
-    // borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    width: Dimensions.get('window').width - 40,
+    justifyContent: 'space-between',
   },
   textInput: {
-    width: 300,
-    padding: 5,
-    marginTop: 5,
-    marginRight: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  buttonZone: {
-    position: 'absolute',
-    width: '90%',
-    bottom: 30,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginHorizontal: 5,
+    flex: 1,
+    paddingLeft: 20,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#d3d3d3',
+    marginBottom: 10,
   },
   button: {
-    width: '45%',
-    height: 40,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: '#ababab',
   },
   buttonActive: {
-    backgroundColor: 'black',
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
+    width: 180,
+    height: 20,
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 

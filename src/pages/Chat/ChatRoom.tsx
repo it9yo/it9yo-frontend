@@ -1,5 +1,5 @@
 import React, {
-  useState, useCallback, useEffect, useLayoutEffect,
+  useState, useCallback, useEffect, useLayoutEffect, useRef,
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -15,6 +15,12 @@ import Config from 'react-native-config';
 // test
 import Toast from 'react-native-toast-message';
 
+import {
+  Button, DrawerLayoutAndroid, StyleSheet, Text, View,
+} from 'react-native';
+
+import DrawerButton from '@components/Header/DrawerButton';
+
 function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
@@ -23,8 +29,13 @@ function ChatRoom({ navigation, route }) {
   const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[]>([]);
 
+  const drawer = useRef(null);
+
   useLayoutEffect(() => {
-    navigation.setOptions({ headerTitle: route.params.title });
+    navigation.setOptions({
+      headerTitle: route.params.title,
+      headerRight: () => <DrawerButton onPress={() => drawer.current.openDrawer()}/>,
+    });
   }, [navigation, route]);
 
   useEffect(() => {
@@ -115,6 +126,7 @@ function ChatRoom({ navigation, route }) {
         name: nickName,
         avatar: profileImageUrl,
       },
+      system: !userChat,
     };
     AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify([newMessage, ...messages]));
     setMessages((prev) => [newMessage, ...prev]);
@@ -144,15 +156,49 @@ function ChatRoom({ navigation, route }) {
     sendMessage(message[0].text);
   }, []);
 
+  const navigationView = () => (
+    <View style={[styles.container, styles.navigationContainer]}>
+      <Text style={styles.paragraph}>I'm in the Drawer!</Text>
+      <Button
+        title="Close drawer"
+        onPress={() => drawer.current.closeDrawer()}
+      />
+    </View>
+  );
+
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={(message) => onSend(message)}
-      user={{
-        _id: userInfo.userId,
-      }}
-    />
+    <DrawerLayoutAndroid
+      ref={drawer}
+      drawerWidth={300}
+      drawerPosition="right"
+      renderNavigationView={navigationView}
+    >
+      <GiftedChat
+        messages={messages}
+        onSend={(message) => onSend(message)}
+        user={{
+          _id: userInfo.userId,
+        }}
+      />
+    </DrawerLayoutAndroid>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  navigationContainer: {
+    backgroundColor: '#ecf0f1',
+  },
+  paragraph: {
+    padding: 16,
+    fontSize: 15,
+    textAlign: 'center',
+  },
+});
 
 export default ChatRoom;

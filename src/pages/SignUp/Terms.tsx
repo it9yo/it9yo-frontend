@@ -18,29 +18,23 @@ function Terms({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container}>
       <Text>약관 동의 화면</Text>
-      <View style={styles.buttonZone}>
-        <TouchableOpacity
-          style={StyleSheet.compose(styles.button, styles.buttonActive)}
-          onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>이  전</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={
-            canGoNext
-              ? StyleSheet.compose(styles.button, styles.buttonActive)
-              : styles.button
-          }
-          disabled={!canGoNext}
-          onPress={() => {
-            setSignupInfo({
-              ...signupInfo,
-              agree: true,
-            });
-            navigation.push('PhoneCertification');
-          }}>
-          <Text style={styles.buttonText}>다음으로</Text>
-        </TouchableOpacity>
-      </View>
+
+      <TouchableOpacity
+        style={
+          canGoNext
+            ? StyleSheet.compose(styles.button, styles.buttonActive)
+            : styles.button
+        }
+        disabled={!canGoNext}
+        onPress={() => {
+          setSignupInfo({
+            ...signupInfo,
+            agree: true,
+          });
+          navigation.push('PhoneCertification');
+        }}>
+        <Text style={styles.buttonText}>동의하기</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -51,30 +45,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonZone: {
-    position: 'absolute',
-    width: '90%',
-    bottom: 30,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginHorizontal: 5,
-  },
   button: {
-    width: '45%',
-    height: 40,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: '#ababab',
   },
   buttonActive: {
-    backgroundColor: 'black',
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
+    width: 180,
+    height: 20,
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 

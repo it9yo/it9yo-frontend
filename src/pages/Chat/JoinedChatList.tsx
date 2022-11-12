@@ -26,6 +26,10 @@ function JoinedChatList({ navigation }) {
     loadData();
   }, [isFocused]);
 
+  useEffect(() => {
+    console.log('chatList', chatList);
+  }, [chatList]);
+
   const loadData = async () => {
     try {
       setLoading(true);
@@ -68,7 +72,7 @@ function JoinedChatList({ navigation }) {
 
   return <FlatList
       data={chatList}
-      keyExtractor={(item) => item.campaignId.toString()}
+      keyExtractor={(item) => `joinedChat_${item.campaignId.toString()}`}
       renderItem={renderItem}
       onEndReached={onEndReached}
       onEndReachedThreshold={1}

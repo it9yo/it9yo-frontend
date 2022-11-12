@@ -22,7 +22,7 @@ function ChangeLocation({ navigation }) {
       <View style={styles.textList}>
       {sidoList.map((item, idx) => (
         <TouchableOpacity
-          key={idx}
+          key={item.toString()}
           onPress={() => {
             setSido(item);
             setSigungu('');
@@ -36,7 +36,7 @@ function ChangeLocation({ navigation }) {
       <View style={styles.textList}>
         {!!sido && AddressList[sido].map((item, idx) => (
           <TouchableOpacity
-          key={idx}
+          key={item.toString()}
           onPress={() => setSigungu(item)}>
           <Text style={item === sigungu ? styles.selectedText : styles.commonText}>
             {item}

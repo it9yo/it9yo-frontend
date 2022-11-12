@@ -70,7 +70,7 @@ function CreatedChatList({ navigation }) {
 
   return <FlatList
       data={chatList}
-      keyExtractor={(item) => item.campaignId.toString()}
+      keyExtractor={(item) => `createdChat_${item.campaignId.toString()}`}
       renderItem={renderItem}
       onEndReached={onEndReached}
       onEndReachedThreshold={1}
