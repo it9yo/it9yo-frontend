@@ -88,6 +88,7 @@ function Chat() {
         name: nickName,
         avatar: profileImageUrl,
       },
+      system: !userChat,
     };
 
     const newMessageList: IMessage[] = [newMessage, ...messageList];

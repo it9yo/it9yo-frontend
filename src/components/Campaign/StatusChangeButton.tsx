@@ -12,12 +12,13 @@ import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
 import { useNavigation } from '@react-navigation/native';
 
-interface BottomNavProps {
+interface ButtonParams {
   campaignDetail: CampaignData;
   setCampaignDetail: any;
+  sendMessage: any;
 }
 
-function StatusChangeButton({ campaignDetail, setCampaignDetail }: BottomNavProps) {
+function StatusChangeButton({ campaignDetail, setCampaignDetail, sendMessage }: ButtonParams) {
   const navigation = useNavigation();
   const { campaignId, campaignStatus, title } = campaignDetail;
   const accessToken = useRecoilState(userAccessToken)[0];

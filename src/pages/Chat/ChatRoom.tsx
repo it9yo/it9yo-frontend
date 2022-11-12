@@ -125,6 +125,7 @@ function ChatRoom({ navigation, route }) {
         _id: userId,
         name: nickName,
         avatar: profileImageUrl,
+        system: !userChat,
       },
     };
     AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify([newMessage, ...messages]));

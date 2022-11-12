@@ -129,7 +129,7 @@ export function CampaignList() {
   return <View>
     {campaignList.length > 0 ? <FlatList
       data={campaignList}
-      keyExtractor={(item) => item.campaignId.toString()}
+      keyExtractor={(item) => `campaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
       onEndReached={onEndReached}
       onEndReachedThreshold={1}

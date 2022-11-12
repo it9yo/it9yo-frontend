@@ -124,7 +124,7 @@ function JoinedCampaignList() {
   return <View>
     {campaignList.length > 0 ? <FlatList
       data={campaignList}
-      keyExtractor={(item) => item.campaignId.toString()}
+      keyExtractor={(item) => `joinedCampaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
       onEndReached={onEndReached}
       onEndReachedThreshold={1}
