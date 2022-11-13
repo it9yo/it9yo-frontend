@@ -22,23 +22,24 @@ function EachCampaign({ item }: { item: CampaignData }) {
   } = item;
 
   return <Pressable
-    style={{ justifyContent: 'center' }}
     onPress={() => navigation.navigate('CampaignDetail', {
       screen: 'DetailHome',
       params: { campaignId },
     })}>
-
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
-        source={{
-          uri: itemImageURLs[0] || 'https://www.tibs.org.tw/images/default.jpg',
-        }}
+        source={{ uri: itemImageURLs[0] }}
       />
 
-      <View>
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
+      <View style={{ flex: 1 }}>
+        <View style={styles.topInfoZone}>
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
+          </View>
+
+          <Text style={styles.userCntText}>{`${participatedPersonCnt}명 참여중`}</Text>
         </View>
+
         <Text style={styles.campaignTitleText}>{title}</Text>
 
         <View style={styles.hostInfoZone}>
@@ -50,15 +51,9 @@ function EachCampaign({ item }: { item: CampaignData }) {
 
         <Text style={styles.priceText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
       </View>
-
-      <View style={styles.chatStateView}>
-        <Text style={styles.userCntText}>{`${participatedPersonCnt}명 참여중`}</Text>
-      </View>
-
     </View>
 
     <View style={styles.horizonLine} />
-
   </Pressable>;
 }
 
@@ -66,67 +61,68 @@ export default EachCampaign;
 
 const styles = StyleSheet.create({
   campaignListZone: {
+    flex: 1,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderColor: 'white',
+    paddingHorizontal: 30,
+    paddingVertical: 20,
   },
   campaignThumbnail: {
     width: 100,
     height: 100,
     borderRadius: 8,
-    marginRight: 10,
+    marginRight: 15,
+  },
+  topInfoZone: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
   },
   statusBadge: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 52,
-    height: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
     borderRadius: 17,
     backgroundColor: '#fae5d2',
   },
   statusText: {
-    width: 34,
-    height: 18,
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 12,
     fontWeight: '700',
     fontStyle: 'normal',
-    lineHeight: 18,
     letterSpacing: 0,
-    textAlign: 'center',
     color: '#e27919',
   },
   campaignTitleText: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 16,
-    fontWeight: 'normal',
+    fontSize: 18,
+    fontWeight: 'bold',
     fontStyle: 'normal',
-    lineHeight: 24,
     letterSpacing: 0,
-    textAlign: 'left',
     color: '#282828',
+    marginBottom: 4,
   },
   hostInfoZone: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   userIcon: {
-    width: 12,
-    height: 12,
+    width: 14,
+    height: 14,
     opacity: 0.7,
   },
   hostNameZone: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'normal',
     fontStyle: 'normal',
     letterSpacing: 0,
-    textAlign: 'left',
     color: '#828282',
+    marginLeft: 3,
   },
   ellipse: {
     width: 3,
@@ -137,29 +133,18 @@ const styles = StyleSheet.create({
   },
   priceText: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'normal',
     fontStyle: 'normal',
-    lineHeight: 16,
     letterSpacing: 0,
-    textAlign: 'left',
     color: '#282828',
-  },
-  chatStateView: {
-    alignItems: 'flex-end',
-    fontFamily: 'Proxima Nova',
-    position: 'absolute',
-    top: 15,
-    right: 15,
-    fontSize: 14,
   },
   userCntText: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'normal',
     fontStyle: 'normal',
     letterSpacing: 0,
-    textAlign: 'left',
     color: '#282828',
   },
   horizonLine: {

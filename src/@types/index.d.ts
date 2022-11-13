@@ -102,6 +102,7 @@ export interface CampaignData {
   siDo: string;
   siGunGu: string;
   eupMyeonDong: string;
+  doro: string;
   detailAddress: string;
   deadLine: string;
   campaignStatus: string;

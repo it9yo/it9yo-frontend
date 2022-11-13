@@ -60,8 +60,7 @@ function SignupComplete() {
         source={Congraturation}
       />
       <Text style={styles.title}>회원가입을 환영합니다</Text>
-      <Text style={styles.subTitle}>홍길동 님의 회원가입을 축하합니다.</Text>
-      <Text style={styles.subTitle}>5초 후 자동으로 홈 화면으로 이동합니다.</Text>
+      <Text style={styles.subTitle}>{signupInfo.nickName} 님의 회원가입을 축하합니다.</Text>
 
       <TouchableOpacity
         style={StyleSheet.compose(styles.button, styles.buttonActive)}

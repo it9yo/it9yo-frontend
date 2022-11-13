@@ -133,47 +133,77 @@ const BottomSheet = (props) => {
         >
           <Icon name="chevron-down" size={24} color="#000" />
 
-          <View style={{
-            width: '100%', alignItems: 'flex-start', marginTop: 15, marginBottom: 8,
-          }}>
-            <Text style={{ fontSize: 20, fontWeight: '700' }}>수량을 선택하세요</Text>
-          </View>
+          <Text style={styles.title}>수량 입력</Text>
 
-          <View style={{ width: '100%', alignItems: 'flex-start', marginBottom: 15 }}>
+          {/* <View style={{ width: '100%', alignItems: 'flex-start', marginBottom: 15 }}>
             <Text style={{ fontSize: 18, fontWeight: '400' }}>최대 구매 가능 수량: {campaignDetail.maxQuantityPerPerson}개</Text>
-          </View>
+          </View> */}
 
-          <View style={styles.outerBorder}>
-            <TextInput
-              style={styles.quantityInput}
-              value={quantity}
-              onChangeText={onChangeQuantity}
-              placeholder="수량을 입력하세요"
-              placeholderTextColor="#666"
-              clearButtonMode="while-editing"
-              blurOnSubmit={false}
-              keyboardType="numeric"
-            />
-          </View>
+          <TextInput
+            style={styles.quantityInput}
+            value={quantity}
+            onChangeText={onChangeQuantity}
+            placeholder="수량을 입력하세요"
+            placeholderTextColor="#666"
+            clearButtonMode="while-editing"
+            blurOnSubmit={false}
+            keyboardType="numeric"
+          />
 
-          <View style={{
-            flexDirection: 'row', width: '100%', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15,
-          }}>
-            <Text style={{ fontSize: 24, fontWeight: '400' }}>결제포인트: </Text>
-            <Text style={{ fontSize: 24, fontWeight: '400' }}>{numberWithCommas(amount)} 원</Text>
-          </View>
+          <View style={styles.infoBlock}>
 
-          <View style={{
-            width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20,
-          }}>
-            <Text style={{ fontSize: 20, fontWeight: '400' }}>포인트 잔액: {numberWithCommas(userInfo.point)} 원</Text>
-            <TouchableOpacity style={{ ...styles.button, width: 100, height: 35 }} >
-              <Text style={styles.buttonText}>충전하기</Text>
-            </TouchableOpacity>
+            <View style={styles.infoTextZone}>
+              <Text style={{
+                fontFamily: 'SpoqaHanSansNeo',
+                fontSize: 15,
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                letterSpacing: 0,
+                color: '#4f4f4f',
+              }}>
+                나의 포인트 잔액
+              </Text>
+              <Text style={{
+                fontFamily: 'SpoqaHanSansNeo',
+                fontSize: 15,
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                letterSpacing: 0,
+                color: '#121212',
+              }}>
+                {numberWithCommas(userInfo.point)} 원
+              </Text>
+            </View>
+
+            <View style={styles.horizonLine} />
+
+            <View style={styles.infoTextZone}>
+              <Text style={{
+                fontFamily: 'SpoqaHanSansNeo',
+                fontSize: 15,
+                fontWeight: 'bold',
+                fontStyle: 'normal',
+                letterSpacing: 0,
+                color: '#4f4f4f',
+              }}>
+                총 결제금액
+              </Text>
+              <Text style={{
+                fontFamily: 'SpoqaHanSansNeo',
+                fontSize: 17,
+                fontWeight: 'bold',
+                fontStyle: 'normal',
+                letterSpacing: 0,
+                color: '#121212',
+              }}>
+                {numberWithCommas(amount)} 원
+              </Text>
+            </View>
+
           </View>
 
           <TouchableOpacity
-            style={canGoNext ? styles.button : { ...styles.button, backgroundColor: 'gray' }}
+            style={canGoNext ? styles.button : { ...styles.button, backgroundColor: '#e0e0e0' }}
             disabled={!canGoNext}
             onPress={onCheckJoin}
           >
@@ -196,8 +226,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomSheetContainer: {
-    height: 400,
-    // justifyContent: 'center',
     paddingVertical: 15,
     paddingHorizontal: 30,
     alignItems: 'center',
@@ -209,31 +237,69 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    height: 40,
+    height: 48,
+    borderRadius: 4,
+    backgroundColor: '#ff9e3e',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
-    borderRadius: 5,
-    paddingHorizontal: 15,
+    marginBottom: 30,
   },
   buttonText: {
-    color: 'white',
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 18,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#ffffff',
   },
   quantityInput: {
     width: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderStyle: 'solid',
     borderWidth: 1,
-    fontSize: 18,
+    borderColor: '#282828',
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 15,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#282828',
+    paddingHorizontal: 20,
+    marginBottom: 24,
   },
-  outerBorder: {
+  title: {
+    alignSelf: 'flex-start',
+    marginTop: 15,
+    marginBottom: 24,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 22,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: -0.2,
+    color: '#121212',
+  },
+  infoBlock: {
     width: '100%',
-    borderWidth: 4,
-    borderColor: '#ADB5BD',
-    marginBottom: 20,
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#eeeeee',
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    marginBottom: 35,
+  },
+  infoTextZone: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  horizonLine: {
+    height: 1,
+    backgroundColor: '#eeeeee',
+    marginVertical: 15,
   },
 });
 

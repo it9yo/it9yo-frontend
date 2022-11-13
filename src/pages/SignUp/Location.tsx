@@ -26,10 +26,9 @@ function Location({ navigation }: Props) {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>내 지역 선택</Text>
       <View style={styles.subContainer}>
-        <ScrollView>
 
-          <View style={styles.textList}>
-          {sidoList.map((item, idx) => (
+        <ScrollView style={styles.textList}>
+          {sidoList.map((item) => (
             <TouchableOpacity
               key={item.toString()}
               onPress={() => {
@@ -41,21 +40,20 @@ function Location({ navigation }: Props) {
               </Text>
             </TouchableOpacity>
           ))}
-          </View>
         </ScrollView>
 
-        <ScrollView>
-          <View style={styles.textList}>
-            {!!sido && AddressList[sido].map((item, idx) => (
-              <TouchableOpacity
-              key={item.toString()}
-              onPress={() => setSigungu(item)}>
-              <Text style={item === sigungu ? styles.selectedText : styles.commonText}>
-                {item}
-              </Text>
-            </TouchableOpacity>
-            ))}
-          </View>
+        <View style={styles.verticalLine} />
+
+        <ScrollView style={styles.textList}>
+          {!!sido && AddressList[sido].map((item) => (
+            <TouchableOpacity
+            key={item.toString()}
+            onPress={() => setSigungu(item)}>
+            <Text style={item === sigungu ? styles.selectedText : styles.commonText}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+          ))}
         </ScrollView>
 
       </View>
@@ -103,12 +101,14 @@ const styles = StyleSheet.create({
   subContainer: {
     flex: 1,
     flexDirection: 'row',
-    paddingBottom: 60,
+    marginBottom: 60,
+    borderTopWidth: 1,
+    borderColor: '#e0e0e0',
   },
   textList: {
     flex: 1,
-    justifyContent: 'flex-start',
-    marginLeft: 20,
+    paddingHorizontal: 20,
+    paddingTop: 15,
   },
   commonText: {
     fontFamily: 'SpoqaHanSansNeo',
@@ -149,6 +149,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     textAlign: 'center',
     color: '#ffffff',
+  },
+  horizonLine: {
+    height: 10,
+    backgroundColor: '#e0e0e0',
+  },
+  verticalLine: {
+    width: 1,
+    backgroundColor: '#e0e0e0',
   },
 });
 

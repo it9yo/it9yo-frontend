@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   SafeAreaView,
+  ScrollView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { useRecoilValue } from 'recoil';
@@ -19,102 +20,116 @@ function ChangeLocation({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.textList}>
-      {sidoList.map((item, idx) => (
-        <TouchableOpacity
-          key={item.toString()}
-          onPress={() => {
-            setSido(item);
-            setSigungu('');
-          }}>
-          <Text style={item === sido ? styles.selectedText : styles.commonText}>
-            {item}
-          </Text>
-        </TouchableOpacity>
-      ))}
-      </View>
-      <View style={styles.textList}>
-        {!!sido && AddressList[sido].map((item, idx) => (
-          <TouchableOpacity
-          key={item.toString()}
-          onPress={() => setSigungu(item)}>
-          <Text style={item === sigungu ? styles.selectedText : styles.commonText}>
-            {item}
-          </Text>
-        </TouchableOpacity>
-        ))}
-      </View>
+      <View style={styles.subContainer}>
+        <ScrollView style={styles.textList}>
+          {sidoList.map((item) => (
+            <TouchableOpacity
+              key={item.toString()}
+              onPress={() => {
+                setSido(item);
+                setSigungu('');
+              }}>
+              <Text style={item === sido ? styles.selectedText : styles.commonText}>
+                {item}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-      <View style={styles.buttonZone}>
-        <TouchableOpacity
-          style={StyleSheet.compose(styles.button, styles.buttonActive)}
-          onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>취  소</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={
-            canGoNext
-              ? StyleSheet.compose(styles.button, styles.buttonActive)
-              : styles.button
-          }
-          disabled={!canGoNext}
-          onPress={() => navigation.navigate('ChangeLocationCert', { sido, sigungu })}>
-          <Text style={styles.buttonText}>다음으로</Text>
-        </TouchableOpacity>
+        <View style={styles.verticalLine} />
+
+        <ScrollView style={styles.textList}>
+          {!!sido && AddressList[sido].map((item, idx) => (
+            <TouchableOpacity
+            key={item.toString()}
+            onPress={() => setSigungu(item)}>
+            <Text style={item === sigungu ? styles.selectedText : styles.commonText}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+          ))}
+        </ScrollView>
+
       </View>
+      <TouchableOpacity
+        style={
+          canGoNext
+            ? StyleSheet.compose(styles.button, styles.buttonActive)
+            : styles.button
+        }
+        disabled={!canGoNext}
+        onPress={() => navigation.navigate('ChangeLocationCert', { sido, sigungu })}>
+        <Text style={styles.buttonText}>다음</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  subContainer: {
+    flex: 1,
     flexDirection: 'row',
+    marginBottom: 60,
+    borderTopWidth: 1,
+    borderColor: '#e0e0e0',
   },
   textList: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    paddingTop: 15,
   },
   commonText: {
-    marginTop: 8,
-    paddingLeft: 12,
-    color: 'gray',
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#282828',
+    marginBottom: 14,
   },
   selectedText: {
-    color: 'black',
-    fontWeight: 'bold',
-    marginTop: 8,
-    paddingLeft: 12,
     fontSize: 16,
-  },
-  buttonZone: {
-    position: 'absolute',
-    width: '90%',
-    bottom: 30,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginHorizontal: 5,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#e27919',
+    marginBottom: 14,
   },
   button: {
-    width: '45%',
-    height: 40,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: '#ababab',
   },
   buttonActive: {
-    backgroundColor: 'black',
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
+    width: 180,
+    height: 20,
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
+  },
+  horizonLine: {
+    height: 10,
+    backgroundColor: '#e0e0e0',
+  },
+  verticalLine: {
+    width: 1,
+    backgroundColor: '#e0e0e0',
   },
 });
 
