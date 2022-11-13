@@ -25,6 +25,7 @@ function HomeTabs() {
       screenOptions={({ route }) => ({
         tabBarStyle: {
           height: 60,
+          paddingTop: 8,
           paddingBottom: 8,
         },
         tabBarLabelStyle: {

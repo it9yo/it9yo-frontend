@@ -28,9 +28,7 @@ function EachCampaign({ item }: { item: CampaignData }) {
     })}>
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
-        source={{
-          uri: itemImageURLs[0] || 'https://www.tibs.org.tw/images/default.jpg',
-        }}
+        source={{ uri: itemImageURLs[0] }}
       />
 
       <View style={{ flex: 1 }}>

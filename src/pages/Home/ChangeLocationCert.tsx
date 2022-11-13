@@ -117,14 +117,14 @@ function ChangeLocationCert({ navigation, route }) {
       <View
         style={{
           width: Dimensions.get('window').width,
-          height: Dimensions.get('window').height - 180,
+          height: Dimensions.get('window').height - 100,
         }}>
-          {myPosition ? (
+        {myPosition && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
             zoomControl={false}
             center={{
-              zoom: 10,
+              zoom: 13,
               latitude: myPosition.latitude,
               longitude: myPosition.longitude,
             }}>
@@ -137,25 +137,19 @@ function ChangeLocationCert({ navigation, route }) {
               height={15}
               anchor={{ x: 0.5, y: 0.5 }}
               caption={{ text: '현 위치' }}
+              subCaption={{ text: '현 위치' }}
               image={RedDot}
             />
           </NaverMapView>
-          ) : <Text>Loading...</Text>}
+        )}
       </View>
 
-      <View style={styles.buttonZone}>
-        <TouchableOpacity
-          style={StyleSheet.compose(styles.button, styles.buttonActive)}
-          onPress={() => navigation.pop()}>
-          <Text style={styles.buttonText}>이전으로</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={StyleSheet.compose(styles.button, styles.buttonActive)}
-          onPress={onChangeLocation}
+      <TouchableOpacity
+        style={StyleSheet.compose(styles.button, styles.buttonActive)}
+        onPress={onChangeLocation}
         >
-          <Text style={styles.buttonText}>지역 변경 하기</Text>
-        </TouchableOpacity>
-      </View>
+        <Text style={styles.buttonText}>지역 변경 하기</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -163,32 +157,31 @@ function ChangeLocationCert({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
     alignItems: 'center',
-  },
-  buttonZone: {
-    position: 'absolute',
-    width: '90%',
-    bottom: 30,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginHorizontal: 5,
+    backgroundColor: '#fff',
   },
   button: {
-    width: '45%',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray',
-    paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: '#ababab',
   },
   buttonActive: {
-    backgroundColor: 'black',
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
+    width: 180,
+    height: 20,
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 

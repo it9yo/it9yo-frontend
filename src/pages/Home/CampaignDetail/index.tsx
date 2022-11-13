@@ -11,9 +11,14 @@ function CampaignDetail() {
     <Stack.Group
       screenOptions={({ navigation }) => ({
         headerLeft: () => <BackButton onPress={navigation.goBack} />,
-        gestureEnabled: false,
         gestureDirection: 'vertical',
         headerMode: 'float',
+        headerTitleStyle: {
+          fontFamily: 'SpoqaHanSansNeo',
+          fontSize: 18,
+          fontWeight: '700',
+          color: '#1f1f1f',
+        },
       })}>
       <Stack.Screen
         name="DetailHome"

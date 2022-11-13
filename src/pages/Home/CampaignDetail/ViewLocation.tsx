@@ -10,12 +10,15 @@ import RedDot from '@assets/images/red-dot.png';
 import axios, { AxiosResponse } from 'axios';
 import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
+
+import UserIcon from '@assets/images/user.png';
+import GPSIcon from '@assets/images/gps.png';
 import { CampaignData } from '../../../@types/index.d';
 
 function ViewLocation({ navigation, route }) {
   const { campaignDetail }:{ campaignDetail: CampaignData } = route.params;
   const {
-    title, hostNickName, itemImageURLs, detailAddress,
+    title, hostNickName, itemImageURLs, siDo, siGunGu, doro, detailAddress,
   } = campaignDetail;
   const [coord, setCoord] = useState<Coord | null>(null);
 
@@ -48,21 +51,22 @@ function ViewLocation({ navigation, route }) {
       }
     };
 
-    getCoord(detailAddress);
-  }, [detailAddress]);
+    getCoord(doro);
+  }, [doro]);
 
   return (
     <SafeAreaView style={styles.container}>
-      {coord ? (
-        <View
-          style={{
-            width: Dimensions.get('window').width,
-            height: Dimensions.get('window').height - 230,
-          }}>
+      <View
+        style={{
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').height - 70,
+        }}>
+        {coord && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
+            zoomControl={false}
             center={{
-              zoom: 14,
+              zoom: 13,
               latitude: coord.latitude,
               longitude: coord.longitude,
             }}>
@@ -74,39 +78,30 @@ function ViewLocation({ navigation, route }) {
               width={15}
               height={15}
               anchor={{ x: 0.5, y: 0.5 }}
-              caption={{ text: '수령 위치' }}
               image={RedDot}
             />
           </NaverMapView>
-        </View>
-      ) : <Text>Loading...</Text>}
+        )}
+      </View>
+
       <View style={styles.bottomNav}>
-        <View style={styles.itemImageZone}>
-          <Image style={styles.imageThumbnail}
-            source={{ uri: itemImageURLs[0] }}
-          />
-        </View>
-        <View style={styles.detailInfoZone}>
-          <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 8 }}>{title}</Text>
+        <Image style={styles.campaignThumbnail}
+          source={{ uri: itemImageURLs[0] }}
+        />
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Icon name="person-outline" size={18} color="#000" />
-            <Text style={{
-              fontWeight: '600', fontSize: 15, color: 'orange', marginLeft: 2,
-            }}>
-              {hostNickName}
-            </Text>
+        <View style={{ flex: 1 }}>
+          {/* 제목 */}
+          <Text style={styles.campaignTitleText}>{title}</Text>
+          {/* 호스트 정보 */}
+          <View style={styles.infoZone}>
+            <Image style={styles.icon} source={UserIcon} />
+            <Text style={styles.infoText}>{hostNickName}</Text>
           </View>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-            <Icon name="location-outline" size={18} color="#000" />
-            <Text style={{
-              fontWeight: '600', fontSize: 15, color: 'black', marginLeft: 2,
-            }}>
-              {detailAddress}
-            </Text>
+          {/* 주소 */}
+          <View style={styles.infoZone}>
+            <Image style={styles.icon} source={GPSIcon} />
+            <Text style={styles.infoText}>{doro}</Text>
           </View>
-
         </View>
       </View>
     </SafeAreaView>
@@ -121,29 +116,50 @@ const styles = StyleSheet.create({
   },
   bottomNav: {
     position: 'absolute',
-    width: '100%',
-    height: 150,
+    bottom: 30,
     flexDirection: 'row',
-    backgroundColor: 'white',
-    bottom: 0,
+    width: 320,
+    height: 144,
+    borderRadius: 16,
+    backgroundColor: '#ffffff',
+    // elevation: 5,
+    alignItems: 'center',
+    paddingLeft: 20,
   },
-  itemImageZone: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingLeft: 10,
-    paddingBottom: 20,
+  campaignThumbnail: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 15,
   },
-  detailInfoZone: {
-    flex: 2,
-    justifyContent: 'center',
-    paddingLeft: 10,
-    paddingBottom: 20,
+  campaignTitleText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 18,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#282828',
+    marginBottom: 10,
+
   },
-  imageThumbnail: {
-    width: 120,
-    height: 80,
-    borderRadius: 80 / 2,
-    marginRight: 10,
+  infoZone: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  icon: {
+    width: 14,
+    height: 14,
+    opacity: 0.7,
+  },
+  infoText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 14,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#828282',
+    marginLeft: 5,
   },
 });
 

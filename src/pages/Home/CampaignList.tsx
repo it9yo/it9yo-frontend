@@ -10,6 +10,7 @@ import EachCampaign from '@components/Campaign/EachCampaign';
 import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
+import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
@@ -17,6 +18,7 @@ export function CampaignList() {
   const accessToken = useRecoilState(userAccessToken)[0];
   const currentLocation = useRecoilValue(locationState);
   const { siDo, siGunGu } = currentLocation;
+  const isFocused = useIsFocused();
 
   const [campaignList, setCampaignList] = useState<CampaignData[]>([]);
 
@@ -25,15 +27,17 @@ export function CampaignList() {
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
 
   useLayoutEffect(() => {
     loadCampaignData();
+    setInitLoading(false);
     return () => {
       setCampaignList([]);
       setCurrentPage(0);
       setNoMoreData(false);
     };
-  }, [currentLocation]);
+  }, [currentLocation, isFocused]);
 
   const loadCampaignData = async () => {
     if (!siDo && !siGunGu) return;
@@ -127,7 +131,8 @@ export function CampaignList() {
   );
 
   return <View style={styles.container}>
-    {campaignList.length > 0 ? <FlatList
+    {initLoading && <ActivityIndicator />}
+    {campaignList.length > 0 && <FlatList
       data={campaignList}
       keyExtractor={(item) => `campaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -136,7 +141,7 @@ export function CampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    /> : <Text>no data</Text>}
+    />}
   </View>;
 }
 

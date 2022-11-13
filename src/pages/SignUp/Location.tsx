@@ -28,7 +28,7 @@ function Location({ navigation }: Props) {
       <View style={styles.subContainer}>
 
         <ScrollView style={styles.textList}>
-          {sidoList.map((item, idx) => (
+          {sidoList.map((item) => (
             <TouchableOpacity
               key={item.toString()}
               onPress={() => {
@@ -45,7 +45,7 @@ function Location({ navigation }: Props) {
         <View style={styles.verticalLine} />
 
         <ScrollView style={styles.textList}>
-          {!!sido && AddressList[sido].map((item, idx) => (
+          {!!sido && AddressList[sido].map((item) => (
             <TouchableOpacity
             key={item.toString()}
             onPress={() => setSigungu(item)}>

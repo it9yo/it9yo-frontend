@@ -108,7 +108,7 @@ function LocationCertification({ navigation }: Props) {
           width: Dimensions.get('window').width,
           height: Dimensions.get('window').height - 100,
         }}>
-          {myPosition ? (
+        {myPosition && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
             zoomControl={false}
@@ -130,7 +130,7 @@ function LocationCertification({ navigation }: Props) {
               image={RedDot}
             />
           </NaverMapView>
-          ) : <Text>Loading...</Text>}
+        )}
       </View>
 
       <TouchableOpacity

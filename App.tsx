@@ -118,7 +118,6 @@ function App() {
           <Stack.Group
             screenOptions={({ navigation }) => ({
               headerLeft: () => <BackButton onPress={navigation.goBack} />,
-              gestureEnabled: false,
               gestureDirection: 'vertical',
               headerMode: 'float',
               headerTitleStyle: {
@@ -143,15 +142,11 @@ function App() {
               component={ChangeLocationCert}
               options={{ title: '지역 인증' }}
               />
-          </Stack.Group>
-          <Stack.Group
-            screenOptions={({ navigation }) => ({
-              headerLeft: () => <CloseButton onPress={navigation.goBack} />,
-              gestureEnabled: false,
-              gestureDirection: 'vertical',
-              headerMode: 'float',
-            })}
-          >
+              <Stack.Screen
+              name="SearchAddress"
+              component={SearchAddress}
+              options={{ title: '주소 검색' }}
+            />
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen
               name="EditProfile"
@@ -167,11 +162,6 @@ function App() {
               name="ChangeLocation"
               component={ChangeLocation}
               options={{ title: '지역 변경' }}
-            />
-            <Stack.Screen
-              name="SearchAddress"
-              component={SearchAddress}
-              options={{ title: '주소 검색' }}
             />
             <Stack.Screen
               name="WishList"

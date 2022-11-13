@@ -66,7 +66,9 @@ function DetailHome({ navigation, route }) {
 
           {/* 제목 및 정보 */}
           <View style={styles.infoBlock}>
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{
+              flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+            }}>
               <View style={styles.badge}>
                 <Text style={styles.statusText}>
                   {StatusNameList[campaignDetail.campaignStatus]}
@@ -84,10 +86,10 @@ function DetailHome({ navigation, route }) {
             <View style={styles.hostInfoZone}>
               <Image style={styles.infoIcon} source={GPSIcon} />
 
-              <Text style={styles.hostInfoText}>{campaignDetail.eupMyeonDong}</Text>
+              <Text style={styles.hostInfoText}>{campaignDetail.doro}</Text>
 
               <Pressable
-                style={{ flexDirection: 'row', alignItems: 'center' }}
+                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
                 onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}
               >
                 <Text style={StyleSheet.compose(styles.hostInfoText, { color: '#306fe1', marginRight: 2 })}>
@@ -170,29 +172,27 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
     fontStyle: 'normal',
-    lineHeight: 18,
     letterSpacing: 0,
     color: '#e27919',
   },
   peopleText: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'normal',
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#282828',
   },
   titleText: {
-    marginTop: 10,
+    marginTop: 15,
     marginBottom: 20,
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     fontStyle: 'normal',
-    lineHeight: 28.8,
     letterSpacing: -0.48,
     color: '#121212',
   },
@@ -217,20 +217,18 @@ const styles = StyleSheet.create({
   },
   priceText: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: 'normal',
     fontStyle: 'normal',
-    lineHeight: 15.6,
     letterSpacing: -0.13,
     color: '#828282',
     marginBottom: 5,
   },
   price: {
     fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     fontStyle: 'normal',
-    lineHeight: 21.6,
     letterSpacing: -0.18,
     textAlign: 'left',
     color: '#121212',
@@ -247,6 +245,7 @@ const styles = StyleSheet.create({
   tagZone: {
     flexDirection: 'row',
     marginBottom: 20,
+    flexWrap: 'wrap',
   },
   tag: {
     backgroundColor: 'orange',
@@ -254,6 +253,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     paddingVertical: 2,
     paddingHorizontal: 6,
+    marginBottom: 5,
   },
   horizenLine: {
     height: 6,
