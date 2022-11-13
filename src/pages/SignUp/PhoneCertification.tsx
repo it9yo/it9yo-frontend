@@ -100,7 +100,10 @@ function PhoneCertification({ navigation }: Props) {
           onPress={submitPhoneNumber}
           disabled={loading || authenticated}
         >
-          <Text style={styles.submitText}>인증번호 받기</Text>
+          {certNumber
+            ? <Text style={styles.submitText}>인증번호 재전송</Text>
+            : <Text style={styles.submitText}>인증번호 받기</Text>
+          }
         </Pressable>
       </View>
 
@@ -117,13 +120,15 @@ function PhoneCertification({ navigation }: Props) {
           selectTextOnFocus={!authenticated}
           keyboardType="numeric"
         />
-        <Pressable
-          style={styles.submitButton}
+        {certNumber
+        && <Pressable
+          style={styles.checkButton}
           onPress={submitUserCertNumber}
           disabled={loading || authenticated}
         >
-          <Text style={styles.submitText}>인증번호 제출</Text>
+          <Text style={styles.checkButtonText}>확인</Text>
         </Pressable>
+        }
       </View>
 
       <TouchableOpacity
@@ -170,6 +175,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: Dimensions.get('window').width - 40,
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   textInput: {
     flex: 1,
@@ -180,7 +187,6 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: '#d3d3d3',
-    marginBottom: 10,
   },
   submitButton: {
     justifyContent: 'center',
@@ -203,6 +209,25 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     color: '#e27919',
   },
+  checkButton: {
+    position: 'absolute',
+    right: 20,
+    width: 60,
+    height: 32,
+    borderRadius: 32,
+    backgroundColor: '#828282',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkButtonText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 15,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#fbf4f7',
+  },
+
   button: {
     position: 'absolute',
     bottom: 0,

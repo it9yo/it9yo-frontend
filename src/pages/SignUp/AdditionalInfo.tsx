@@ -18,7 +18,7 @@ function AdditionalInfo({ navigation }: Props) {
   const [nickName, setNickName] = useState('');
   const [introduction, setIntroduction] = useState('');
 
-  const canGoNext = !!nickName;
+  const canGoNext = nickName.length > 1;
 
   return (
     <SafeAreaView style={styles.container}>

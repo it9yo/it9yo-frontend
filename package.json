@@ -13,6 +13,7 @@
   "dependencies": {
     "@actbase/react-daum-postcode": "^1.0.4",
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/checkbox": "^0.5.14",
     "@react-native-community/datetimepicker": "^6.4.0",
     "@react-native-community/geolocation": "^2.1.0",
     "@react-native-firebase/app": "^15.4.0",
