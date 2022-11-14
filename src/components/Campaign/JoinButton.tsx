@@ -9,6 +9,7 @@ import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
 import BottomSheet from './BottomSheet';
+import CompleteModal from './CompleteModal';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
@@ -20,6 +21,7 @@ function JoinButton({ campaignDetail, type }: ButtonParams) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const accessToken = useRecoilState(userAccessToken)[0];
   const [modalVisible, setModalVisible] = useState(false);
+  const [completeModalVisible, setCompleteModalVisible] = useState(false);
 
   const onJoinCampaign = async (quantity: number) => {
     try {
@@ -44,10 +46,12 @@ function JoinButton({ campaignDetail, type }: ButtonParams) {
           },
         );
         setUserInfo(changedUserInfo.data.data);
-        Alert.alert('알림', '캠페인 참여가 완료되었습니다.');
-        // initChat(campaignId);
+        setModalVisible(false);
+        setCompleteModalVisible(true);
+
         const text = `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`;
         sendMessage(text);
+        // TODO: 새로고침
       }
     } catch (error) {
       console.error(error);
@@ -102,6 +106,10 @@ function JoinButton({ campaignDetail, type }: ButtonParams) {
       setModalVisible={setModalVisible}
       campaignDetail={campaignDetail}
       onJoinCampaign={onJoinCampaign}
+    />
+    <CompleteModal
+      modalVisible={completeModalVisible}
+      setModalVisible={setCompleteModalVisible}
     />
   </>;
 }

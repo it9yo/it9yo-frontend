@@ -18,6 +18,7 @@ import BottomNav from '@src/components/Campaign/BottomNav';
 import GPSIcon from '@assets/images/gps.png';
 import HostIcon from '@assets/images/host.png';
 import JoinButton from '@src/components/Campaign/JoinButton';
+import MiddleButton from '../../../components/Campaign/MiddleButton';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -119,9 +120,11 @@ function DetailHome({ navigation, route }) {
                   {`${numberWithCommas(campaignDetail.itemPrice)}원`}
                 </Text>
               </View>
-              {/* TODO: 상태에 따라 버튼 변경 */}
 
-              <JoinButton campaignDetail={campaignDetail} type="middle" />
+              <MiddleButton
+                campaignDetail={campaignDetail}
+                setCampaignDetail={setCampaignDetail}
+              />
             </View>
           </View>
 

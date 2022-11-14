@@ -14,8 +14,12 @@ import HeartOutline from '@assets/images/heartOutline.png';
 import Message from '@assets/images/message.png';
 
 import { useNavigation } from '@react-navigation/native';
-import BottomNavButton from './BottomNavButton';
 import JoinButton from './JoinButton';
+import StatusChangeButton from './StatusChangeButton';
+import CancelButton from './CancelButton';
+import ReceiveButton from './ReceiveButton';
+import ManageButton from './ManageButton';
+import ReviewButton from './ReviewButton';
 
 interface BottomNavProps {
   campaignDetail: CampaignData;
@@ -25,7 +29,9 @@ interface BottomNavProps {
 function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
   const navigation = useNavigation();
 
-  const { hostId, campaignId, title } = campaignDetail;
+  const {
+    hostId, campaignId, title, campaignStatus,
+  } = campaignDetail;
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
 
@@ -131,12 +137,21 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
       </View>
     }
 
-    <JoinButton campaignDetail={campaignDetail} />
+    {isHost
+      && <ManageButton campaignDetail={campaignDetail} />}
 
-    {/* <BottomNavButton
-      campaignDetail={campaignDetail}
-      setCampaignDetail={setCampaignDetail}
-    /> */}
+    {!isHost && !inCampaign
+      && <JoinButton campaignDetail={campaignDetail} />}
+
+    {!isHost && inCampaign && campaignStatus === 'RECRUITING'
+      && <CancelButton campaignDetail={campaignDetail} />}
+
+    {!isHost && inCampaign && campaignStatus === 'DISTRIBUTING'
+      && <ReceiveButton campaignDetail={campaignDetail} />}
+
+    {!isHost && inCampaign && campaignStatus === 'COMPLETED'
+      && <ReviewButton campaignDetail={campaignDetail} />}
+
   </View>;
 }
 

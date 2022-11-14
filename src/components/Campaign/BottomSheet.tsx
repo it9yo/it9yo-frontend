@@ -99,21 +99,7 @@ const BottomSheet = (props) => {
   };
 
   const onCheckJoin = () => {
-    Alert.alert(
-      '알림',
-      `정말 ${amount} 원을 사용하여 캠페인에 참가하시겠습니까?`,
-      [
-        {
-          text: '네',
-          onPress: () => onJoinCampaign(Number(quantity)),
-        },
-        {
-          text: '아니요',
-          style: 'cancel',
-        },
-      ],
-      { cancelable: false },
-    );
+    onJoinCampaign(Number(quantity));
   };
 
   return (
@@ -156,37 +142,12 @@ const BottomSheet = (props) => {
               <Text style={{
                 fontFamily: 'SpoqaHanSansNeo',
                 fontSize: 15,
-                fontWeight: 'normal',
-                fontStyle: 'normal',
-                letterSpacing: 0,
-                color: '#4f4f4f',
-              }}>
-                나의 포인트 잔액
-              </Text>
-              <Text style={{
-                fontFamily: 'SpoqaHanSansNeo',
-                fontSize: 15,
-                fontWeight: 'normal',
-                fontStyle: 'normal',
-                letterSpacing: 0,
-                color: '#121212',
-              }}>
-                {numberWithCommas(userInfo.point)} 원
-              </Text>
-            </View>
-
-            <View style={styles.horizonLine} />
-
-            <View style={styles.infoTextZone}>
-              <Text style={{
-                fontFamily: 'SpoqaHanSansNeo',
-                fontSize: 15,
                 fontWeight: 'bold',
                 fontStyle: 'normal',
                 letterSpacing: 0,
                 color: '#4f4f4f',
               }}>
-                총 결제금액
+                총 금액
               </Text>
               <Text style={{
                 fontFamily: 'SpoqaHanSansNeo',
@@ -207,7 +168,7 @@ const BottomSheet = (props) => {
             disabled={!canGoNext}
             onPress={onCheckJoin}
           >
-            <Text style={styles.buttonText}>결제하기</Text>
+            <Text style={styles.buttonText}>참가하기</Text>
           </TouchableOpacity>
 
         </Animated.View>
