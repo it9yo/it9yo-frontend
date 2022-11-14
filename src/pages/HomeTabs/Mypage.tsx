@@ -121,30 +121,21 @@ function Mypage({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.horizenLine} />
-
-        <View style={styles.contentBlock}>
-
-          {/* 잇구요 페이 */}
-          <Pressable onPress={() => navigation.navigate('It9yoPay')}>
-            <View style={styles.button}>
-              <Text style={{ color: 'white', fontSize: 16 }}>잇구요 페이</Text>
-            </View>
-          </Pressable>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: 'black', fontSize: 18 }}>
-              {'잔여 포인트: '}
-            </Text>
-            <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>
-              {`${numberWithCommas(userInfo.point)} P`}
-            </Text>
-          </View>
-
-        </View>
+        
       </View>
 
       <View style={styles.mainContent}>
+
+        <View style={styles.menuBlock}>
+          <Text style={styles.menuText}>
+            잇구요 페이
+          </Text>
+          <Text>
+          {`${numberWithCommas(userInfo.point)} P`}
+          </Text>
+          <Icon name='ios-chevron-forward' size={24} color='black' />
+        </View>
+        <View style={styles.horizenLine} />
 
         {/* 완료한 공동구매 내역 */}
         <View style={styles.menuBlock}>
@@ -210,9 +201,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginTop: 10,
     marginBottom: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: 'gray',
   },
   contentBlock: {
     paddingVertical: 10,
@@ -238,16 +226,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#E2B950',
-    borderColor: 'black',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 5,
   },
   profileThumbnail: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 50,
     height: 50,
-    borderRadius: 50 / 2,
     backgroundColor: 'gray',
   },
   menuText: {
