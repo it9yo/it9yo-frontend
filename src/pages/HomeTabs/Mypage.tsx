@@ -133,7 +133,7 @@ function Mypage({ navigation }) {
           <Text>
           {`${numberWithCommas(userInfo.point)} P`}
           </Text>
-          <Icon name='ios-chevron-forward' size={24} color='black' />
+          <Icon onPress={() => navigation.navigate('It9yoPay')} name='ios-chevron-forward' size={24} color='black' />
         </View>
         <View style={styles.horizenLine} />
 
