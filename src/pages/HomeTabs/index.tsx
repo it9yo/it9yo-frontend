@@ -69,8 +69,8 @@ function HomeTabs() {
         name="Manage"
         component={Manage}
         options={{
-          title: '캠페인관리',
-          tabBarLabel: '캠페인관리',
+          title: '공구관리',
+          tabBarLabel: '공구관리',
         }}
         />
       <Tab.Screen

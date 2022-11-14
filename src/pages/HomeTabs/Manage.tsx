@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { SafeAreaView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { TabView, TabBar, SceneMap } from 'react-native-tab-view';
 
 import JoinedCampaignList from '@src/pages/Manage/JoinedCampaignList';
 import CreatedCampaignList from '@src/pages/Manage/CreatedCampaignList';
@@ -25,6 +25,24 @@ function Manage() {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
+        renderTabBar={props => (
+          <TabBar
+            {...props}
+            indicatorStyle={{
+              backgroundColor: "#FF9E3E",
+            }}
+            style={{
+              backgroundColor: "white",
+              fontWeight: "bold",
+              shadowOffset: { height: 0, width: 0 },
+              shadowColor: "transparent"
+            }}
+            pressColor={"transparent"}
+            renderLabel={({ route, focused }) => (
+              <Text focused={focused} style={{color: focused? '#FF9E3E' : '#282828'}}>{route.title}</Text>
+            )}
+          />
+        )}
       />
     </SafeAreaView>
   );
@@ -33,6 +51,7 @@ function Manage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    fontFamily: 'SpoqaHanSansNeo',
     backgroundColor: '#fff',
   },
 });
