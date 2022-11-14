@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import CampaignList from '@pages/Home/CampaignList';
 import {
@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeHeader from '@src/components/Header/HomeHeader';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { location } from '@src/states';
 import { useRecoilState } from 'recoil';
 
@@ -14,6 +14,11 @@ import Plus from '@assets/images/plus.png';
 
 function Home() {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    console.log('Focused on Home');
+  }, [isFocused]);
 
   return <SafeAreaView style={styles.container}>
     <HomeHeader />

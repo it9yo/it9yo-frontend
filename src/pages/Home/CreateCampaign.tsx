@@ -18,7 +18,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 
 import { useRecoilState } from 'recoil';
-import { userAccessToken } from '@src/states';
+import { userAccessToken, userState } from '@src/states';
 import { CommonActions } from '@react-navigation/native';
 
 import categoryName from '@src/constants/category';
@@ -127,6 +127,9 @@ function CreateCampaign({ navigation, route }) {
 
         if (response.status === 200) {
           Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
+          const { campaignId } = response.data.data;
+          const text = `'${title}' 캠페인이 생성되었습니다.`;
+          sendMessage(text, campaignId);
           navigation.dispatch(CommonActions.goBack());
         }
       } catch (error) {
@@ -134,6 +137,26 @@ function CreateCampaign({ navigation, route }) {
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const sendMessage = async (text: string, campaignId: number) => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/chat/publish/${campaignId}`,
+        {
+          content: text,
+          userChat: false,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log(response);
+    } catch (error) {
+      console.error(error);
     }
   };
 

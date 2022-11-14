@@ -14,18 +14,23 @@ import HeartOutline from '@assets/images/heartOutline.png';
 import Message from '@assets/images/message.png';
 
 import { useNavigation } from '@react-navigation/native';
-import BottomNavButton from './BottomNavButton';
 import JoinButton from './JoinButton';
+import CancelButton from './CancelButton';
+import ReceiveButton from './ReceiveButton';
+import ManageButton from './ManageButton';
+import ReviewButton from './ReviewButton';
 
 interface BottomNavProps {
   campaignDetail: CampaignData;
-  setCampaignDetail: any;
+  setRefresh: any;
 }
 
-function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
+function BottomNav({ campaignDetail, setRefresh }: BottomNavProps) {
   const navigation = useNavigation();
 
-  const { hostId, campaignId, title } = campaignDetail;
+  const {
+    hostId, campaignId, title, campaignStatus,
+  } = campaignDetail;
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
 
@@ -114,7 +119,7 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
     <View style={styles.navUtilButton}>
       <TouchableOpacity onPress={handleWish}>
         {isWish
-          ? <Image style={styles.icon} source={Heart} />
+          ? <Image style={{ width: 32, height: 32 }} source={Heart} />
           : <Image style={styles.icon} source={HeartOutline} />
         }
       </TouchableOpacity>
@@ -131,12 +136,27 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
       </View>
     }
 
-    <JoinButton campaignDetail={campaignDetail} />
+{isHost
+      && <ManageButton campaignDetail={campaignDetail} />}
 
-    {/* <BottomNavButton
+    {!isHost && !inCampaign
+      && <JoinButton
       campaignDetail={campaignDetail}
-      setCampaignDetail={setCampaignDetail}
-    /> */}
+      setRefresh={setRefresh}/>}
+
+    {!isHost && inCampaign && campaignStatus === 'RECRUITING'
+      && <CancelButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}/>}
+
+    {!isHost && inCampaign && campaignStatus === 'DISTRIBUTING'
+      && <ReceiveButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}/>}
+
+    {!isHost && inCampaign && campaignStatus === 'COMPLETED'
+      && <ReviewButton campaignDetail={campaignDetail} />}
+
   </View>;
 }
 
