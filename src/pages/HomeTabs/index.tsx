@@ -77,7 +77,7 @@ function HomeTabs() {
         name="Chat"
         component={Chat}
         options={{
-          title: '채팅 목록',
+          title: '채팅',
           tabBarLabel: '채팅',
         }}
       />
@@ -86,7 +86,7 @@ function HomeTabs() {
         component={Mypage}
         options={{
           title: '내 정보',
-          tabBarLabel: '내정보',
+          tabBarLabel: '내 정보',
         }}
       />
   </Tab.Navigator>);

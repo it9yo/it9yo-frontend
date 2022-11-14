@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, useWindowDimensions } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, useWindowDimensions } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
 import Toast from 'react-native-toast-message';
 
 import { ReceivedMessageData } from '@src/@types';
 
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import JoinedChatList from '@pages/Chat/JoinedChatList';
 import CreatedChatList from '@pages/Chat/CreatedChatList';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -107,6 +107,24 @@ function Chat() {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
+        renderTabBar={props => (
+          <TabBar
+            {...props}
+            indicatorStyle={{
+              backgroundColor: "#FF9E3E",
+            }}
+            style={{
+              backgroundColor: "white",
+              fontWeight: "bold",
+              shadowOffset: { height: 0, width: 0 },
+              shadowColor: "transparent"
+            }}
+            pressColor={"transparent"}
+            renderLabel={({ route, focused }) => (
+              <Text focused={focused} style={{color: focused? '#FF9E3E' : '#282828'}}>{route.title}</Text>
+            )}
+          />
+        )}
       />
     </SafeAreaView>
   );
