@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Alert, StyleSheet, Text, TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { CampaignData } from '@src/@types';
 import axios from 'axios';
@@ -9,17 +7,20 @@ import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
 import BottomSheet from './BottomSheet';
+import CompleteModal from './CompleteModal';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
+  setRefresh: any;
   type?: string;
 }
 
-function JoinButton({ campaignDetail, type }: ButtonParams) {
+function JoinButton({ campaignDetail, setRefresh, type }: ButtonParams) {
   const { campaignId } = campaignDetail;
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const accessToken = useRecoilState(userAccessToken)[0];
   const [modalVisible, setModalVisible] = useState(false);
+  const [completeModalVisible, setCompleteModalVisible] = useState(false);
 
   const onJoinCampaign = async (quantity: number) => {
     try {
@@ -44,10 +45,12 @@ function JoinButton({ campaignDetail, type }: ButtonParams) {
           },
         );
         setUserInfo(changedUserInfo.data.data);
-        Alert.alert('알림', '캠페인 참여가 완료되었습니다.');
-        // initChat(campaignId);
+        setModalVisible(false);
+        setCompleteModalVisible(true);
+
         const text = `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`;
         sendMessage(text);
+        setRefresh(true);
       }
     } catch (error) {
       console.error(error);
@@ -74,24 +77,6 @@ function JoinButton({ campaignDetail, type }: ButtonParams) {
     }
   };
 
-  // const initChat = (id: number) => {
-  //   try {
-  //     const initMsg: IMessage[] = [{
-  //       _id: 0,
-  //       text: `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`,
-  //       createdAt: new Date(),
-  //       user: {
-  //         _id: 0,
-  //         name: 'React Native',
-  //       },
-  //       system: true,
-  //     }];
-  //     AsyncStorage.setItem(`chatMessages_${id}`, JSON.stringify(initMsg));
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
   return <>
     <TouchableOpacity style={type === 'middle' ? styles.middleButton : styles.button} onPress={() => setModalVisible(true)}>
       <Text style={styles.buttonText}>참가하기</Text>
@@ -102,6 +87,10 @@ function JoinButton({ campaignDetail, type }: ButtonParams) {
       setModalVisible={setModalVisible}
       campaignDetail={campaignDetail}
       onJoinCampaign={onJoinCampaign}
+    />
+    <CompleteModal
+      modalVisible={completeModalVisible}
+      setModalVisible={setCompleteModalVisible}
     />
   </>;
 }

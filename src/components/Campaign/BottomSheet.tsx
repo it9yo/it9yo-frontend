@@ -36,7 +36,7 @@ const BottomSheet = (props) => {
   const [quantity, setQuantity] = useState('1');
   const [amount, setAmount] = useState(campaignDetail.itemPrice);
 
-  const canGoNext = userInfo.point >= amount;
+  const canGoNext = Number(quantity) > 0;
 
   const resetBottomSheet = Animated.timing(panY, {
     toValue: 0,
@@ -99,21 +99,7 @@ const BottomSheet = (props) => {
   };
 
   const onCheckJoin = () => {
-    Alert.alert(
-      '알림',
-      `정말 ${amount} 원을 사용하여 캠페인에 참가하시겠습니까?`,
-      [
-        {
-          text: '네',
-          onPress: () => onJoinCampaign(Number(quantity)),
-        },
-        {
-          text: '아니요',
-          style: 'cancel',
-        },
-      ],
-      { cancelable: false },
-    );
+    onJoinCampaign(Number(quantity));
   };
 
   return (
@@ -133,11 +119,10 @@ const BottomSheet = (props) => {
         >
           <Icon name="chevron-down" size={24} color="#000" />
 
-          <Text style={styles.title}>수량 입력</Text>
-
-          {/* <View style={{ width: '100%', alignItems: 'flex-start', marginBottom: 15 }}>
-            <Text style={{ fontSize: 18, fontWeight: '400' }}>최대 구매 가능 수량: {campaignDetail.maxQuantityPerPerson}개</Text>
-          </View> */}
+          <View style={styles.titleZone}>
+            <Text style={styles.title}>수량 입력</Text>
+            <Text style={styles.subTitle}>(최대 {campaignDetail.maxQuantityPerPerson})</Text>
+          </View>
 
           <TextInput
             style={styles.quantityInput}
@@ -156,37 +141,12 @@ const BottomSheet = (props) => {
               <Text style={{
                 fontFamily: 'SpoqaHanSansNeo',
                 fontSize: 15,
-                fontWeight: 'normal',
-                fontStyle: 'normal',
-                letterSpacing: 0,
-                color: '#4f4f4f',
-              }}>
-                나의 포인트 잔액
-              </Text>
-              <Text style={{
-                fontFamily: 'SpoqaHanSansNeo',
-                fontSize: 15,
-                fontWeight: 'normal',
-                fontStyle: 'normal',
-                letterSpacing: 0,
-                color: '#121212',
-              }}>
-                {numberWithCommas(userInfo.point)} 원
-              </Text>
-            </View>
-
-            <View style={styles.horizonLine} />
-
-            <View style={styles.infoTextZone}>
-              <Text style={{
-                fontFamily: 'SpoqaHanSansNeo',
-                fontSize: 15,
                 fontWeight: 'bold',
                 fontStyle: 'normal',
                 letterSpacing: 0,
                 color: '#4f4f4f',
               }}>
-                총 결제금액
+                총 금액
               </Text>
               <Text style={{
                 fontFamily: 'SpoqaHanSansNeo',
@@ -207,7 +167,7 @@ const BottomSheet = (props) => {
             disabled={!canGoNext}
             onPress={onCheckJoin}
           >
-            <Text style={styles.buttonText}>결제하기</Text>
+            <Text style={styles.buttonText}>참가하기</Text>
           </TouchableOpacity>
 
         </Animated.View>
@@ -269,16 +229,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 24,
   },
-  title: {
-    alignSelf: 'flex-start',
+  titleZone: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     marginTop: 15,
     marginBottom: 24,
+  },
+  title: {
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 22,
     fontWeight: 'normal',
     fontStyle: 'normal',
     letterSpacing: -0.2,
     color: '#121212',
+  },
+  subTitle: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 20,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: -0.2,
+    color: '#121212',
+    marginLeft: 6,
   },
   infoBlock: {
     width: '100%',

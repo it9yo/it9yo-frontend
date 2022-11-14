@@ -74,6 +74,10 @@ function ChatRoom({ navigation, route }) {
       Toast.show({
         text1: nickName,
         text2: content,
+        onPress: () => {
+          Toast.hide();
+          navigation.navigate('ChatRoom', { campaignId, title: '123' });
+        },
       });
 
       receiveMessage(messageData);
