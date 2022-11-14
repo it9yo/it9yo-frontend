@@ -29,7 +29,7 @@ export function CampaignList() {
   const [refreshing, setRefreshing] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     loadCampaignData();
     setInitLoading(false);
     return () => {

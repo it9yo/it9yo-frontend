@@ -14,18 +14,32 @@ function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function EachCampaign({ item }: { item: CampaignData }) {
+interface CampaignProps {
+  item: CampaignData;
+  type?: string;
+}
+
+function EachCampaign({ item, type }: CampaignProps) {
   const navigation = useNavigation();
   const {
-    campaignId, title, eupMyeonDong, itemImageURLs,
+    campaignId, title, eupMyeonDong, itemImageURLs, hostId,
     campaignStatus, hostNickName, participatedPersonCnt, itemPrice,
   } = item;
 
-  return <Pressable
-    onPress={() => navigation.navigate('CampaignDetail', {
-      screen: 'DetailHome',
-      params: { campaignId },
-    })}>
+  const handlePress = () => {
+    if (type === 'manage') {
+      navigation.navigate('ManageCampaign', {
+        campaignId, title, hostId, itemPrice, campaignStatus, itemImageURLs, participatedPersonCnt,
+      });
+    } else {
+      navigation.navigate('CampaignDetail', {
+        screen: 'DetailHome',
+        params: { campaignId },
+      });
+    }
+  };
+
+  return <Pressable onPress={handlePress}>
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
         source={{ uri: itemImageURLs[0] }}
@@ -122,12 +136,11 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#828282',
-    marginLeft: 3,
+    marginHorizontal: 3,
   },
   ellipse: {
     width: 3,
     height: 3,
-    marginHorizontal: 3,
     borderRadius: 1.5,
     backgroundColor: '#ababab',
   },

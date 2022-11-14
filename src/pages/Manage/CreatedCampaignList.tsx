@@ -117,7 +117,7 @@ function CreatedCampaignList() {
   };
 
   const renderItem = ({ item }: { item: CampaignData }) => (
-    <EachCampaign item={item}/>
+    <EachCampaign item={item} type="manage" />
   );
 
   return <View>

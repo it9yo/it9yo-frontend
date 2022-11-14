@@ -24,7 +24,7 @@ function JoinedCampaignList() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     loadData();
     return () => {
       setCampaignList([]);

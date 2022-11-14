@@ -153,3 +153,11 @@ export interface ReceivedMessageData {
   userChat: boolean;
   profileImageUrl: string;
 }
+
+export interface JoinUserInfo {
+  userId: number;
+  nickName: string;
+  quantity: number;
+  receiveStatus: string;
+  deposit: boolean;
+}

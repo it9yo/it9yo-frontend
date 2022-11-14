@@ -116,8 +116,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    width: 180,
-    height: 20,
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
     fontWeight: '700',

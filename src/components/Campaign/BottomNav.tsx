@@ -136,7 +136,7 @@ function BottomNav({ campaignDetail, setRefresh }: BottomNavProps) {
       </View>
     }
 
-{isHost
+    {isHost
       && <ManageButton campaignDetail={campaignDetail} />}
 
     {!isHost && !inCampaign

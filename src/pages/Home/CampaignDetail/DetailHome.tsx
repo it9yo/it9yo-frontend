@@ -12,13 +12,13 @@ import { SliderBox } from 'react-native-image-slider-box';
 
 import { CampaignData } from '@src/@types';
 
-import StatusNameList from '@constants/statusname';
+import MiddleButton from '@components/Campaign/MiddleButton';
 import BottomNav from '@src/components/Campaign/BottomNav';
+
+import StatusNameList from '@constants/statusname';
 
 import GPSIcon from '@assets/images/gps.png';
 import HostIcon from '@assets/images/host.png';
-import JoinButton from '@src/components/Campaign/JoinButton';
-import MiddleButton from '../../../components/Campaign/MiddleButton';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');

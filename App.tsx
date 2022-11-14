@@ -29,6 +29,7 @@ import { userState, userAccessToken } from '@src/states';
 
 import BackButton from '@components/Header/BackButton';
 import CloseButton from '@components/Header/CloseButton';
+import ManageCampaign from '@src/pages/Manage/ManageCampaign';
 
 const Stack = createNativeStackNavigator();
 
@@ -136,6 +137,10 @@ function App() {
             <Stack.Screen
               name="ChatRoom"
               component={ChatRoom}
+            />
+            <Stack.Screen
+              name="ManageCampaign"
+              component={ManageCampaign}
             />
             <Stack.Screen
               name="ChangeLocationCert"
