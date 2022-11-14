@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import {
   View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, Pressable, Image,
 } from 'react-native';
@@ -29,6 +29,8 @@ function DetailHome({ navigation, route }) {
 
   const accessToken = useRecoilState(userAccessToken)[0];
   const [campaignDetail, setCampaignDetail] = useState<CampaignData | undefined>();
+  const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useLayoutEffect(() => {
     const loadCampaignDetail = async () => {
@@ -50,7 +52,37 @@ function DetailHome({ navigation, route }) {
     };
 
     loadCampaignDetail();
+
+    return () => setCampaignDetail(undefined);
   }, []);
+
+  useEffect(() => {
+    if (refresh) {
+      setLoading(true);
+      refreshCampaign();
+      setRefresh(false);
+    }
+  }, [refresh]);
+
+  const refreshCampaign = async () => {
+    if (loading) return;
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/campaign/detail/${campaignId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        setCampaignDetail(response.data.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (campaignDetail) {
     return (
@@ -111,7 +143,7 @@ function DetailHome({ navigation, route }) {
 
           <View style={styles.horizenLine} />
 
-          {/* 가격 및 참가하기 */}
+          {/* 가격 및 버튼 */}
           <View style={styles.infoBlock}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
               <View>
@@ -123,7 +155,7 @@ function DetailHome({ navigation, route }) {
 
               <MiddleButton
                 campaignDetail={campaignDetail}
-                setCampaignDetail={setCampaignDetail}
+                setRefresh={setRefresh}
               />
             </View>
           </View>
@@ -149,7 +181,7 @@ function DetailHome({ navigation, route }) {
 
         <BottomNav
           campaignDetail={campaignDetail}
-          setCampaignDetail={setCampaignDetail}
+          setRefresh={setRefresh}
         />
 
       </SafeAreaView>);

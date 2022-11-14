@@ -15,7 +15,6 @@ import Message from '@assets/images/message.png';
 
 import { useNavigation } from '@react-navigation/native';
 import JoinButton from './JoinButton';
-import StatusChangeButton from './StatusChangeButton';
 import CancelButton from './CancelButton';
 import ReceiveButton from './ReceiveButton';
 import ManageButton from './ManageButton';
@@ -23,10 +22,10 @@ import ReviewButton from './ReviewButton';
 
 interface BottomNavProps {
   campaignDetail: CampaignData;
-  setCampaignDetail: any;
+  setRefresh: any;
 }
 
-function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
+function BottomNav({ campaignDetail, setRefresh }: BottomNavProps) {
   const navigation = useNavigation();
 
   const {
@@ -120,7 +119,7 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
     <View style={styles.navUtilButton}>
       <TouchableOpacity onPress={handleWish}>
         {isWish
-          ? <Image style={styles.icon} source={Heart} />
+          ? <Image style={{ width: 32, height: 32 }} source={Heart} />
           : <Image style={styles.icon} source={HeartOutline} />
         }
       </TouchableOpacity>
@@ -137,17 +136,23 @@ function BottomNav({ campaignDetail, setCampaignDetail }: BottomNavProps) {
       </View>
     }
 
-    {isHost
+{isHost
       && <ManageButton campaignDetail={campaignDetail} />}
 
     {!isHost && !inCampaign
-      && <JoinButton campaignDetail={campaignDetail} />}
+      && <JoinButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}/>}
 
     {!isHost && inCampaign && campaignStatus === 'RECRUITING'
-      && <CancelButton campaignDetail={campaignDetail} />}
+      && <CancelButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}/>}
 
     {!isHost && inCampaign && campaignStatus === 'DISTRIBUTING'
-      && <ReceiveButton campaignDetail={campaignDetail} />}
+      && <ReceiveButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}/>}
 
     {!isHost && inCampaign && campaignStatus === 'COMPLETED'
       && <ReviewButton campaignDetail={campaignDetail} />}

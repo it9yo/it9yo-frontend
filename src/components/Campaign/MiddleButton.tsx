@@ -1,6 +1,5 @@
 import { CampaignData } from '@src/@types';
 import React, { useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
 import Config from 'react-native-config';
@@ -8,7 +7,6 @@ import axios from 'axios';
 
 import { useNavigation } from '@react-navigation/native';
 import JoinButton from './JoinButton';
-import StatusChangeButton from './StatusChangeButton';
 import CancelButton from './CancelButton';
 import ReceiveButton from './ReceiveButton';
 import ManageButton from './ManageButton';
@@ -16,10 +14,10 @@ import ReviewButton from './ReviewButton';
 
 interface ButtonProps {
   campaignDetail: CampaignData;
-  setCampaignDetail: any;
+  setRefresh: any;
 }
 
-function MiddleButton({ campaignDetail, setCampaignDetail }: ButtonProps) {
+function MiddleButton({ campaignDetail, setRefresh }: ButtonProps) {
   const navigation = useNavigation();
 
   const { hostId, campaignId, campaignStatus } = campaignDetail;
@@ -52,12 +50,25 @@ function MiddleButton({ campaignDetail, setCampaignDetail }: ButtonProps) {
   return <>
     {isHost
       && <ManageButton campaignDetail={campaignDetail} type="middle" />}
+
     {!isHost && !inCampaign
-      && <JoinButton campaignDetail={campaignDetail} type="middle" />}
+      && <JoinButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}
+      type="middle" />}
+
     {!isHost && inCampaign && campaignStatus === 'RECRUITING'
-      && <CancelButton campaignDetail={campaignDetail} type="middle" />}
+      && <CancelButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}
+      type="middle" />}
+
     {!isHost && inCampaign && campaignStatus === 'DISTRIBUTING'
-      && <ReceiveButton campaignDetail={campaignDetail} type="middle" />}
+      && <ReceiveButton
+      campaignDetail={campaignDetail}
+      setRefresh={setRefresh}
+      type="middle" />}
+
     {!isHost && inCampaign && campaignStatus === 'COMPLETED'
       && <ReviewButton campaignDetail={campaignDetail} type="middle" />}
   </>;

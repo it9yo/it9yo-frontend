@@ -36,7 +36,7 @@ const BottomSheet = (props) => {
   const [quantity, setQuantity] = useState('1');
   const [amount, setAmount] = useState(campaignDetail.itemPrice);
 
-  const canGoNext = userInfo.point >= amount;
+  const canGoNext = Number(quantity) > 0;
 
   const resetBottomSheet = Animated.timing(panY, {
     toValue: 0,
@@ -119,11 +119,10 @@ const BottomSheet = (props) => {
         >
           <Icon name="chevron-down" size={24} color="#000" />
 
-          <Text style={styles.title}>수량 입력</Text>
-
-          {/* <View style={{ width: '100%', alignItems: 'flex-start', marginBottom: 15 }}>
-            <Text style={{ fontSize: 18, fontWeight: '400' }}>최대 구매 가능 수량: {campaignDetail.maxQuantityPerPerson}개</Text>
-          </View> */}
+          <View style={styles.titleZone}>
+            <Text style={styles.title}>수량 입력</Text>
+            <Text style={styles.subTitle}>(최대 {campaignDetail.maxQuantityPerPerson})</Text>
+          </View>
 
           <TextInput
             style={styles.quantityInput}
@@ -230,16 +229,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 24,
   },
-  title: {
-    alignSelf: 'flex-start',
+  titleZone: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     marginTop: 15,
     marginBottom: 24,
+  },
+  title: {
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 22,
     fontWeight: 'normal',
     fontStyle: 'normal',
     letterSpacing: -0.2,
     color: '#121212',
+  },
+  subTitle: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 20,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: -0.2,
+    color: '#121212',
+    marginLeft: 6,
   },
   infoBlock: {
     width: '100%',

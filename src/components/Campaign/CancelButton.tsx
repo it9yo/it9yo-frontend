@@ -11,10 +11,11 @@ import { userAccessToken, userState } from '@src/states';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
+  setRefresh: any;
   type?: string;
 }
 
-function CancelButton({ campaignDetail, type }: ButtonParams) {
+function CancelButton({ campaignDetail, setRefresh, type }: ButtonParams) {
   const { campaignId } = campaignDetail;
   const accessToken = useRecoilState(userAccessToken)[0];
 
@@ -31,11 +32,7 @@ function CancelButton({ campaignDetail, type }: ButtonParams) {
       );
       if (response.status === 200) {
         Alert.alert('알림', '캠페인 취소가 완료되었습니다.');
-        // TODO: 새로고침 되도록
-        // navigation.navigate('CampaignDetail', {
-        //   screen: 'DetailHome',
-        //   params: { campaignId },
-        // });
+        setRefresh(true);
       }
     } catch (error) {
       console.error(error);

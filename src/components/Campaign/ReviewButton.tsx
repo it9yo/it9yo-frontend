@@ -15,8 +15,9 @@ interface ButtonParams {
 }
 
 function ReviewButton({ campaignDetail, type }: ButtonParams) {
-  const { campaignId } = campaignDetail;
+  const { campaignId, campaignStatus } = campaignDetail;
   const accessToken = useRecoilState(userAccessToken)[0];
+  const buttonActive = campaignStatus === 'DISTRIBUTING';
 
   const onCancelCampaign = async () => {
     try {

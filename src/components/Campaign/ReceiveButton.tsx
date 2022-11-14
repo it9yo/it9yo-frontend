@@ -11,32 +11,29 @@ import { userAccessToken, userState } from '@src/states';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
+  setRefresh: any;
   type?: string;
 }
 
-function ReceiveButton({ campaignDetail, type }: ButtonParams) {
+function ReceiveButton({ campaignDetail, setRefresh, type }: ButtonParams) {
   const { campaignId } = campaignDetail;
   const accessToken = useRecoilState(userAccessToken)[0];
 
-  const onCancelCampaign = async () => {
+  const onReceive = async () => {
     try {
-      // const response = await axios.post(
-      //   `${Config.API_URL}/campaign/join/cancel/${campaignId}`,
-      //   {},
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   },
-      // );
-      // if (response.status === 200) {
-      //   Alert.alert('알림', '캠페인 취소가 완료되었습니다.');
-      // TODO: 새로고침 되도록
-      // navigation.navigate('CampaignDetail', {
-      //   screen: 'DetailHome',
-      //   params: { campaignId },
-      // });
-      // }
+      const response = await axios.post(
+        `${Config.API_URL}/campaign/join/receive/${campaignId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        Alert.alert('알림', '물품 수령이 완료되었습니다.');
+        setRefresh(true);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -44,7 +41,7 @@ function ReceiveButton({ campaignDetail, type }: ButtonParams) {
 
   return <TouchableOpacity
     style={type === 'middle' ? styles.middleButton : styles.button}
-    onPress={onCancelCampaign}>
+    onPress={onReceive}>
     <Text style={styles.buttonText}>수령하기</Text>
   </TouchableOpacity>;
 }
