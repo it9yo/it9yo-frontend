@@ -27,6 +27,8 @@ function MiddleButton({ campaignDetail, setRefresh }: ButtonProps) {
   const [isHost, setHost] = useState(false);
   const [inCampaign, setInCampaign] = useState(false);
 
+  const [received, setReceived] = useState(false);
+
   useEffect(() => {
     const setInfo = async () => {
       if (userInfo.userId === hostId) {
@@ -47,6 +49,27 @@ function MiddleButton({ campaignDetail, setRefresh }: ButtonProps) {
     setInfo();
   }, []);
 
+  useEffect(() => {
+    const checkReceived = async () => {
+      try {
+        const response = await axios.get(
+          `${Config.API_URL}/campaign/join/receive/${campaignId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        );
+        if (response.status === 200) {
+          setReceived(response.data.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    checkReceived();
+  }, []);
+
   return <>
     {isHost
       && <ManageButton campaignDetail={campaignDetail} type="middle" />}
@@ -63,13 +86,13 @@ function MiddleButton({ campaignDetail, setRefresh }: ButtonProps) {
       setRefresh={setRefresh}
       type="middle" />}
 
-    {!isHost && inCampaign && campaignStatus === 'DISTRIBUTING'
+    {!isHost && inCampaign && campaignStatus === 'DISTRIBUTING' && !received
       && <ReceiveButton
       campaignDetail={campaignDetail}
       setRefresh={setRefresh}
       type="middle" />}
 
-    {!isHost && inCampaign && campaignStatus === 'COMPLETED'
+    {!isHost && inCampaign && received
       && <ReviewButton campaignDetail={campaignDetail} type="middle" />}
   </>;
 }
