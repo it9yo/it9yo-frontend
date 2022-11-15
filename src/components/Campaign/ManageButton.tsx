@@ -14,7 +14,8 @@ function ManageButton({ campaignDetail, type }: ButtonParams) {
   const { campaignId } = campaignDetail;
 
   return <TouchableOpacity
-    style={type === 'middle' ? styles.middleButton : styles.button}>
+    style={type === 'middle' ? styles.middleButton : styles.button}
+    onPress={() => naivgation.navigate('ManageCampaign', { ...campaignDetail })}>
     <Text style={styles.buttonText}>관리</Text>
   </TouchableOpacity>;
 }

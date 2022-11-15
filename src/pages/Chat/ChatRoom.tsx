@@ -1,10 +1,10 @@
 import React, {
-  useState, useCallback, useEffect, useLayoutEffect, useRef,
+  useState, useCallback, useEffect, useRef,
 } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import messaging from '@react-native-firebase/messaging';
-import { ReceivedMessageData } from '@src/@types';
+import { JoinUserInfo, ReceivedMessageData } from '@src/@types';
 
 import { GiftedChat, type IMessage } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -16,10 +16,23 @@ import Config from 'react-native-config';
 import Toast from 'react-native-toast-message';
 
 import {
-  Button, DrawerLayoutAndroid, StyleSheet, Text, View,
+  ActivityIndicator,
+  Button, DrawerLayoutAndroid, FlatList, Image, StyleSheet, Text, View,
 } from 'react-native';
 
 import DrawerButton from '@components/Header/DrawerButton';
+import StatusNameList from '@src/constants/statusname';
+import EachUser from '@src/components/EachUser';
+
+interface DrawerData {
+  campaignTitle: string;
+  campaignStatus: string;
+  itemImageURLs: string[];
+  hostName: string;
+  participatedPersonCnt: number;
+}
+
+const pageSize = 10;
 
 function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
@@ -29,9 +42,17 @@ function ChatRoom({ navigation, route }) {
   const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[]>([]);
 
+  const [userList, setUserList] = useState<JoinUserInfo[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [noMoreData, setNoMoreData] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const [campaignData, setCampaignData] = useState<DrawerData>();
+
   const drawer = useRef(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerTitle: route.params.title,
       headerRight: () => <DrawerButton onPress={() => drawer.current.openDrawer()}/>,
@@ -40,7 +61,7 @@ function ChatRoom({ navigation, route }) {
 
   useEffect(() => {
     setChatRoomId(campaignId);
-    initData();
+    initChatData();
     return () => {
       setChatRoomId(null);
     };
@@ -55,20 +76,8 @@ function ChatRoom({ navigation, route }) {
       const receivedMessage = JSON.parse(notification.body);
       if (receivedMessage.campaignId !== campaignId) return;
 
-      console.log('receivedMessage', receivedMessage);
-      const {
-        userId, nickName, content, profileImageUrl, userChat,
-      } = receivedMessage;
-
-      const messageData: ReceivedMessageData = {
-        messageId,
-        sentTime,
-        userId,
-        nickName,
-        content,
-        profileImageUrl,
-        userChat,
-      };
+      receiveMessage({ ...receivedMessage, messageId, sentTime });
+      const { nickName, content, campaignTitle } = receivedMessage;
 
       // test
       Toast.show({
@@ -76,17 +85,74 @@ function ChatRoom({ navigation, route }) {
         text2: content,
         onPress: () => {
           Toast.hide();
-          navigation.navigate('ChatRoom', { campaignId, title: '123' });
+          navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
         },
       });
-
-      receiveMessage(messageData);
     });
 
     return unsubscribe;
   }, []);
 
-  const initData = async () => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/campaign/detail/v2/${campaignId}?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (response.status === 200) {
+        const {
+          campaignTitle, campaignStatus, itemImageURLs, hostName, participatedPersonCnt, userInfos,
+        } = response.data.data;
+        const {
+          content, first, last, number, empty,
+        } = userInfos;
+        if (empty) return;
+        if (first) {
+          const campaign: DrawerData = {
+            campaignTitle,
+            campaignStatus,
+            itemImageURLs,
+            hostName,
+            participatedPersonCnt,
+          };
+          console.log(campaign);
+          setCampaignData(campaign);
+          setUserList([...content]);
+        } else {
+          setUserList((prev) => [...prev, ...content]);
+        }
+        setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onEndReached = () => {
+    if (!noMoreData || !loading) {
+      loadData();
+    }
+  };
+
+  const initChatData = async () => {
     try {
       const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
       if (list !== null) {
@@ -132,8 +198,8 @@ function ChatRoom({ navigation, route }) {
       },
       system: !userChat,
     };
-    AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify([newMessage, ...messages]));
     setMessages((prev) => [newMessage, ...prev]);
+    await AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify([newMessage, ...messages]));
   };
 
   const sendMessage = async (text: string) => {
@@ -160,13 +226,49 @@ function ChatRoom({ navigation, route }) {
     sendMessage(message[0].text);
   }, []);
 
-  const navigationView = () => (
-    <View style={[styles.container, styles.navigationContainer]}>
-      <Text style={styles.paragraph}>I'm in the Drawer!</Text>
-      <Button
-        title="Close drawer"
-        onPress={() => drawer.current.closeDrawer()}
-      />
+  const renderItem = ({ item }: { item: JoinUserInfo }) => (
+    <EachUser item={item} campaignStatus={campaignData?.campaignStatus} />
+  );
+
+  const ChatRoomDrawer = () => (
+    <View style={styles.container}>
+      {campaignData
+      && <>
+        <View style={styles.campaignInfoZone}>
+          <Image style={styles.campaignThumbnail} source={{ uri: campaignData.itemImageURLs[0] }} />
+
+          <View>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>{StatusNameList[campaignData.campaignStatus]}</Text>
+            </View>
+
+            <Text style={styles.campaignInfoText}>{campaignData.campaignTitle}</Text>
+
+            {/* <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text> */}
+          </View>
+
+        </View>
+
+        <View style={styles.userListContainer}>
+          {/* 참여중인 인원 */}
+          <View style={styles.userCntZone}>
+            <Text style={styles.userCntText}>총 </Text>
+            <Text style={{ ...styles.userCntText, fontWeight: 'bold' }}>{campaignData.participatedPersonCnt}명</Text>
+            <Text style={styles.userCntText}> 참여중</Text>
+          </View>
+
+          {/* 유저 정보 리스트 */}
+          {userList.length > 0 && <FlatList
+            data={userList}
+            keyExtractor={(item) => `userList_${item.userId.toString()}`}
+            renderItem={renderItem}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={1}
+            ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+          />}
+        </View>
+      </>}
+
     </View>
   );
 
@@ -175,7 +277,7 @@ function ChatRoom({ navigation, route }) {
       ref={drawer}
       drawerWidth={300}
       drawerPosition="right"
-      renderNavigationView={navigationView}
+      renderNavigationView={ChatRoomDrawer}
     >
       <GiftedChat
         messages={messages}
@@ -190,18 +292,65 @@ function ChatRoom({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#fff',
     flex: 1,
-    alignItems: 'center',
+  },
+  campaignInfoZone: {
+    height: 140,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    paddingHorizontal: 30,
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderColor: '#eeeeee',
+  },
+  campaignThumbnail: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginRight: 15,
+  },
+  statusBadge: {
+    height: 20,
     justifyContent: 'center',
-    padding: 16,
+    alignItems: 'center',
+    paddingHorizontal: 3,
+    paddingVertical: 2,
+    borderRadius: 17,
+    backgroundColor: '#fae5d2',
+    marginBottom: 5,
   },
-  navigationContainer: {
-    backgroundColor: '#ecf0f1',
+  statusText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 12,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#e27919',
   },
-  paragraph: {
-    padding: 16,
-    fontSize: 15,
-    textAlign: 'center',
+  campaignInfoText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 18,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#282828',
+    marginBottom: 5,
+  },
+  userListContainer: {
+    padding: 20,
+  },
+  userCntZone: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  userCntText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 14,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#3b3b3b',
   },
 });
 

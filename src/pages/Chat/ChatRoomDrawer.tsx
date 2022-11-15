@@ -16,13 +16,18 @@ function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-const pageSize = 10;
+interface DrawerData {
+  campaignTitle: string;
+  campaignStatus: string;
+  itemImageURLs: string[];
+  hostName: string;
+  participatedPersonCnt: number;
+}
 
-function ManageCampaign({ navigation, route }) {
+const pageSize = 20;
+
+function ChatRoomDrawer({ campaignId } : { campaignId: number }) {
   const accessToken = useRecoilState(userAccessToken)[0];
-  const {
-    campaignId, title, hostId, itemPrice, campaignStatus, itemImageURLs, participatedPersonCnt,
-  } = route.params;
 
   const [userList, setUserList] = useState<JoinUserInfo[]>([]);
 
@@ -31,12 +36,11 @@ function ManageCampaign({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
 
+  const [campaignData, setCampaignData] = useState<DrawerData>();
+
   useEffect(() => {
-    navigation.setOptions({
-      headerTitle: route.params.title,
-    });
     loadData();
-  }, [navigation, route]);
+  }, []);
 
   const loadData = async () => {
     try {
@@ -53,10 +57,14 @@ function ManageCampaign({ navigation, route }) {
 
       if (response.status === 200) {
         const {
-          content, first, last, number, empty,
+          content, first, last, number, empty, campaignTitle,
+          campaignStatus, itemImageURLs, hostName, participatedPersonCnt,
         } = response.data.data.userInfos;
         if (empty) return;
         if (first) {
+          setCampaignData({
+            campaignTitle, campaignStatus, itemImageURLs, hostName, participatedPersonCnt,
+          });
           setUserList([...content]);
         } else {
           setUserList((prev) => [...prev, ...content]);
@@ -81,80 +89,55 @@ function ManageCampaign({ navigation, route }) {
     }
   };
 
-  const onChangeStatus = async (status: string) => {
-    try {
-      console.log(status);
-      const response = await axios.post(
-        `${Config.API_URL}/campaign/changeStatus/${campaignId}/${status}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      if (response.status === 200) {
-        Alert.alert('알림', '캠페인 상태 변경이 완료되었습니다.');
-      }
-    } catch (error) {
-      console.error(error);
-    }
-    return false;
-  };
-
   const renderItem = ({ item }: { item: JoinUserInfo }) => (
-    <EachUser item={item} campaignStatus={campaignStatus} itemPrice={itemPrice} />
+    <EachUser
+      item={item}
+      campaignStatus={campaignData.campaignStatus}
+      itemPrice={campaignData.itemPrice} />
   );
 
-  return <View style={styles.container}>
+  if (campaignData) {
+    return <View style={styles.container}>
+      <View style={styles.campaignInfoZone}>
+        <Image style={styles.campaignThumbnail} source={{ uri: campaignData.itemImageURLs[0] }} />
 
-    <View style={styles.campaignInfoZone}>
-      <Image style={styles.campaignThumbnail} source={{ uri: itemImageURLs[0] }} />
+        <View>
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>{StatusNameList[campaignData.campaignStatus]}</Text>
+          </View>
 
-      <View>
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
+          <Text style={styles.campaignInfoText}>{campaignData.campaignTitle}</Text>
+
+          {/* <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text> */}
         </View>
 
-        <Text style={styles.campaignInfoText}>{title}</Text>
-
-        <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
       </View>
 
-    </View>
+      <View style={styles.userListContainer}>
+        {/* 참여중인 인원 */}
+        <View style={styles.userCntZone}>
+          <Text style={styles.userCntText}>총 </Text>
+          <Text style={{ ...styles.userCntText, fontWeight: 'bold' }}>{campaignData.participatedPersonCnt}명</Text>
+          <Text style={styles.userCntText}> 참여중</Text>
+        </View>
 
-    <View style={styles.userListContainer}>
-      {/* 참여중인 인원 */}
-      <View style={styles.userCntZone}>
-        <Text style={styles.userCntText}>총 </Text>
-        <Text style={{ ...styles.userCntText, fontWeight: 'bold' }}>{participatedPersonCnt}명</Text>
-        <Text style={styles.userCntText}> 참여중</Text>
+        {/* 유저 정보 리스트 */}
+        {userList.length > 0 && <FlatList
+          data={userList}
+          keyExtractor={(item) => `userList_${item.userId.toString()}`}
+          renderItem={renderItem}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={1}
+          ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+        />}
       </View>
 
-      {/* 유저 정보 리스트 */}
-      {userList.length > 0 && <FlatList
-        data={userList}
-        keyExtractor={(item) => `joinedUser_${item.userId.toString()}`}
-        renderItem={renderItem}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={1}
-        ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
-      />}
-    </View>
-    <View style={styles.buttonZone}>
-      <TouchableOpacity style={styles.button} onPress={() => onChangeStatus('CONFIRM')}>
-        <Text style={styles.buttonText}>상태 변경</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={StyleSheet.compose(styles.button, styles.buttonActive)}>
-        <Text style={styles.buttonText}>공구채팅</Text>
-      </TouchableOpacity>
-    </View>
-  </View>;
+    </View>;
+  }
+  return <View>
+      <Text>loading</Text>
+    </View>;
 }
-
-export default ManageCampaign;
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -242,3 +225,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
+
+export default ChatRoomDrawer;

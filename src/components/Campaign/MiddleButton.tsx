@@ -15,60 +15,15 @@ import ReviewButton from './ReviewButton';
 interface ButtonProps {
   campaignDetail: CampaignData;
   setRefresh: any;
+  isHost: boolean;
+  inCampaign: boolean;
+  received: boolean;
 }
 
-function MiddleButton({ campaignDetail, setRefresh }: ButtonProps) {
-  const navigation = useNavigation();
-
-  const { hostId, campaignId, campaignStatus } = campaignDetail;
-  const userInfo = useRecoilState(userState)[0];
-  const accessToken = useRecoilState(userAccessToken)[0];
-
-  const [isHost, setHost] = useState(false);
-  const [inCampaign, setInCampaign] = useState(false);
-
-  const [received, setReceived] = useState(false);
-
-  useEffect(() => {
-    const setInfo = async () => {
-      if (userInfo.userId === hostId) {
-        setHost(true);
-      } else {
-        const isInCampaign = await axios.get(
-          `${Config.API_URL}/campaign/join/in/${campaignId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        setInCampaign(isInCampaign.data.data);
-      }
-    };
-
-    setInfo();
-  }, []);
-
-  useEffect(() => {
-    const checkReceived = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/campaign/join/receive/${campaignId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        if (response.status === 200) {
-          setReceived(response.data.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    checkReceived();
-  }, []);
+function MiddleButton({
+  campaignDetail, setRefresh, isHost, inCampaign, received,
+}: ButtonProps) {
+  const { campaignStatus } = campaignDetail;
 
   return <>
     {isHost

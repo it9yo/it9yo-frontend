@@ -128,8 +128,6 @@ function CreateCampaign({ navigation, route }) {
         if (response.status === 200) {
           Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
           const { campaignId } = response.data.data;
-          const text = `'${title}' 캠페인이 생성되었습니다.`;
-          sendMessage(text, campaignId);
           navigation.dispatch(CommonActions.goBack());
         }
       } catch (error) {

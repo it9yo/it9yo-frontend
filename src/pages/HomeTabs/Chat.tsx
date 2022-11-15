@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, useWindowDimensions } from 'react-native';
+import {
+  SafeAreaView, StyleSheet, Text, useWindowDimensions,
+} from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
 import Toast from 'react-native-toast-message';
@@ -14,7 +16,7 @@ import { IMessage } from 'react-native-gifted-chat';
 import { useRecoilState } from 'recoil';
 import { currentChatRoomId } from '@src/states';
 
-function Chat() {
+function Chat({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -37,28 +39,19 @@ function Chat() {
       const receivedMessage = JSON.parse(notification.body);
       if (chatRoomId && chatRoomId === receivedMessage.campaignId) return;
 
+      setReceivedMessage({ ...receivedMessage, messageId, sentTime });
       const {
-        campaignId, userId, nickName, content, profileImageUrl, userChat,
+        nickName, content, campaignId, campaignTitle,
       } = receivedMessage;
 
-      const messageData: ReceivedMessageData = {
-        campaignId,
-        messageId,
-        sentTime,
-        userId,
-        nickName,
-        content,
-        profileImageUrl,
-        userChat,
-      };
-
-      // TODO: 로그아웃 상태일때 오는지 확인
       Toast.show({
         text1: nickName,
         text2: content,
+        onPress: () => {
+          Toast.hide();
+          navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
+        },
       });
-
-      setReceivedMessage(messageData);
     });
 
     return unsubscribe;
@@ -92,7 +85,7 @@ function Chat() {
     };
 
     const newMessageList: IMessage[] = [newMessage, ...messageList];
-    AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessageList));
+    await AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessageList));
   };
 
   const renderScene = SceneMap({
@@ -107,21 +100,21 @@ function Chat() {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
-        renderTabBar={props => (
+        renderTabBar={(props) => (
           <TabBar
             {...props}
             indicatorStyle={{
-              backgroundColor: "#FF9E3E",
+              backgroundColor: '#FF9E3E',
             }}
             style={{
-              backgroundColor: "white",
-              fontWeight: "bold",
+              backgroundColor: 'white',
+              fontWeight: 'bold',
               shadowOffset: { height: 0, width: 0 },
-              shadowColor: "transparent"
+              shadowColor: 'transparent',
             }}
-            pressColor={"transparent"}
+            pressColor={'transparent'}
             renderLabel={({ route, focused }) => (
-              <Text focused={focused} style={{color: focused? '#FF9E3E' : '#282828'}}>{route.title}</Text>
+              <Text focused={focused} style={{ color: focused ? '#FF9E3E' : '#282828' }}>{route.title}</Text>
             )}
           />
         )}

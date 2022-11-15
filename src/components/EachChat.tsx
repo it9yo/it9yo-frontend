@@ -47,8 +47,8 @@ function EachChat({ item } : { item: ChatRoomData }) {
     const messageList: IMessage[] = JSON.parse(prevMessages);
     const recentMessage = messageList[0];
     const { text, createdAt } = recentMessage;
-    console.log(createdAt, typeof createdAt);
-    setLastChat(text);
+    const lastText = text.length > 20 ? `${text.substring(0, 20)}...` : text;
+    setLastChat(lastText);
     const lastTimeText = `${timeConversion(new Date().getTime() - new Date(createdAt).getTime())} 전`;
     setLastTime(lastTimeText);
   };

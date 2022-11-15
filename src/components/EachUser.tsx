@@ -6,39 +6,40 @@ import {
 import StatusNameList from '@constants/statusname';
 import { JoinUserInfo } from '@src/@types';
 
-import ProfileIcon from '@assets/images/profile.png';
-import CheckBox from '@react-native-community/checkbox';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 interface EachUserProps {
   item: JoinUserInfo;
-  campaignStatus: string;
-  editable: boolean;
+  campaignStatus?: string;
+  itemPrice?: number;
 }
-function EachUser({ item, campaignStatus, editable } : EachUserProps) {
-  const {
-    userId, nickName, quantity, receiveStatus, deposit,
-  } = item;
 
-  const [checked, setChecked] = useState(deposit);
+function numberWithCommas(x: number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function EachUser({ item, campaignStatus, itemPrice } : EachUserProps) {
+  const {
+    userId, nickName, quantity, receiveStatus, deposit, profileImage,
+  } = item;
 
   return <View style={styles.container}>
     <View style={styles.leftContainer}>
-      {editable && <CheckBox
-        tintColors={{
-          true: '#ff9e3e',
-        }}
-        value={checked}
-        onValueChange={(newValue) => {
-          setChecked(newValue);
-        }}/>
-      }
-      <Image style={styles.image} source={ProfileIcon} />
+      <Image style={styles.image} source={{ uri: profileImage }} />
       <Text style={styles.infoText}>{nickName}</Text>
-      <View style={styles.depositStatusBadge}>
+      {deposit === true
+        ? <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
+        <Text style={{ ...styles.depositStatusText, color: 'white' }}>입금완료</Text>
+      </View>
+        : <View style={styles.depositStatusBadge}>
         <Text style={styles.depositStatusText}>입금대기</Text>
       </View>
+      }
+      <Icon name='swap' size={20} color="#adb7cb"/>
     </View>
-    <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>
+    {itemPrice
+      ? <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>
+      : <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>}
 
   </View>;
 }
@@ -57,8 +58,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'black',
     marginRight: 10,
   },
   infoText: {
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 17,
     backgroundColor: '#e0e0e0',
-    marginLeft: 10,
+    marginHorizontal: 10,
   },
   depositStatusText: {
     fontFamily: 'SpoqaHanSansNeo',

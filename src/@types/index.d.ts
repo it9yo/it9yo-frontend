@@ -152,6 +152,9 @@ export interface ReceivedMessageData {
   content: string;
   userChat: boolean;
   profileImageUrl: string;
+  hostId: number;
+  chatRoomName: string;
+  campaignTitle: string;
 }
 
 export interface JoinUserInfo {
@@ -160,4 +163,5 @@ export interface JoinUserInfo {
   quantity: number;
   receiveStatus: string;
   deposit: boolean;
+  profileImage: string;
 }

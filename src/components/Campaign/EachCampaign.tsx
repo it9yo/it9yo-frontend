@@ -16,10 +16,9 @@ function numberWithCommas(x: number) {
 
 interface CampaignProps {
   item: CampaignData;
-  type?: string;
 }
 
-function EachCampaign({ item, type }: CampaignProps) {
+function EachCampaign({ item }: CampaignProps) {
   const navigation = useNavigation();
   const {
     campaignId, title, eupMyeonDong, itemImageURLs, hostId,
@@ -27,16 +26,10 @@ function EachCampaign({ item, type }: CampaignProps) {
   } = item;
 
   const handlePress = () => {
-    if (type === 'manage') {
-      navigation.navigate('ManageCampaign', {
-        campaignId, title, hostId, itemPrice, campaignStatus, itemImageURLs, participatedPersonCnt,
-      });
-    } else {
-      navigation.navigate('CampaignDetail', {
-        screen: 'DetailHome',
-        params: { campaignId },
-      });
-    }
+    navigation.navigate('CampaignDetail', {
+      screen: 'DetailHome',
+      params: { campaignId },
+    });
   };
 
   return <Pressable onPress={handlePress}>
