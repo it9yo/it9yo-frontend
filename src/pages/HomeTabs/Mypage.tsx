@@ -8,6 +8,11 @@ import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Pay from '@assets/images/pay.png';
+import Review from '@assets/images/review.png';
+import DoneCampaign from '@assets/images/done-campaign.png';
+import OnHeart from '@assets/images/on-heart.png';
+import Survey from '@assets/images/survey.png';
 
 import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 
@@ -98,79 +103,74 @@ function Mypage({ navigation }) {
             {userInfo.profileImageUrl
               ? <Image style={styles.profileThumbnail} source={{ uri: userInfo.profileImageUrl }}/>
               : <View style={styles.profileThumbnail}>
-              <Icon style={{ paddingTop: 7 }} name='ios-person' size={45} color='white' />
+              <Icon style={{ paddingTop: 7 }} name='ios-person' size={60} color='white' />
             </View>}
-            <Pressable onPress={onChangeProfilePhoto}>
-              <Icon name='camera-outline' size={30} color='gray' />
-            </Pressable>
+            
           </View>
-
-          <Text style={{ color: 'black', fontSize: 18 }}>
+          <Pressable onPress={onChangeProfilePhoto} style={styles.changeProfilePhotoContainer}>
+            <Icon name='camera-outline' size={15} color='gray' />
+          </Pressable>
+          <Text style={{ color: 'black', fontSize: 18, position: 'relative', left: -70}}>
             {userInfo.nickName}
           </Text>
 
           <View style={{ alignItems: 'center' }}>
             <Pressable onPress={() => navigation.navigate('EditProfile')}>
               <View style={styles.button}>
-                <Text style={{ color: 'white', fontSize: 16 }}>프로필 수정</Text>
+                <Text style={{ color: '#f6aa63', fontSize: 13 }}>프로필 수정</Text>
               </View>
             </Pressable>
             <Pressable onPress={onLogout}>
-              <Text style={{ color: 'black', fontSize: 16, marginTop: 10 }}>로그아웃</Text>
+            <View style={styles.button}>
+                <Text style={{ color: '#f6aa63', fontSize: 13 }}>로그아웃</Text>
+              </View>
             </Pressable>
           </View>
         </View>
 
-        <View style={styles.horizenLine} />
-
-        <View style={styles.contentBlock}>
-
-          {/* 잇구요 페이 */}
-          <Pressable onPress={() => navigation.navigate('It9yoPay')}>
-            <View style={styles.button}>
-              <Text style={{ color: 'white', fontSize: 16 }}>잇구요 페이</Text>
-            </View>
-          </Pressable>
-
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ color: 'black', fontSize: 18 }}>
-              {'잔여 포인트: '}
-            </Text>
-            <Text style={{ color: 'black', fontSize: 18, fontWeight: '500' }}>
-              {`${numberWithCommas(userInfo.point)} P`}
-            </Text>
-          </View>
-
-        </View>
+        
       </View>
 
       <View style={styles.mainContent}>
-
-        {/* 완료한 공동구매 내역 */}
         <View style={styles.menuBlock}>
-          <Text style={styles.menuText}>
-            완료한 공동구매 내역
-          </Text>
-          <Icon name='ios-chevron-forward' size={24} color='black' />
+          <View style={{flexDirection: 'row'}}>
+            <Image style={styles.icon} source={Pay}/>
+            <Text style={styles.menuText}>
+              잇구요 페이
+            </Text>
+          </View>
+            <View style={{flexDirection: 'row'}}>
+            <Text style={styles.payPoint}>
+            {`${numberWithCommas(userInfo.point)} P`}
+            </Text>
+            <Icon onPress={() => navigation.navigate('It9yoPay')} name='ios-chevron-forward' size={24} color='black' />
+          </View>
         </View>
-
         <View style={styles.horizenLine} />
+
+        
 
         {/* 후기 남기기 */}
         <View style={styles.menuBlock}>
-          <Text style={styles.menuText}>
-            후기 남기기
-          </Text>
+        <View style={{flexDirection: 'row'}}>
+          <Image style={styles.icon} source={Review}/>
+            <Text style={styles.menuText}>
+              후기 남기기
+            </Text>
+        </View>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
 
         <View style={styles.horizenLine} />
 
-        {/* 신고하기 */}
+        {/* 완료한 공동구매 내역 */}
         <View style={styles.menuBlock}>
+        <View style={{flexDirection: 'row'}}>
+        <Image style={styles.icon} source={DoneCampaign}/>
           <Text style={styles.menuText}>
-            신고하기
+            완료한 공동구매 내역
           </Text>
+        </View>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
 
@@ -179,9 +179,12 @@ function Mypage({ navigation }) {
         {/* 찜한 공동구매 목록 */}
         <Pressable onPress={() => navigation.navigate('WishList')}>
           <View style={styles.menuBlock}>
+          <View style={{flexDirection: 'row'}}>
+          <Image style={styles.icon} source={OnHeart}/>
             <Text style={styles.menuText}>
               찜한 공동구매 목록
             </Text>
+          </View>
             <Icon name='ios-chevron-forward' size={24} color='black' />
           </View>
         </Pressable>
@@ -190,9 +193,12 @@ function Mypage({ navigation }) {
 
         {/* 문의하기 */}
         <View style={styles.menuBlock}>
+        <View style={{flexDirection: 'row'}}>
+        <Image style={styles.icon} source={Survey}/>
           <Text style={styles.menuText}>
             문의하기
           </Text>
+        </View>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
 
@@ -210,9 +216,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginTop: 10,
     marginBottom: 30,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: 'gray',
   },
   contentBlock: {
     paddingVertical: 10,
@@ -226,35 +229,60 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 9,
+    marginBottom: 9,
   },
   horizenLine: {
-    borderBottomColor: 'gray',
-    borderBottomWidth: 1,
+    borderBottomColor: '#f6f6f6',
+    borderBottomWidth: 2,
   },
   button: {
-    maxWidth: 100,
+    width: 92,
+    height: 36,
     paddingVertical: 5,
     paddingHorizontal: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E2B950',
-    borderColor: 'black',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 5,
+    backgroundColor: '#fff7ef',
+    marginTop: 5,
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: '#f6aa63',
   },
   profileThumbnail: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 50,
-    height: 50,
-    borderRadius: 50 / 2,
+    width: 60,
+    height: 60,
     backgroundColor: 'gray',
+    borderRadius: 30,
   },
   menuText: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: '400',
+    marginLeft: 20,
   },
+  changeProfilePhotoContainer: {
+    backgroundColor: 'white',
+    position: 'relative',
+    left: -60,
+    top: 25,
+    zIndex: 0,
+    borderRadius: 20,
+    borderWidth: 1,
+    padding: 3,
+    borderColor: '#eeeeee',
+  },
+  icon: {
+    width: 25,
+    height: 25,
+  },
+  payPoint:{
+    color: '#ff9e3e',
+    fontSize: 14,
+    marginRight: 20,
+  }
 });
 
 export default Mypage;

@@ -69,15 +69,15 @@ function HomeTabs() {
         name="Manage"
         component={Manage}
         options={{
-          title: '캠페인관리',
-          tabBarLabel: '캠페인관리',
+          title: '공구관리',
+          tabBarLabel: '공구관리',
         }}
         />
       <Tab.Screen
         name="Chat"
         component={Chat}
         options={{
-          title: '채팅 목록',
+          title: '채팅',
           tabBarLabel: '채팅',
         }}
       />
@@ -86,7 +86,7 @@ function HomeTabs() {
         component={Mypage}
         options={{
           title: '내 정보',
-          tabBarLabel: '내정보',
+          tabBarLabel: '내 정보',
         }}
       />
   </Tab.Navigator>);
