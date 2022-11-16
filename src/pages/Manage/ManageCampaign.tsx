@@ -11,6 +11,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { JoinUserInfo } from '@src/@types';
 import EachUser from '../../components/EachUser';
+import { CampaignData } from '../../@types/index.d';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -20,9 +21,10 @@ const pageSize = 10;
 
 function ManageCampaign({ navigation, route }) {
   const accessToken = useRecoilState(userAccessToken)[0];
+  const campaignData: CampaignData = route.params;
   const {
     campaignId, title, hostId, itemPrice, campaignStatus, itemImageURLs, participatedPersonCnt,
-  } = route.params;
+  } = campaignData;
 
   const [userList, setUserList] = useState<JoinUserInfo[]>([]);
 
@@ -36,6 +38,7 @@ function ManageCampaign({ navigation, route }) {
       headerTitle: route.params.title,
     });
     loadData();
+    console.log(campaignData);
   }, [navigation, route]);
 
   const loadData = async () => {
@@ -103,7 +106,7 @@ function ManageCampaign({ navigation, route }) {
   };
 
   const renderItem = ({ item }: { item: JoinUserInfo }) => (
-    <EachUser item={item} campaignStatus={campaignStatus} itemPrice={itemPrice} />
+    <EachUser item={item} campaignData={campaignData} />
   );
 
   return <View style={styles.container}>

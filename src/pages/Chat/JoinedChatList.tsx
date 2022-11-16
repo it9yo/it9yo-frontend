@@ -43,14 +43,20 @@ function JoinedChatList({ navigation }) {
         },
       );
       if (response.status === 200) {
-        if (response.data.data.numberOfElements > 0) {
-          const { content, totalPages } = response.data.data;
-          console.log(response.data.data);
-          if (currentPage === totalPages - 1) setNoMoreData(true);
-          if (chatList.length <= pageSize * currentPage) {
-            setChatList((prev) => [...prev, ...content]);
-            setCurrentPage((prev) => prev + 1);
-          }
+        const {
+          content, first, last, number, empty,
+        } = response.data.data;
+        if (empty) return;
+        if (first) {
+          setChatList([...content]);
+        } else {
+          setChatList((prev) => [...prev, ...content]);
+        }
+        setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
         }
       }
     } catch (error) {
@@ -72,7 +78,10 @@ function JoinedChatList({ navigation }) {
 
   return <FlatList
       data={chatList}
-      keyExtractor={(item) => `joinedChat_${item.campaignId.toString()}`}
+      keyExtractor={(item) => {
+        console.log(item.campaignId);
+        return `joinedChat_${item.campaignId.toString()}`;
+      }}
       renderItem={renderItem}
       onEndReached={onEndReached}
       onEndReachedThreshold={1}

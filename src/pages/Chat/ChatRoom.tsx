@@ -4,7 +4,7 @@ import React, {
 import AsyncStorage from '@react-native-community/async-storage';
 
 import messaging from '@react-native-firebase/messaging';
-import { JoinUserInfo, ReceivedMessageData } from '@src/@types';
+import { CampaignData, JoinUserInfo, ReceivedMessageData } from '@src/@types';
 
 import { GiftedChat, type IMessage } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -24,14 +24,6 @@ import DrawerButton from '@components/Header/DrawerButton';
 import StatusNameList from '@src/constants/statusname';
 import EachUser from '@src/components/EachUser';
 
-interface DrawerData {
-  campaignTitle: string;
-  campaignStatus: string;
-  itemImageURLs: string[];
-  hostName: string;
-  participatedPersonCnt: number;
-}
-
 const pageSize = 10;
 
 function ChatRoom({ navigation, route }) {
@@ -48,7 +40,7 @@ function ChatRoom({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
 
-  const [campaignData, setCampaignData] = useState<DrawerData>();
+  const [campaignData, setCampaignData] = useState<CampaignData | undefined>();
 
   const drawer = useRef(null);
 
@@ -60,8 +52,15 @@ function ChatRoom({ navigation, route }) {
   }, [navigation, route]);
 
   useEffect(() => {
+    console.log(drawer.current);
+  }, [drawer.current]);
+
+  useEffect(() => {
     setChatRoomId(campaignId);
     initChatData();
+    loadCampaignDetail();
+    loadUserData();
+
     return () => {
       setChatRoomId(null);
     };
@@ -93,11 +92,27 @@ function ChatRoom({ navigation, route }) {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const loadCampaignDetail = async () => {
+    if (loading) return;
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/campaign/detail/${campaignId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const campaignDetailData: CampaignData = response.data.data;
+        setCampaignData(campaignDetailData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-  const loadData = async () => {
+  const loadUserData = async () => {
     try {
       setLoading(true);
       const url = `${Config.API_URL}/campaign/detail/v2/${campaignId}?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
@@ -111,23 +126,12 @@ function ChatRoom({ navigation, route }) {
       );
 
       if (response.status === 200) {
-        const {
-          campaignTitle, campaignStatus, itemImageURLs, hostName, participatedPersonCnt, userInfos,
-        } = response.data.data;
+        const { userInfos } = response.data.data;
         const {
           content, first, last, number, empty,
         } = userInfos;
         if (empty) return;
         if (first) {
-          const campaign: DrawerData = {
-            campaignTitle,
-            campaignStatus,
-            itemImageURLs,
-            hostName,
-            participatedPersonCnt,
-          };
-          console.log(campaign);
-          setCampaignData(campaign);
           setUserList([...content]);
         } else {
           setUserList((prev) => [...prev, ...content]);
@@ -148,7 +152,7 @@ function ChatRoom({ navigation, route }) {
 
   const onEndReached = () => {
     if (!noMoreData || !loading) {
-      loadData();
+      loadUserData();
     }
   };
 
@@ -227,7 +231,7 @@ function ChatRoom({ navigation, route }) {
   }, []);
 
   const renderItem = ({ item }: { item: JoinUserInfo }) => (
-    <EachUser item={item} campaignStatus={campaignData?.campaignStatus} />
+    <EachUser item={item} campaignData={campaignData} />
   );
 
   const ChatRoomDrawer = () => (
@@ -242,7 +246,7 @@ function ChatRoom({ navigation, route }) {
               <Text style={styles.statusText}>{StatusNameList[campaignData.campaignStatus]}</Text>
             </View>
 
-            <Text style={styles.campaignInfoText}>{campaignData.campaignTitle}</Text>
+            <Text style={styles.campaignInfoText}>{campaignData.title}</Text>
 
             {/* <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text> */}
           </View>

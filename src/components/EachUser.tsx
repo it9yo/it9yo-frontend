@@ -3,39 +3,65 @@ import {
   Image, Pressable, StyleSheet, Text, View,
 } from 'react-native';
 
-import StatusNameList from '@constants/statusname';
-import { JoinUserInfo } from '@src/@types';
+import { JoinUserInfo, CampaignData } from '@src/@types';
 
 import Icon from 'react-native-vector-icons/AntDesign';
+import { useRecoilState } from 'recoil';
+import { userAccessToken } from '@src/states';
+import axios from 'axios';
+import Config from 'react-native-config';
 
 interface EachUserProps {
   item: JoinUserInfo;
-  campaignStatus?: string;
-  itemPrice?: number;
+  campaignData: CampaignData;
 }
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function EachUser({ item, campaignStatus, itemPrice } : EachUserProps) {
+function EachUser({ item, campaignData } : EachUserProps) {
+  const accessToken = useRecoilState(userAccessToken)[0];
   const {
     userId, nickName, quantity, receiveStatus, deposit, profileImage,
   } = item;
+  const { campaignId, itemPrice } = campaignData;
+
+  const [isDeposit, setDeposit] = useState(deposit);
+
+  const handleDeposit = async () => {
+    try {
+      const response = await axios.post(
+        `${Config.API_URL}/campaign/join/deposit/v2/${campaignId}/${userId}/${!isDeposit}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        setDeposit((prev) => !prev);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return <View style={styles.container}>
     <View style={styles.leftContainer}>
       <Image style={styles.image} source={{ uri: profileImage }} />
       <Text style={styles.infoText}>{nickName}</Text>
-      {deposit === true
-        ? <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
+      {isDeposit ? <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
         <Text style={{ ...styles.depositStatusText, color: 'white' }}>입금완료</Text>
       </View>
         : <View style={styles.depositStatusBadge}>
         <Text style={styles.depositStatusText}>입금대기</Text>
       </View>
       }
-      <Icon name='swap' size={20} color="#adb7cb"/>
+      <Pressable onPress={handleDeposit}>
+        <Icon name='swap' size={20} color="#adb7cb"/>
+      </Pressable>
     </View>
     {itemPrice
       ? <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>

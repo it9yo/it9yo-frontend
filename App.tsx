@@ -28,8 +28,8 @@ import WishList from '@pages/Mypage/WishList';
 import { userState, userAccessToken } from '@src/states';
 
 import BackButton from '@components/Header/BackButton';
-import CloseButton from '@components/Header/CloseButton';
 import ManageCampaign from '@src/pages/Manage/ManageCampaign';
+import CreateReview from '@src/pages/Manage/CreateReview';
 
 const Stack = createNativeStackNavigator();
 
@@ -172,6 +172,11 @@ function App() {
               name="WishList"
               component={WishList}
               options={{ title: '찜 목록' }}
+            />
+            <Stack.Screen
+              name="CreateReview"
+              component={CreateReview}
+              options={{ title: '슈퍼바이저 평가하기' }}
             />
           </Stack.Group>
         </Stack.Navigator>

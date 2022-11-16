@@ -36,7 +36,7 @@ function CreatedCampaignList() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {

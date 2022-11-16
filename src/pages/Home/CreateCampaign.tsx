@@ -127,34 +127,14 @@ function CreateCampaign({ navigation, route }) {
 
         if (response.status === 200) {
           Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
-          const { campaignId } = response.data.data;
-          navigation.dispatch(CommonActions.goBack());
+          // navigation.dispatch(CommonActions.goBack());
+          navigation.goBack();
         }
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
-    }
-  };
-
-  const sendMessage = async (text: string, campaignId: number) => {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/chat/publish/${campaignId}`,
-        {
-          content: text,
-          userChat: false,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      console.log(response);
-    } catch (error) {
-      console.error(error);
     }
   };
 

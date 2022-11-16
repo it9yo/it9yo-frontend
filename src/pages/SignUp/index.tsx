@@ -11,7 +11,7 @@ import Terms from './Terms';
 const Stack = createNativeStackNavigator();
 
 function SignUp() {
-  return <Stack.Navigator initialRouteName='Terms'>
+  return <Stack.Navigator initialRouteName='Location'>
     <Stack.Group
       screenOptions={({ navigation }) => ({
         headerLeft: () => <BackButton onPress={navigation.goBack} />,
