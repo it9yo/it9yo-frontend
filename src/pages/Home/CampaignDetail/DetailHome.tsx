@@ -19,7 +19,6 @@ import StatusNameList from '@constants/statusname';
 
 import GPSIcon from '@assets/images/gps.png';
 import HostIcon from '@assets/images/host.png';
-import { setHours } from 'date-fns';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -141,8 +140,7 @@ function DetailHome({ navigation, route }) {
 
               <Pressable
                 style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
-                onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}
-              >
+                onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}>
                 <Text style={StyleSheet.compose(styles.hostInfoText, { color: '#306fe1', marginRight: 2 })}>
                   지도보기
                 </Text>
@@ -156,6 +154,15 @@ function DetailHome({ navigation, route }) {
               <Text style={styles.hostInfoText}>
                 {campaignDetail.hostNickName}
               </Text>
+
+              <Pressable
+                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => navigation.navigate('HostReview', { campaignDetail })}>
+                <Text style={StyleSheet.compose(styles.hostInfoText, { color: '#306fe1', marginRight: 2 })}>
+                  프로필
+                </Text>
+                <Icon name='md-chevron-forward-sharp' size={20} color='#A7A7A8' />
+              </Pressable>
             </View>
           </View>
 

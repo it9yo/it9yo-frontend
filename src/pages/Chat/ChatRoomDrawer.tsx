@@ -1,143 +1,70 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
-  View, Image, Text, StyleSheet, Pressable, Platform, Dimensions, ActivityIndicator, FlatList, TouchableOpacity, Alert,
+  View, Image, Text, StyleSheet, ActivityIndicator, FlatList,
 } from 'react-native';
 
 import StatusNameList from '@constants/statusname';
 
-import { useRecoilState } from 'recoil';
-import { userAccessToken } from '@src/states';
-import axios from 'axios';
-import Config from 'react-native-config';
 import { JoinUserInfo } from '@src/@types';
 import EachUser from '../../components/EachUser';
+import { CampaignData } from '../../@types/index.d';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 interface DrawerData {
-  campaignTitle: string;
-  campaignStatus: string;
-  itemImageURLs: string[];
-  hostName: string;
-  participatedPersonCnt: number;
+  campaignData: CampaignData;
+  userList: JoinUserInfo[];
+  onEndReached: any;
+  noMoreData: boolean;
+  loading: boolean;
 }
 
-const pageSize = 20;
-
-function ChatRoomDrawer({ campaignId } : { campaignId: number }) {
-  const accessToken = useRecoilState(userAccessToken)[0];
-
-  const [userList, setUserList] = useState<JoinUserInfo[]>([]);
-
-  const [currentPage, setCurrentPage] = useState(0);
-  const [noMoreData, setNoMoreData] = useState(false);
-
-  const [loading, setLoading] = useState(false);
-
-  const [campaignData, setCampaignData] = useState<DrawerData>();
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const url = `${Config.API_URL}/campaign/detail/v2/${campaignId}?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
-      const response = await axios.get(
-        url,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-
-      if (response.status === 200) {
-        const {
-          content, first, last, number, empty, campaignTitle,
-          campaignStatus, itemImageURLs, hostName, participatedPersonCnt,
-        } = response.data.data.userInfos;
-        if (empty) return;
-        if (first) {
-          setCampaignData({
-            campaignTitle, campaignStatus, itemImageURLs, hostName, participatedPersonCnt,
-          });
-          setUserList([...content]);
-        } else {
-          setUserList((prev) => [...prev, ...content]);
-        }
-        setCurrentPage(number + 1);
-        if (last) {
-          setNoMoreData(true);
-        } else {
-          setNoMoreData(false);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onEndReached = () => {
-    if (!noMoreData || !loading) {
-      loadData();
-    }
-  };
-
+const ChatRoomDrawer = ({
+  campaignData, userList, onEndReached, noMoreData, loading,
+}: DrawerData) => {
   const renderItem = ({ item }: { item: JoinUserInfo }) => (
-    <EachUser
-      item={item}
-      campaignStatus={campaignData.campaignStatus}
-      itemPrice={campaignData.itemPrice} />
+     <EachUser item={item} campaignData={campaignData} type='drawer' />
   );
+  return (<View style={styles.container}>
+    <View style={styles.campaignInfoZone}>
+      <Image style={styles.campaignThumbnail} source={{ uri: campaignData.itemImageURLs[0] }} />
 
-  if (campaignData) {
-    return <View style={styles.container}>
-      <View style={styles.campaignInfoZone}>
-        <Image style={styles.campaignThumbnail} source={{ uri: campaignData.itemImageURLs[0] }} />
-
-        <View>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{StatusNameList[campaignData.campaignStatus]}</Text>
-          </View>
-
-          <Text style={styles.campaignInfoText}>{campaignData.campaignTitle}</Text>
-
-          {/* <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text> */}
+      <View>
+        <View style={styles.statusBadge}>
+          <Text style={styles.statusText}>{StatusNameList[campaignData.campaignStatus]}</Text>
         </View>
 
+        <Text style={styles.campaignInfoText}>{campaignData.title}</Text>
+
+        {/* <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text> */}
       </View>
 
-      <View style={styles.userListContainer}>
-        {/* 참여중인 인원 */}
-        <View style={styles.userCntZone}>
-          <Text style={styles.userCntText}>총 </Text>
-          <Text style={{ ...styles.userCntText, fontWeight: 'bold' }}>{campaignData.participatedPersonCnt}명</Text>
-          <Text style={styles.userCntText}> 참여중</Text>
-        </View>
+    </View>
 
-        {/* 유저 정보 리스트 */}
-        {userList.length > 0 && <FlatList
-          data={userList}
-          keyExtractor={(item) => `userList_${item.userId.toString()}`}
-          renderItem={renderItem}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={1}
-          ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
-        />}
+    <View style={styles.userListContainer}>
+      {/* 참여중인 인원 */}
+      <View style={styles.userCntZone}>
+        <Text style={styles.userCntText}>총 </Text>
+        <Text style={{ ...styles.userCntText, fontWeight: 'bold' }}>{campaignData.participatedPersonCnt}명</Text>
+        <Text style={styles.userCntText}> 참여중</Text>
       </View>
 
-    </View>;
-  }
-  return <View>
-      <Text>loading</Text>
-    </View>;
-}
+      {/* 유저 정보 리스트 */}
+      {userList.length > 0 && <FlatList
+        data={userList}
+        keyExtractor={(item) => `userList_${item.userId.toString()}`}
+        renderItem={renderItem}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={1}
+        ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+      />}
+    </View>
+
+  </View>);
+};
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
@@ -199,30 +126,6 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#3b3b3b',
-  },
-  buttonZone: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 60,
-    flexDirection: 'row',
-  },
-  button: {
-    flex: 1,
-    backgroundColor: '#ababab',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonActive: {
-    backgroundColor: '#ff9e3e',
-  },
-  buttonText: {
-    fontFamily: 'SpoqaHanSansNeo',
-    fontSize: 16,
-    fontWeight: '700',
-    fontStyle: 'normal',
-    letterSpacing: 0,
-    color: '#ffffff',
   },
 });
 

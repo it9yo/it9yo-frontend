@@ -30,6 +30,7 @@ import { userState, userAccessToken } from '@src/states';
 import BackButton from '@components/Header/BackButton';
 import ManageCampaign from '@src/pages/Manage/ManageCampaign';
 import CreateReview from '@src/pages/Manage/CreateReview';
+import HostReview from '@src/pages/Home/CampaignDetail/HostReview';
 
 const Stack = createNativeStackNavigator();
 
@@ -176,7 +177,12 @@ function App() {
             <Stack.Screen
               name="CreateReview"
               component={CreateReview}
-              options={{ title: '슈퍼바이저 평가하기' }}
+              options={{ title: '슈퍼바이어 평가하기' }}
+            />
+            <Stack.Screen
+              name="HostReview"
+              component={HostReview}
+              options={{ title: '슈퍼바이어 프로필' }}
             />
           </Stack.Group>
         </Stack.Navigator>

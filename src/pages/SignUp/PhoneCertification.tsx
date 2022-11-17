@@ -50,20 +50,22 @@ function PhoneCertification({ navigation }: Props) {
         },
       );
 
-      if (phoneNumberCheck.status !== 200) {
-        Alert.alert('알림', '이미 등록된 전화번호입니다.');
-        return;
+      if (phoneNumberCheck.status === 200) {
+        const response = await axios.post(
+          `${Config.API_URL}/auth/phoneAuth`,
+          {
+            tel: phoneNumber,
+          },
+        );
+        setCertNumber(response.data.data);
       }
-
-      const response = await axios.post(
-        `${Config.API_URL}/auth/phoneAuth`,
-        {
-          tel: phoneNumber,
-        },
-      );
-      setCertNumber(response.data.data);
     } catch (error) {
-      console.error(error);
+      const { code, message } = error.response.data;
+      if (code === 'phoneAlreadyExists') {
+        Alert.alert('알림', message);
+      } else {
+        console.error(error);
+      }
     } finally {
       setLoading(false);
     }

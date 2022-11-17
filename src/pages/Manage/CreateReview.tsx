@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  View, Image, Text, StyleSheet, Pressable, Platform, Dimensions, ActivityIndicator, FlatList, TouchableOpacity, Alert, TextInput, KeyboardAvoidingView, Touchable,
+  View, Image, Text, StyleSheet, Platform, TouchableOpacity,
+  Alert, TextInput, KeyboardAvoidingView,
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
-import { CampaignData, JoinUserInfo } from '@src/@types';
+import { CampaignData } from '@src/@types';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 function numberWithCommas(x: number) {
@@ -26,10 +27,6 @@ function CreateReview({ navigation, route }) {
   const [loading, setLoading] = useState(false);
 
   const [content, setContent] = useState('');
-
-  useEffect(() => {
-
-  }, []);
 
   const submitRating = async () => {
     setLoading(true);

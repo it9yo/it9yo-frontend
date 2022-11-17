@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image, Pressable, StyleSheet, Text, View,
 } from 'react-native';
@@ -14,13 +14,14 @@ import Config from 'react-native-config';
 interface EachUserProps {
   item: JoinUserInfo;
   campaignData: CampaignData;
+  type?: string;
 }
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function EachUser({ item, campaignData } : EachUserProps) {
+function EachUser({ item, campaignData, type } : EachUserProps) {
   const accessToken = useRecoilState(userAccessToken)[0];
   const {
     userId, nickName, quantity, receiveStatus, deposit, profileImage,
@@ -28,6 +29,11 @@ function EachUser({ item, campaignData } : EachUserProps) {
   const { campaignId, itemPrice } = campaignData;
 
   const [isDeposit, setDeposit] = useState(deposit);
+
+  useEffect(() => {
+    console.log('type', type);
+    console.log('campaignData', campaignData);
+  }, []);
 
   const handleDeposit = async () => {
     try {
@@ -59,11 +65,13 @@ function EachUser({ item, campaignData } : EachUserProps) {
         <Text style={styles.depositStatusText}>입금대기</Text>
       </View>
       }
-      <Pressable onPress={handleDeposit}>
-        <Icon name='swap' size={20} color="#adb7cb"/>
-      </Pressable>
+      {type !== 'drawer'
+        && <Pressable onPress={handleDeposit}>
+          <Icon name='swap' size={20} color="#adb7cb"/>
+        </Pressable>
+      }
     </View>
-    {itemPrice
+    {type !== 'drawer' && itemPrice
       ? <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>
       : <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>}
 

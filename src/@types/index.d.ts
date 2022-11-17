@@ -165,3 +165,12 @@ export interface JoinUserInfo {
   deposit: boolean;
   profileImage: string;
 }
+
+export interface ReviewInfo {
+  campaignCommentId : number;
+  writerId : number;
+  campaignId : number;
+  content : string;
+  point : number;
+  parentCommentId : number | null;
+}
