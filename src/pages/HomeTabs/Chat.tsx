@@ -40,9 +40,18 @@ function Chat({ navigation }) {
       if (chatRoomId && chatRoomId === receivedMessage.campaignId) return;
 
       setReceivedMessage({ ...receivedMessage, messageId, sentTime });
+
       const {
         nickName, content, campaignId, campaignTitle,
       } = receivedMessage;
+
+      const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
+      const newUnreadMessages = Number(unreadMessages) + 1;
+      await AsyncStorage.setItem(`unreadMessages_${campaignId}`, String(newUnreadMessages));
+
+      const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
+      const newUnreadAllMessages = Number(unreadAllMessages) + 1;
+      await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
 
       Toast.show({
         text1: nickName,

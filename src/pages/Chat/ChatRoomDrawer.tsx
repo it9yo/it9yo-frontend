@@ -9,10 +9,6 @@ import { JoinUserInfo } from '@src/@types';
 import EachUser from '../../components/EachUser';
 import { CampaignData } from '../../@types/index.d';
 
-function numberWithCommas(x: number) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
 interface DrawerData {
   campaignData: CampaignData;
   userList: JoinUserInfo[];

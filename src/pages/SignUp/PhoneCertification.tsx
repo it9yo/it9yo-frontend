@@ -43,29 +43,29 @@ function PhoneCertification({ navigation }: Props) {
     }
     try {
       setLoading(true);
-      const phoneNumberCheck = await axios.post(
-        `${Config.API_URL}/auth/phoneExists`,
+      // const phoneNumberCheck = await axios.post(
+      //   `${Config.API_URL}/auth/phoneExists`,
+      //   {
+      //     phoneNumber,
+      //   },
+      // );
+
+      const response = await axios.post(
+        `${Config.API_URL}/auth/phoneAuth`,
         {
-          phoneNumber,
+          tel: phoneNumber,
         },
       );
-
-      if (phoneNumberCheck.status === 200) {
-        const response = await axios.post(
-          `${Config.API_URL}/auth/phoneAuth`,
-          {
-            tel: phoneNumber,
-          },
-        );
-        setCertNumber(response.data.data);
-      }
+      console.log(response);
+      setCertNumber(response.data.data);
     } catch (error) {
-      const { code, message } = error.response.data;
-      if (code === 'phoneAlreadyExists') {
-        Alert.alert('알림', message);
-      } else {
-        console.error(error);
-      }
+      // const { code, message } = error.response.data;
+      // if (code === 'phoneAlreadyExists') {
+      //   Alert.alert('알림', message);
+      // } else {
+      //   console.error(error);
+      // }
+      console.error(error);
     } finally {
       setLoading(false);
     }

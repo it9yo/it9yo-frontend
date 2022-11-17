@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // import Home from './Home';
@@ -11,7 +11,10 @@ import PeopleIcon from '@assets/images/people.png';
 import MessageIcon from '@assets/images/message.png';
 import ProfileIcon from '@assets/images/profile.png';
 
-import { Image, StyleSheet } from 'react-native';
+import {
+  Image, StyleSheet, Text, View,
+} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Home from './Home';
 import Mypage from './Mypage';
 import Chat from './Chat';
@@ -20,6 +23,18 @@ import Manage from './Manage';
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    const getUnreadMessages = async () => {
+      const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
+      const unread = Number(unreadAllMessages);
+      setUnreadMessages(unread);
+    };
+
+    getUnreadMessages();
+  }, []);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -43,10 +58,15 @@ function HomeTabs() {
               source={PeopleIcon}
             />;
           } if (route.name === 'Chat') {
-            return <Image
-              style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
-              source={MessageIcon}
-            />;
+            return <View>
+              <Image
+                style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
+                source={MessageIcon}
+              />
+              {unreadMessages > 0 && <View style={styles.badge}>
+                <Text style={styles.badgeNum}>{unreadMessages}</Text>
+              </View>}
+            </View>;
           } if (route.name === 'Mypage') {
             return <Image
               style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
@@ -98,5 +118,25 @@ const styles = StyleSheet.create({
   tabIcon: {
     width: 24,
     height: 24,
+  },
+  badge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 20,
+    paddingHorizontal: 6,
+    borderRadius: 12,
+    backgroundColor: '#fb5135',
+  },
+  badgeNum: {
+    fontFamily: 'Roboto',
+    fontSize: 12,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    letterSpacing: -0.3,
+    color: '#ffffff',
   },
 });

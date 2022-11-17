@@ -20,7 +20,7 @@ import Toast from 'react-native-toast-message';
 import DrawerButton from '@components/Header/DrawerButton';
 import ChatRoomDrawer from './ChatRoomDrawer';
 
-const pageSize = 10;
+const pageSize = 50;
 
 function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
@@ -52,6 +52,16 @@ function ChatRoom({ navigation, route }) {
   }, [drawer.current]);
 
   useEffect(() => {
+    const readMessages = async () => {
+      const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
+      const newUnreadMessages = Number(unreadMessages);
+      await AsyncStorage.setItem(`unreadMessages_${campaignId}`, '0');
+
+      const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
+      const newUnreadAllMessages = Number(unreadAllMessages) - newUnreadMessages;
+      await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
+    };
+    readMessages();
     setChatRoomId(campaignId);
     initChatData();
     loadCampaignDetail();

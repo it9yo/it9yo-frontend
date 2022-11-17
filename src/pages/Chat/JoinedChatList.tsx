@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList } from 'react-native';
 
@@ -6,14 +8,17 @@ import { userAccessToken } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
-import { ChatRoomData } from '@src/@types';
+import { ChatListData, ChatRoomData } from '@src/@types';
 import EachChat from '@src/components/EachChat';
+import AsyncStorage from '@react-native-community/async-storage';
+import { IMessage } from 'react-native-gifted-chat';
 
-const pageSize = 20;
+const pageSize = 50;
 
 function JoinedChatList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
   const [chatList, setChatList] = useState<ChatRoomData[]>([]);
+  const [sortedChatList, setSortedChatList] = useState<ChatListData[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [noMoreData, setNoMoreData] = useState(false);
@@ -27,10 +32,33 @@ function JoinedChatList({ navigation }) {
   }, [isFocused]);
 
   useEffect(() => {
-    console.log('chatList', chatList);
+    async function getLastMessages() {
+      const result: ChatListData[] = [];
+      for (const chat of chatList) {
+        const { campaignId } = chat;
+        const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+        const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
+        if (prevMessages) {
+          const messageList: IMessage[] = JSON.parse(prevMessages);
+          const recentMessage = messageList[0];
+          const { text, createdAt } = recentMessage;
+          const lastTime = new Date(createdAt);
+          const unread = Number(unreadMessages);
+          result.push({
+            ...chat, lastTime, lastChat: text, unread,
+          });
+        }
+      }
+      if (result.length === 0) return;
+      const sortedResult = result.sort((a, b) => b.lastTime.getTime() - a.lastTime.getTime());
+      setSortedChatList(sortedResult);
+    }
+    getLastMessages();
+    return () => setSortedChatList([]);
   }, [chatList]);
 
   const loadData = async () => {
+    if (noMoreData || loading) return;
     try {
       setLoading(true);
       const url = `${Config.API_URL}/chat/joining?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
@@ -66,26 +94,17 @@ function JoinedChatList({ navigation }) {
     }
   };
 
-  const onEndReached = () => {
-    if (!noMoreData || !loading) {
-      loadData();
-    }
-  };
-
-  const renderItem = ({ item }: { item: ChatRoomData }) => (
+  const renderItem = ({ item }: { item: ChatListData }) => (
     <EachChat item={item}/>
   );
 
   return <FlatList
-      data={chatList}
-      keyExtractor={(item) => {
-        console.log(item.campaignId);
-        return `joinedChat_${item.campaignId.toString()}`;
-      }}
+      data={sortedChatList}
+      keyExtractor={(item) => `joinedChat_${item.campaignId.toString()}`}
       renderItem={renderItem}
-      onEndReached={onEndReached}
-      onEndReachedThreshold={1}
-      ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+      // onEndReached={onEndReached}
+      // onEndReachedThreshold={1}
+      // ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
     />;
 }
 

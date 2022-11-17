@@ -5,7 +5,7 @@ import {
 
 import { useNavigation } from '@react-navigation/native';
 import StatusNameList from '@constants/statusname';
-import { ChatRoomData } from '@src/@types';
+import { ChatListData, ChatRoomData } from '@src/@types';
 import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
 
@@ -28,30 +28,25 @@ function timeConversion(millisec: number) {
   return `${seconds}초`;
 }
 
-function EachChat({ item } : { item: ChatRoomData }) {
+function EachChat({ item } : { item: ChatListData }) {
   const navigation = useNavigation();
-  const [lastChat, setLastChat] = useState('');
-  const [lastTime, setLastTime] = useState('');
-
+  const [lastChatTime, setLastChatTime] = useState('');
+  const [lastMessage, setLastMessage] = useState('');
   const {
-    campaignId, title, itemImageURLs,
+    campaignId, title, itemImageURLs, lastTime, lastChat, unread,
   } = item;
 
   useEffect(() => {
-    getLastMessage();
+    if (lastTime) {
+      const lastTimeText = `${timeConversion(new Date().getTime() - lastTime.getTime())} 전`;
+      setLastChatTime(lastTimeText);
+    }
+    if (lastChat) {
+      const lastText = lastChat.length > 20 ? `${lastChat.substring(0, 20)}...` : lastChat;
+      setLastMessage(lastText);
+    }
   }, []);
 
-  const getLastMessage = async () => {
-    const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-    if (!prevMessages) return;
-    const messageList: IMessage[] = JSON.parse(prevMessages);
-    const recentMessage = messageList[0];
-    const { text, createdAt } = recentMessage;
-    const lastText = text.length > 20 ? `${text.substring(0, 20)}...` : text;
-    setLastChat(lastText);
-    const lastTimeText = `${timeConversion(new Date().getTime() - new Date(createdAt).getTime())} 전`;
-    setLastTime(lastTimeText);
-  };
   return <Pressable onPress={() => navigation.navigate('ChatRoom', { campaignId, title })}>
     <View style={styles.chatListView}>
       <View style={styles.leftContainer}>
@@ -62,14 +57,16 @@ function EachChat({ item } : { item: ChatRoomData }) {
         />
         <View style={styles.chatContainer}>
           <Text style={styles.chatTitle}>{title}</Text>
-          <Text style={styles.chatContent}>{lastChat}</Text>
+          <Text style={styles.chatContent}>{lastMessage}</Text>
         </View>
       </View>
       <View style={styles.rightContainer}>
-        <Text style={styles.chatTimeText}>{lastTime}</Text>
-        {/* <View style={styles.badge}>
-          <Text style={styles.badgeNum}>1</Text>
-        </View> */}
+        <Text style={styles.chatTimeText}>{lastChatTime}</Text>
+        {unread > 0
+          && <View style={styles.badge}>
+            <Text style={styles.badgeNum}>{unread}</Text>
+          </View>
+        }
       </View>
     </View>
   </Pressable>;

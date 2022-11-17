@@ -4,11 +4,8 @@ import CampaignList from '@pages/Home/CampaignList';
 import {
   Image, SafeAreaView, StyleSheet, TouchableOpacity,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import HomeHeader from '@src/components/Header/HomeHeader';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { location } from '@src/states';
-import { useRecoilState } from 'recoil';
 
 import Plus from '@assets/images/plus.png';
 

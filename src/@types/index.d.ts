@@ -174,3 +174,9 @@ export interface ReviewInfo {
   point : number;
   parentCommentId : number | null;
 }
+
+export interface ChatListData extends ChatRoomData {
+  lastTime: Date;
+  lastChat: string;
+  unread: number;
+}
