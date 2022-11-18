@@ -4,10 +4,7 @@ import {
 } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
-import StatusNameList from '@constants/statusname';
-import { ChatListData, ChatRoomData } from '@src/@types';
-import AsyncStorage from '@react-native-community/async-storage';
-import { IMessage } from 'react-native-gifted-chat';
+import { ChatListData } from '@src/@types';
 
 function timeConversion(millisec: number) {
   const seconds = Math.floor(millisec / 1000);

@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList } from 'react-native';
+import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 import { userAccessToken } from '@src/states';
@@ -24,11 +24,13 @@ function JoinedChatList({ navigation }) {
   const [noMoreData, setNoMoreData] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
     loadData();
+    setInitLoading(false);
   }, [isFocused]);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ function JoinedChatList({ navigation }) {
     }
     getLastMessages();
     return () => setSortedChatList([]);
-  }, [chatList]);
+  }, [chatList, isFocused]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
@@ -94,18 +96,27 @@ function JoinedChatList({ navigation }) {
     }
   };
 
+  const onEndReached = () => {
+    if (!noMoreData || !loading) {
+      loadData();
+    }
+  };
+
   const renderItem = ({ item }: { item: ChatListData }) => (
     <EachChat item={item}/>
   );
 
-  return <FlatList
+  return <View>
+    {initLoading && <ActivityIndicator />}
+    {sortedChatList.length > 0 && <FlatList
       data={sortedChatList}
-      keyExtractor={(item) => `joinedChat_${item.campaignId.toString()}`}
+      keyExtractor={(item) => `joinedChat${item.campaignId.toString()}`}
       renderItem={renderItem}
-      // onEndReached={onEndReached}
-      // onEndReachedThreshold={1}
-      // ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
-    />;
+      onEndReached={onEndReached}
+      onEndReachedThreshold={1}
+      ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+    />}
+  </View>;
 }
 
 export default JoinedChatList;

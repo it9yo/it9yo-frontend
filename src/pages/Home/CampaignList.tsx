@@ -44,7 +44,7 @@ export function CampaignList() {
     if (noMoreData) return;
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&siDo=${siDo}&siGunGu=${siGunGu}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC&campaignStatus=RECRUITING&siDo=${siDo}&siGunGu=${siGunGu}`;
       const response = await axios.get(
         url,
         {
@@ -132,7 +132,7 @@ export function CampaignList() {
 
   return <View style={styles.container}>
     {initLoading && <ActivityIndicator />}
-    {campaignList.length > 0 && <FlatList
+    <FlatList
       data={campaignList}
       keyExtractor={(item) => `campaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -141,7 +141,7 @@ export function CampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    />}
+    />
   </View>;
 }
 

@@ -9,6 +9,7 @@ import { useRecoilState } from 'recoil';
 
 import EachCampaign from '@components/Campaign/EachCampaign';
 import { CampaignData } from '@src/@types';
+import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
@@ -23,15 +24,19 @@ function CreatedCampaignList() {
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
 
-  useLayoutEffect(() => {
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
     loadData();
+    setInitLoading(false);
     return () => {
       setCampaignList([]);
       setCurrentPage(0);
       setNoMoreData(false);
     };
-  }, []);
+  }, [isFocused]);
 
   const loadData = async () => {
     try {
@@ -73,7 +78,7 @@ function CreatedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -121,7 +126,8 @@ function CreatedCampaignList() {
   );
 
   return <View>
-    {campaignList.length > 0 ? <FlatList
+    {initLoading && <ActivityIndicator />}
+    <FlatList
       data={campaignList}
       keyExtractor={(item) => `createdCampaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -130,7 +136,7 @@ function CreatedCampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    /> : <Text>no data</Text>}
+    />
   </View>;
 }
 

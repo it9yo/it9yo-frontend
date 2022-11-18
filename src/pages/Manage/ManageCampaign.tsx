@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Image, Text, StyleSheet, Pressable, Platform, Dimensions, ActivityIndicator, FlatList, TouchableOpacity, Alert,
+  View, Image, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert,
 } from 'react-native';
 
 import StatusNameList from '@constants/statusname';
@@ -84,9 +84,9 @@ function ManageCampaign({ navigation, route }) {
     }
   };
 
-  const onChangeStatus = async (status: string) => {
+  const onChangeStatus = async () => {
     try {
-      console.log(status);
+      console.log(campaignStatus);
       const response = await axios.post(
         `${Config.API_URL}/campaign/changeStatus/${campaignId}/${status}`,
         {},
@@ -145,7 +145,7 @@ function ManageCampaign({ navigation, route }) {
       />}
     </View>
     <View style={styles.buttonZone}>
-      <TouchableOpacity style={styles.button} onPress={() => onChangeStatus('CONFIRM')}>
+      <TouchableOpacity style={styles.button} onPress={onChangeStatus}>
         <Text style={styles.buttonText}>상태 변경</Text>
       </TouchableOpacity>
 

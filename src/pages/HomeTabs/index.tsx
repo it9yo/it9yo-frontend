@@ -15,6 +15,7 @@ import {
   Image, StyleSheet, Text, View,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 import Home from './Home';
 import Mypage from './Mypage';
 import Chat from './Chat';
@@ -24,6 +25,7 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     const getUnreadMessages = async () => {
@@ -33,7 +35,7 @@ function HomeTabs() {
     };
 
     getUnreadMessages();
-  }, []);
+  }, [isFocused]);
 
   return (
     <Tab.Navigator

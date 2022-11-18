@@ -9,6 +9,7 @@ import { useRecoilState } from 'recoil';
 
 import EachCampaign from '@components/Campaign/EachCampaign';
 import { CampaignData } from '@src/@types';
+import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
@@ -23,20 +24,24 @@ function JoinedCampaignList() {
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
+
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     loadData();
+    setInitLoading(false);
     return () => {
       setCampaignList([]);
       setCurrentPage(0);
       setNoMoreData(false);
     };
-  }, []);
+  }, [isFocused]);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC`;
       const response = await axios.get(
         url,
         {
@@ -73,7 +78,7 @@ function JoinedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING`;
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&campaignStatus=RECRUITING`;
 
       const response = await axios.get(
         url,
@@ -122,7 +127,8 @@ function JoinedCampaignList() {
   );
 
   return <View>
-    {campaignList.length > 0 ? <FlatList
+    {initLoading && <ActivityIndicator />}
+    <FlatList
       data={campaignList}
       keyExtractor={(item) => `joinedCampaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -131,7 +137,7 @@ function JoinedCampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    /> : <Text>no data</Text>}
+    />
   </View>;
 }
 
