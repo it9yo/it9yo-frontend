@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import {
   Alert,
-  Dimensions, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
+  Dimensions, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import NaverMapView, { Marker } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
@@ -11,9 +11,10 @@ import axios, { AxiosResponse } from 'axios';
 
 import { useRecoilState } from 'recoil';
 
-import RedDot from '@assets/images/red-dot.png';
 import { userAccessToken, userState } from '@states/user';
 import { Coord } from '@src/@types';
+
+import ChatBubble from '@assets/images/chatBubble.png';
 
 function ChangeLocationCert({ navigation, route }) {
   const changedLocation = route.params;
@@ -23,6 +24,8 @@ function ChangeLocationCert({ navigation, route }) {
   const [myPosition, setMyPosition] = useState<Coord | null>(null);
 
   const [locationAuth, setLocationAuth] = useState(false);
+
+  const [doro, setDoro] = useState('');
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -55,11 +58,12 @@ function ChangeLocationCert({ navigation, route }) {
           },
         );
 
-        console.log(response);
-
-        const sido = response.data.results[0].region.area1.name;
-        const sidoAlias = response.data.results[0].region.area1.alias;
-        const sigungu = response.data.results[0].region.area2.name;
+        const { region } = response.data.results[0];
+        const sido = region.area1.name;
+        const sidoAlias = region.area1.alias;
+        const sigungu = region.area2.name;
+        const eupMyeonDong = region.area3.name;
+        setDoro(`${sido} ${sigungu} ${eupMyeonDong}`);
 
         if ((changedLocation.sido === sido || changedLocation.sido === sidoAlias)
           && changedLocation.sigungu === sigungu) {
@@ -129,17 +133,24 @@ function ChangeLocationCert({ navigation, route }) {
               longitude: myPosition.longitude,
             }}>
             <Marker
-              coordinate={{
-                latitude: myPosition.latitude,
-                longitude: myPosition.longitude,
-              }}
-              width={15}
-              height={15}
-              anchor={{ x: 0.5, y: 0.5 }}
-              caption={{ text: '현 위치' }}
-              subCaption={{ text: '현 위치' }}
-              image={RedDot}
-            />
+              coordinate={myPosition}
+              width={500}
+              height={75}>
+              <View style={{
+                flex: 1, alignItems: 'center',
+              }}>
+                <View style={{ padding: 5 }}>
+                  <ImageBackground
+                    source={ChatBubble}
+                    style={{ paddingHorizontal: 40, paddingTop: 10, paddingBottom: 20 }}>
+                    <Text style={styles.bubbleText}>{doro}</Text>
+                  </ImageBackground>
+                </View>
+                <View style={styles.behindEllipse}>
+                  <View style={styles.frontEllipse} />
+                </View>
+              </View>
+            </Marker>
           </NaverMapView>
         )}
       </View>
@@ -182,6 +193,31 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     textAlign: 'center',
     color: '#ffffff',
+  },
+  behindEllipse: {
+    position: 'absolute',
+    bottom: 0,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  frontEllipse: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+    zIndex: 1,
+  },
+  bubbleText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 13,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
   },
 });
 

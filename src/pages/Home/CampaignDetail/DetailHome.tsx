@@ -149,7 +149,7 @@ function DetailHome({ navigation, route }) {
             </View>
 
             <View style={styles.hostInfoZone}>
-              <Image style={styles.infoIcon} source={HostIcon} />
+              <Image style={styles.infoIcon} source={{ uri: campaignDetail.hostProfileUrl }} />
 
               <Text style={styles.hostInfoText}>
                 {campaignDetail.hostNickName}
@@ -269,8 +269,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoIcon: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
   },
   hostInfoText: {
     fontFamily: 'SpoqaHanSansNeo',

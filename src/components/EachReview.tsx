@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderColor: '#f1f1f1',
+    paddingHorizontal: 25,
   },
   subContainer: {
     flexDirection: 'row',

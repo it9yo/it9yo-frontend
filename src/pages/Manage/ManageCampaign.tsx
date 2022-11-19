@@ -24,9 +24,9 @@ const pageSize = 10;
 function ManageCampaign({ navigation, route }) {
   const accessToken = useRecoilState(userAccessToken)[0];
   const campaignData: CampaignData = route.params;
-  const {
-    campaignId, title, hostId, itemPrice, campaignStatus, itemImageURLs, participatedPersonCnt,
-  } = campaignData;
+  const { campaignId } = campaignData;
+
+  const [campaignDetail, setCampaignDetail] = useState<CampaignData | undefined>();
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -41,14 +41,25 @@ function ManageCampaign({ navigation, route }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused || refresh) {
+    if (isFocused) {
       navigation.setOptions({
         headerTitle: route.params.title,
       });
+      loadCampaignDetail();
       loadData();
       setRefresh(false);
     }
-  }, [navigation, route, isFocused, refresh]);
+  }, [navigation, route, isFocused]);
+
+  useEffect(() => {
+    if (refresh) {
+      setLoading(true);
+      loadCampaignDetail();
+      loadData();
+      setLoading(false);
+      setRefresh(false);
+    }
+  }, [refresh]);
 
   const loadData = async () => {
     try {
@@ -87,6 +98,27 @@ function ManageCampaign({ navigation, route }) {
     }
   };
 
+  const loadCampaignDetail = async () => {
+    if (loading) return;
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/campaign/detail/${campaignId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status !== 200) return;
+
+      const campaign: CampaignData = response.data.data;
+      setCampaignDetail(campaign);
+    } catch (error) {
+      if (error.response.data.message === '캠페인에 참여중인 사용자가 아닙니다.') return;
+      console.error(error);
+    }
+  };
+
   const onEndReached = () => {
     if (!noMoreData || !loading) {
       loadData();
@@ -94,64 +126,65 @@ function ManageCampaign({ navigation, route }) {
   };
 
   const renderItem = ({ item }: { item: JoinUserInfo }) => (
-    <EachUser item={item} campaignData={campaignData} />
+    <EachUser item={item} campaignData={campaignDetail} />
   );
+  if (campaignDetail) {
+    return <View style={styles.container}>
 
-  return <View style={styles.container}>
+      <View style={styles.campaignInfoZone}>
+        <Image style={styles.campaignThumbnail} source={{ uri: campaignDetail.itemImageURLs[0] }} />
 
-    <View style={styles.campaignInfoZone}>
-      <Image style={styles.campaignThumbnail} source={{ uri: itemImageURLs[0] }} />
+        <View>
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>{StatusNameList[campaignDetail.campaignStatus]}</Text>
+          </View>
 
-      <View>
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{StatusNameList[campaignStatus]}</Text>
+          <Text style={styles.campaignInfoText}>{campaignDetail.title}</Text>
+
+          <Text style={styles.campaignInfoText}>{`${numberWithCommas(campaignDetail.itemPrice)} 원`}</Text>
         </View>
 
-        <Text style={styles.campaignInfoText}>{title}</Text>
-
-        <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
       </View>
 
-    </View>
+      <View style={styles.userListContainer}>
+        {/* 참여중인 인원 */}
+        <View style={styles.userCntZone}>
+          <Text style={styles.userCntText}>총 </Text>
+          <Text style={{ ...styles.userCntText, fontWeight: 'bold' }}>{campaignDetail.participatedPersonCnt}명</Text>
+          <Text style={styles.userCntText}> 참여중</Text>
+        </View>
 
-    <View style={styles.userListContainer}>
-      {/* 참여중인 인원 */}
-      <View style={styles.userCntZone}>
-        <Text style={styles.userCntText}>총 </Text>
-        <Text style={{ ...styles.userCntText, fontWeight: 'bold' }}>{participatedPersonCnt}명</Text>
-        <Text style={styles.userCntText}> 참여중</Text>
+        {/* 유저 정보 리스트 */}
+        {userList.length > 0 && <FlatList
+          data={userList}
+          keyExtractor={(item) => `joinedUser_${item.userId.toString()}`}
+          renderItem={renderItem}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={1}
+          ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
+        />}
       </View>
 
-      {/* 유저 정보 리스트 */}
-      {userList.length > 0 && <FlatList
-        data={userList}
-        keyExtractor={(item) => `joinedUser_${item.userId.toString()}`}
-        renderItem={renderItem}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={1}
-        ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
-      />}
-    </View>
+      <StatusChangeModal
+        campaignDetail={campaignData}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        setRefresh={setRefresh}
+      />
 
-    <StatusChangeModal
-      campaignDetail={campaignData}
-      modalVisible={modalVisible}
-      setModalVisible={setModalVisible}
-      setRefresh={setRefresh}
-    />
+      <View style={styles.buttonZone}>
+        <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+          <Text style={styles.buttonText}>상태 변경</Text>
+        </TouchableOpacity>
 
-    <View style={styles.buttonZone}>
-      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
-        <Text style={styles.buttonText}>상태 변경</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={StyleSheet.compose(styles.button, styles.buttonActive)}
-        onPress={() => navigation.navigate('ChatRoom', { campaignId, title })}>
-        <Text style={styles.buttonText}>공구채팅</Text>
-      </TouchableOpacity>
-    </View>
-  </View>;
+        <TouchableOpacity
+          style={StyleSheet.compose(styles.button, styles.buttonActive)}
+          onPress={() => navigation.navigate('ChatRoom', { campaignId, title: campaignDetail.title })}>
+          <Text style={styles.buttonText}>공구채팅</Text>
+        </TouchableOpacity>
+      </View>
+    </View>;
+  }
 }
 
 export default ManageCampaign;

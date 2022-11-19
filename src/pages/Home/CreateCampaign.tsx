@@ -59,7 +59,7 @@ function CreateCampaign({ navigation, route }) {
   const [detailAddress, setDetailAddress] = useState('');
   const [deadLine, setDeadLine] = useState<Date | null>(null);
   const [maxQuantityPerPerson, setMaxQuantity] = useState('');
-  const [campaignCategory, setCategory] = useState('FOOD');
+  const [campaignCategory, setCategory] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');
@@ -355,12 +355,13 @@ function CreateCampaign({ navigation, route }) {
               selectedValue={campaignCategory}
               onValueChange={(itemValue) => setCategory(itemValue)}
             >
+              <Picker.Item label="카테고리를 선택해주세요" value="" />
               <Picker.Item label="식품" value="FOOD" />
-              {/* <Picker.Item label="의류" value="clothes" />
-              <Picker.Item label="전자기기" value="electronic" />
-              <Picker.Item label="아동용품" value="baby" />
-              <Picker.Item label="도서" value="book" />
-              <Picker.Item label="기타" value="etc" /> */}
+              <Picker.Item label="의류" value="CLOTHES" />
+              <Picker.Item label="전자기기" value="ELECTRONIC" />
+              <Picker.Item label="아동용품" value="BABY" />
+              <Picker.Item label="도서" value="BOOK" />
+              <Picker.Item label="기타" value="ETC" />
             </Picker>
           </View>
         </View>

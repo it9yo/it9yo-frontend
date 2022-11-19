@@ -26,9 +26,14 @@ function EachUser({ item, campaignData, type } : EachUserProps) {
   const {
     userId, nickName, quantity, receiveStatus, deposit, profileImage,
   } = item;
-  const { campaignId, itemPrice } = campaignData;
+  const { campaignId, itemPrice, campaignStatus } = campaignData;
 
   const [isDeposit, setDeposit] = useState(deposit);
+
+  useEffect(() => {
+    console.log(item);
+    console.log(campaignData);
+  }, [item, campaignData]);
 
   const handleDeposit = async () => {
     try {
@@ -49,27 +54,42 @@ function EachUser({ item, campaignData, type } : EachUserProps) {
     }
   };
 
-  return <View style={styles.container}>
-    <View style={styles.leftContainer}>
-      <Image style={styles.image} source={{ uri: profileImage }} />
-      <Text style={styles.infoText}>{nickName}</Text>
-      {type !== 'drawer' && isDeposit
-      && <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
-        <Text style={{ ...styles.depositStatusText, color: 'white' }}>입금완료</Text>
-      </View>}
-      {type !== 'drawer' && !isDeposit
-      && <View style={styles.depositStatusBadge}>
-        <Text style={styles.depositStatusText}>입금대기</Text>
-      </View>}
+  if (campaignStatus === 'DISTRIBUTING' || campaignStatus === 'COMPLETED') {
+    return <View style={styles.container}>
+      <View style={styles.leftContainer}>
+        <Image style={styles.image} source={{ uri: profileImage }} />
+        <Text style={styles.infoText}>{nickName}</Text>
+        {receiveStatus !== 'NOT_RECEIVED'
+        && <View style={styles.depositStatusBadge}>
+          <Text style={styles.depositStatusText}>수령완료</Text>
+        </View>}
+      </View>
+      {type !== 'drawer' && itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>}
+      {type !== 'drawer' && !itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>}
+    </View>;
+  }
 
-      {type !== 'drawer'
-        && <Pressable onPress={handleDeposit}>
-          <Icon name='swap' size={20} color="#adb7cb"/>
-        </Pressable>}
-    </View>
-    {type !== 'drawer' && itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>}
-    {type !== 'drawer' && !itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>}
-  </View>;
+  return <View style={styles.container}>
+      <View style={styles.leftContainer}>
+        <Image style={styles.image} source={{ uri: profileImage }} />
+        <Text style={styles.infoText}>{nickName}</Text>
+        {type !== 'drawer' && isDeposit
+        && <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
+          <Text style={{ ...styles.depositStatusText, color: 'white' }}>입금완료</Text>
+        </View>}
+        {type !== 'drawer' && !isDeposit
+        && <View style={styles.depositStatusBadge}>
+          <Text style={styles.depositStatusText}>입금대기</Text>
+        </View>}
+
+        {type !== 'drawer'
+          && <Pressable onPress={handleDeposit}>
+            <Icon name='swap' size={20} color="#adb7cb"/>
+          </Pressable>}
+      </View>
+      {type !== 'drawer' && itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>}
+      {type !== 'drawer' && !itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>}
+    </View>;
 }
 const styles = StyleSheet.create({
   container: {

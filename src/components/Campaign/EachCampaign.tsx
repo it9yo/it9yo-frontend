@@ -23,6 +23,7 @@ function EachCampaign({ item }: CampaignProps) {
   const {
     campaignId, title, eupMyeonDong, itemImageURLs, hostId,
     campaignStatus, hostNickName, participatedPersonCnt, itemPrice,
+    hostProfileUrl,
   } = item;
 
   const handlePress = () => {
@@ -50,7 +51,7 @@ function EachCampaign({ item }: CampaignProps) {
         <Text style={styles.campaignTitleText}>{title}</Text>
 
         <View style={styles.hostInfoZone}>
-          <Image style={styles.userIcon} source={UserIcon} />
+          <Image style={styles.userIcon} source={{ uri: hostProfileUrl }} />
           <Text style={styles.hostNameZone}>{hostNickName}</Text>
           <View style={styles.ellipse} />
           <Text style={styles.hostNameZone}>{eupMyeonDong}</Text>
@@ -118,9 +119,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   userIcon: {
-    width: 14,
-    height: 14,
-    opacity: 0.7,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 3,
   },
   hostNameZone: {
     fontFamily: 'SpoqaHanSansNeo',

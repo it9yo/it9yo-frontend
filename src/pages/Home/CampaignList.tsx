@@ -86,8 +86,8 @@ export function CampaignList({ title }:{ title?: string }) {
     try {
       setRefreshing(true);
       const url = title
-        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
-        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
+        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
+        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
 
       const response = await axios.get(
         url,
@@ -98,7 +98,6 @@ export function CampaignList({ title }:{ title?: string }) {
         },
       );
       if (response.status === 200) {
-        console.log(response.data.data);
         const {
           content, first, last,
         } = response.data.data;

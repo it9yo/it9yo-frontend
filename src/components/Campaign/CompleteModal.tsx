@@ -6,9 +6,6 @@ import {
 
 import CheckIcon from '@assets/images/check.png';
 
-// onRequestClose={() => {
-//   setModalVisible(!modalVisible);
-// }}>
 function CompleteModal({ modalVisible, setModalVisible, setRefresh }) {
   return <Modal
     animationType="fade"

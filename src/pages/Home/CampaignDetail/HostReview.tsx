@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     flex: 1,
+    paddingBottom: 200,
   },
   hostInfoZone: {
     flexDirection: 'row',
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
   },
   reviewContainer: {
     paddingVertical: 20,
-    paddingHorizontal: 25,
+    // paddingHorizontal: 25,
   },
   userCntZone: {
     flexDirection: 'row',
@@ -207,6 +208,8 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#121212',
+    marginLeft: 25,
+    marginBottom: 10,
   },
   buttonZone: {
     position: 'absolute',
