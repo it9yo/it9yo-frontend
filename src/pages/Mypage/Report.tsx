@@ -6,12 +6,8 @@ import {
   Text, TextInput, View, Image, Alert, Platform, ScrollView,
 } from 'react-native';
 
-import { format } from 'date-fns';
-import ko from 'date-fns/esm/locale/ko/index.js';
-
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 
 import axios from 'axios';
@@ -23,8 +19,8 @@ import { userAccessToken, userState } from '@src/states';
 import categoryName from '@src/constants/category';
 
 import ImageDelBtn from '@assets/images/imageDelBtn.png';
-import SearchBtn from '@assets/images/search.png';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { useIsFocused } from '@react-navigation/native';
+import { CampaignData } from '@src/@types';
 
 interface Preview {
   key: string | undefined;
@@ -38,12 +34,21 @@ interface ImageData {
   uri: string;
 }
 
-function numberWithCommas(x: number) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
+const pageSize = 50;
 
 function Report({ navigation, route }) {
+  const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
+
+  const [campaignList, setCampaignList] = useState<CampaignData[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [noMoreData, setNoMoreData] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
+
+  const isFocused = useIsFocused();
 
   const [images, setImages] = useState<ImageData[]>([]);
   const [previews, setPreviews] = useState<Preview[]>([]);
@@ -51,62 +56,64 @@ function Report({ navigation, route }) {
   const [campaignCategory, setCategory] = useState();
   const [description, setDescription] = useState('');
 
-  const [loading, setLoading] = useState(false);
+  const canGoNext = campaignCategory && description.length > 0;
 
-  const canGoNext = images.length > 0 && title.length > 0 && Number(itemPrice) > 0 && siDo
-  && siGunGu && eupMyeonDong && zipcode && doro && detailAddress && Number(maxQuantityPerPerson) > 0
-  && campaignCategory && description.length > 0;
-
-  const onCreateCampaign = async () => {
-    if (!canGoNext || !deadLine) return;
-    if (!loading) {
-      setLoading(true);
-      try {
-        const formData = new FormData();
-        const request = {
-          title,
-          itemPrice: Number(itemPrice),
-          siDo,
-          siGunGu,
-          eupMyeonDong,
-          doro,
-          detailAddress,
-          deadLine: deadLine.toISOString().split('T')[0],
-          maxQuantityPerPerson: Number(maxQuantityPerPerson),
-          minQuantityPerPerson: 1,
-          campaignCategory,
-          tags,
-          description,
-        };
-
-        formData.append('request', JSON.stringify(request));
-
-        images.map((image) => {
-          const { name, type, uri } = image;
-          return formData.append('files', { name, type, uri });
-        });
-
-        const response = await axios.post(
-          `${Config.API_URL}/campaign/add/v2`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'multipart/form-data',
-            },
-          },
-        );
-
-        if (response.status === 200) {
-          Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
-          navigation.goBack();
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+  useEffect(() => {
+    if (isFocused) {
+      loadData();
+      setInitLoading(false);
     }
+
+    return () => {
+      setCampaignList([]);
+      setCurrentPage(0);
+      setNoMoreData(false);
+    };
+  }, [isFocused]);
+
+  useEffect(() => {
+    console.log('campaignList', campaignList);
+  }, [campaignList]);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC`;
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (response.status === 200) {
+        const {
+          content, first, last, number,
+        } = response.data.data;
+        if (first) {
+          setCampaignList([...content]);
+        } else {
+          setCampaignList((prev) => [...prev, ...content]);
+        }
+        setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onReport = () => {
+    Alert.alert('알림', '신고 내용 등록이 완료되었습니다.');
+    navigation.goBack();
   };
 
   const onAddImage = async () => {
@@ -180,6 +187,29 @@ function Report({ navigation, route }) {
       <ScrollView style={styles.scrollContainer}>
 
         <View style={styles.inputWrapper}>
+          <Text style={styles.label}>신고할 캠페인 선택</Text>
+          <View style={{ ...styles.textInput, paddingHorizontal: 2, justifyContent: 'center' }}>
+            {/* TODO: 스타일 변경 */}
+            <Picker
+              style={{
+                fontSize: 8,
+              }}
+              selectedValue={campaignCategory}
+              onValueChange={(itemValue) => setCategory(itemValue)}
+            >
+              <Picker.Item label="신고할 캠페인을 선택해 주세요" value="" />
+              {campaignList.length > 0
+                && campaignList.map((item) => (
+                  <Picker.Item
+                    key={item.campaignId.toString()}
+                    label={item.title}
+                    value={item.campaignId.toString()} />
+                ))}
+            </Picker>
+          </View>
+        </View>
+
+        <View style={styles.inputWrapper}>
           <Text style={styles.label}>신고사유 선택</Text>
           <View style={{ ...styles.textInput, paddingHorizontal: 2, justifyContent: 'center' }}>
             {/* TODO: 스타일 변경 */}
@@ -240,7 +270,7 @@ function Report({ navigation, route }) {
         style={canGoNext
           ? StyleSheet.compose(styles.button, styles.buttonActive)
           : styles.button}
-        onPress={onCreateCampaign}
+        onPress={onReport}
         disabled={!canGoNext}
       >
         <Text style={styles.buttonText}>등록하기</Text>
