@@ -126,7 +126,6 @@ function CreateCampaign({ navigation, route }) {
 
         if (response.status === 200) {
           Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
-          // navigation.dispatch(CommonActions.goBack());
           navigation.goBack();
         }
       } catch (error) {
@@ -162,32 +161,34 @@ function CreateCampaign({ navigation, route }) {
         compressImageMaxWidth: 300,
         compressImageMaxHeight: 300,
       });
-
-      if (response.length > 0) {
-        console.log(response);
-        response.map(async (item) => {
-          const priviewUri = `data:${item.mime};base64,${item.data}`;
-          const isImageExist = previews.filter((preview) => preview.uri === priviewUri);
-          if (!isImageExist.length) {
-            setPreviews((prev) => [...prev, { key: item.localIdentifier, uri: priviewUri }]);
-            const resizedImage = await ImageResizer.createResizedImage(
-              item.path,
-              300,
-              300,
-              item.mime.includes('jpeg') ? 'JPEG' : 'PNG',
-              100,
-            );
-            console.log(item);
-            console.log(resizedImage);
-            setImages((prev) => [...prev, {
-              key: priviewUri,
-              name: resizedImage.name,
-              type: item.mime,
-              uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
-            }]);
-          }
-        });
+      if (response.length > 5 - previews.length) {
+        Alert.alert('알림', '사진은 최대 5개까지 선택 가능합니다.');
+        return;
       }
+
+      console.log(response);
+      response.map(async (item) => {
+        const priviewUri = `data:${item.mime};base64,${item.data}`;
+        const isImageExist = previews.filter((preview) => preview.uri === priviewUri);
+        if (!isImageExist.length) {
+          setPreviews((prev) => [...prev, { key: item.localIdentifier, uri: priviewUri }]);
+          const resizedImage = await ImageResizer.createResizedImage(
+            item.path,
+            300,
+            300,
+            item.mime.includes('jpeg') ? 'JPEG' : 'PNG',
+            100,
+          );
+          console.log(item);
+          console.log(resizedImage);
+          setImages((prev) => [...prev, {
+            key: priviewUri,
+            name: resizedImage.name,
+            type: item.mime,
+            uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
+          }]);
+        }
+      });
     } catch (error) {
       console.error(error);
     }
@@ -226,7 +227,7 @@ function CreateCampaign({ navigation, route }) {
 
         <View style={styles.inputWrapper}>
           <Text style={{ ...styles.label, marginBottom: 0 }}>대표사진</Text>
-          <ScrollView style={styles.imageScroll} horizontal={true}>
+          <ScrollView style={styles.imageScroll} horizontal={true} persistentScrollbar={true}>
             {previews && previews.map((preview) => {
               const { uri } = preview;
               return <View key={uri} style={{ marginRight: 20, marginTop: 15 }} >

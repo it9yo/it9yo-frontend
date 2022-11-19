@@ -27,9 +27,6 @@ function HomeHeader() {
     </Pressable>
 
     <View style={styles.navButtonZone}>
-      <Pressable style={{ marginRight: 18 }}>
-        <Image style={styles.icon} source={Filter}/>
-      </Pressable>
       <Pressable style={{ marginRight: 18 }} onPress={() => navigation.navigate('Search')}>
         <Image style={styles.icon} source={Search}/>
       </Pressable>

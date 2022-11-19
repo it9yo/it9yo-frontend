@@ -10,6 +10,7 @@ import { userAccessToken } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { JoinUserInfo } from '@src/@types';
+import { useIsFocused } from '@react-navigation/native';
 import EachUser from '../../components/EachUser';
 import { CampaignData } from '../../@types/index.d';
 
@@ -33,13 +34,16 @@ function ManageCampaign({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    navigation.setOptions({
-      headerTitle: route.params.title,
-    });
-    loadData();
-    console.log(campaignData);
-  }, [navigation, route]);
+    if (isFocused) {
+      navigation.setOptions({
+        headerTitle: route.params.title,
+      });
+      loadData();
+    }
+  }, [navigation, route, isFocused]);
 
   const loadData = async () => {
     try {

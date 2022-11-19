@@ -8,6 +8,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
+import { AsyncStorage } from '@react-native-community/async-storage';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
@@ -18,6 +19,26 @@ interface ButtonParams {
 function CancelButton({ campaignDetail, setRefresh, type }: ButtonParams) {
   const { campaignId } = campaignDetail;
   const accessToken = useRecoilState(userAccessToken)[0];
+
+  const handleCancle = () => {
+    Alert.alert(
+      '알림',
+      '정말 캠페인을 취소하시겠습니까?',
+      [
+        {
+          text: '네',
+          onPress: async () => {
+            const isChanged = await onCancelCampaign();
+          },
+        },
+        {
+          text: '아니요',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false },
+    );
+  };
 
   const onCancelCampaign = async () => {
     try {
@@ -32,6 +53,16 @@ function CancelButton({ campaignDetail, setRefresh, type }: ButtonParams) {
       );
       if (response.status === 200) {
         Alert.alert('알림', '캠페인 취소가 완료되었습니다.');
+        await AsyncStorage.setItem(`chatMessages_${campaignId}`, null);
+
+        const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
+        const newUnreadMessages = Number(unreadMessages);
+        await AsyncStorage.setItem(`unreadMessages_${campaignId}`, '0');
+
+        const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
+        const newUnreadAllMessages = Number(unreadAllMessages) - newUnreadMessages;
+        await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
+
         setRefresh(true);
       }
     } catch (error) {
@@ -41,7 +72,7 @@ function CancelButton({ campaignDetail, setRefresh, type }: ButtonParams) {
 
   return <TouchableOpacity
     style={type === 'middle' ? styles.middleButton : styles.button}
-    onPress={onCancelCampaign}>
+    onPress={handleCancle}>
     <Text style={styles.buttonText}>취소하기</Text>
   </TouchableOpacity>;
 }

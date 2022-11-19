@@ -12,7 +12,6 @@ import { CampaignData, ChatListData } from '@src/@types';
 import EachChat from '@src/components/EachChat';
 import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
-import { createIconSetFromFontello } from 'react-native-vector-icons';
 
 const pageSize = 50;
 
@@ -33,55 +32,10 @@ function CreatedChatList({ navigation }) {
   useEffect(() => {
     if (isFocused) {
       loadData();
+      getLastMessages();
+      setInitLoading(false);
     }
   }, [isFocused]);
-
-  useEffect(() => {
-    async function getLastMessages() {
-      const result: ChatListData[] = [];
-      const restResult: ChatListData[] = [];
-      console.log('chatList', chatList);
-      for (const chat of chatList) {
-        const { campaignId } = chat;
-        const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-        const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
-        if (prevMessages === null) {
-          restResult.push({
-            ...chat,
-          });
-        } else {
-          const messageList: IMessage[] = JSON.parse(prevMessages);
-          console.log(`${campaignId} has ${messageList.length} messages`);
-          if (messageList.length > 0) {
-            const recentMessage = messageList[0];
-            const { text, createdAt } = recentMessage;
-            const lastTime = new Date(createdAt);
-            const unread = Number(unreadMessages);
-            result.push({
-              ...chat, lastTime, lastChat: text, unread,
-            });
-          } else {
-            restResult.push({
-              ...chat,
-            });
-          }
-        }
-      }
-      if (result.length === 0 && restResult.length === 0) return;
-
-      let sortedList: ChatListData[] = [];
-      if (result.length !== 0) {
-        const sortedResult = result.sort((a, b) => b.lastTime.getTime() - a.lastTime.getTime());
-        sortedList = [...sortedResult];
-      }
-      setSortedChatList([...sortedList, ...restResult]);
-    }
-    setInitLoading(true);
-    getLastMessages();
-    setInitLoading(false);
-
-    return () => setSortedChatList([]);
-  }, [chatList, isFocused]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
@@ -119,6 +73,47 @@ function CreatedChatList({ navigation }) {
       setLoading(false);
     }
   };
+
+  async function getLastMessages() {
+    if (chatList.length === 0) return;
+
+    const result: ChatListData[] = [];
+    const restResult: ChatListData[] = [];
+    for (const chat of chatList) {
+      const { campaignId } = chat;
+      const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+      const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
+      if (prevMessages === null) {
+        restResult.push({
+          ...chat,
+        });
+      } else {
+        const messageList: IMessage[] = JSON.parse(prevMessages);
+        console.log(`${campaignId} has ${messageList.length} messages`);
+        if (messageList.length > 0) {
+          const recentMessage = messageList[0];
+          const { text, createdAt } = recentMessage;
+          const lastTime = new Date(createdAt);
+          const unread = Number(unreadMessages);
+          result.push({
+            ...chat, lastTime, lastChat: text, unread,
+          });
+        } else {
+          restResult.push({
+            ...chat,
+          });
+        }
+      }
+    }
+    if (result.length === 0 && restResult.length === 0) return;
+
+    let sortedList: ChatListData[] = [];
+    if (result.length !== 0) {
+      const sortedResult = result.sort((a, b) => b.lastTime.getTime() - a.lastTime.getTime());
+      sortedList = [...sortedResult];
+    }
+    setSortedChatList([...sortedList, ...restResult]);
+  }
 
   const onEndReached = () => {
     if (!noMoreData || !loading) {

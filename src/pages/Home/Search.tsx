@@ -43,9 +43,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 15,
+    paddingVertical: 10,
     borderBottom: 1,
     borderBottomColor: 'black',
-    height: 56,
   },
   textInput: {
     flex: 1,
