@@ -11,6 +11,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { JoinUserInfo } from '@src/@types';
 import { useIsFocused } from '@react-navigation/native';
+import StatusChangeModal from '@src/components/Campaign/StatusChangeModal';
 import EachUser from '../../components/EachUser';
 import { CampaignData } from '../../@types/index.d';
 
@@ -27,23 +28,27 @@ function ManageCampaign({ navigation, route }) {
     campaignId, title, hostId, itemPrice, campaignStatus, itemImageURLs, participatedPersonCnt,
   } = campaignData;
 
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [userList, setUserList] = useState<JoinUserInfo[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [noMoreData, setNoMoreData] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused || refresh) {
       navigation.setOptions({
         headerTitle: route.params.title,
       });
       loadData();
+      setRefresh(false);
     }
-  }, [navigation, route, isFocused]);
+  }, [navigation, route, isFocused, refresh]);
 
   const loadData = async () => {
     try {
@@ -88,27 +93,6 @@ function ManageCampaign({ navigation, route }) {
     }
   };
 
-  const onChangeStatus = async () => {
-    try {
-      console.log(campaignStatus);
-      const response = await axios.post(
-        `${Config.API_URL}/campaign/changeStatus/${campaignId}/${status}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      if (response.status === 200) {
-        Alert.alert('알림', '캠페인 상태 변경이 완료되었습니다.');
-      }
-    } catch (error) {
-      console.error(error);
-    }
-    return false;
-  };
-
   const renderItem = ({ item }: { item: JoinUserInfo }) => (
     <EachUser item={item} campaignData={campaignData} />
   );
@@ -148,12 +132,22 @@ function ManageCampaign({ navigation, route }) {
         ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       />}
     </View>
+
+    <StatusChangeModal
+      campaignDetail={campaignData}
+      modalVisible={modalVisible}
+      setModalVisible={setModalVisible}
+      setRefresh={setRefresh}
+    />
+
     <View style={styles.buttonZone}>
-      <TouchableOpacity style={styles.button} onPress={onChangeStatus}>
+      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>상태 변경</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={StyleSheet.compose(styles.button, styles.buttonActive)}>
+      <TouchableOpacity
+        style={StyleSheet.compose(styles.button, styles.buttonActive)}
+        onPress={() => navigation.navigate('ChatRoom', { campaignId, title })}>
         <Text style={styles.buttonText}>공구채팅</Text>
       </TouchableOpacity>
     </View>

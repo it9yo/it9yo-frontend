@@ -8,7 +8,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
-import { AsyncStorage } from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
@@ -53,7 +53,7 @@ function CancelButton({ campaignDetail, setRefresh, type }: ButtonParams) {
       );
       if (response.status === 200) {
         Alert.alert('알림', '캠페인 취소가 완료되었습니다.');
-        await AsyncStorage.setItem(`chatMessages_${campaignId}`, null);
+        await AsyncStorage.setItem(`chatMessages_${campaignId}`, '');
 
         const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
         const newUnreadMessages = Number(unreadMessages);

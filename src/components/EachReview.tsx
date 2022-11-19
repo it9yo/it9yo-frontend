@@ -1,33 +1,39 @@
+import { ReviewInfo } from '@src/@types';
 import React from 'react';
 import {
   Image, StyleSheet, Text, View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 
-function EachReview() {
+function EachReview({ item }:{ item: ReviewInfo }) {
+  const {
+    writerNickName, campaignTitle, createdDate, writerProfileUrl, point, content,
+  } = item;
   const rateNum = [1, 2, 3, 4, 5];
-  const rating = 4;
+  const date = createdDate.split('-').join('.').split('T')[0];
   return (
     <View style={styles.container}>
       <View style={styles.subContainer}>
-        <Image style={styles.profileImage} source={{ uri: 'https://cdn.vectorstock.com/i/1000x1000/17/61/male-avatar-profile-picture-vector-10211761.webp' }} />
+        <Image style={styles.profileImage} source={{ uri: writerProfileUrl }} />
 
         <View style={styles.reviewerTextZone}>
-          <Text style={styles.reviewerNickname}>1234</Text>
+          <Text style={styles.reviewerNickname}>{writerNickName}</Text>
           <View style={styles.reviewInfo}>
             <View style={styles.starZone}>
               {rateNum.map((item) => (
                 <View
                   key={item.toString()}
                   style={{ marginHorizontal: 2 }}>
-                  <Icon name='star' size={16} color={item <= rating ? '#e4ba4d' : '#dfdfdf'}/>
+                  <Icon name='star' size={16} color={item <= point ? '#e4ba4d' : '#dfdfdf'}/>
                 </View>
               ))}
             </View>
 
             <View style={styles.verticalLine} />
 
-            <Text style={styles.reviewDate}>22.07.20</Text>
+            <Text style={styles.reviewDate}>{date}</Text>
+            <View style={styles.verticalLine} />
+            <Text style={styles.reviewDate}>{campaignTitle}</Text>
 
           </View>
         </View>
@@ -35,7 +41,7 @@ function EachReview() {
 
       <View style={styles.subContainer}>
         <Text style={styles.reviewContent}>
-          너무 친철하시고 배송도 꼼꼼해서 좋았어요 다음에도 공구하면 좋을거같아요 맛있게 잘멋었 ...더보기
+          {content}
         </Text>
       </View>
     </View>

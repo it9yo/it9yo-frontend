@@ -113,6 +113,7 @@ export interface CampaignData {
   minQuantityPerPerson: number;
   hostId: number;
   hostNickName: string;
+  hostProfileUrl: string;
   campaignCategory: string;
   chatRoomName: string;
   chatRoomParticipatedPersonCnt: number;
@@ -148,6 +149,10 @@ export interface ReviewInfo {
   content : string;
   point : number;
   parentCommentId : number | null;
+  writerProfileUrl: string;
+  writerNickName: string;
+  campaignTitle: string;
+  createdDate: string;
 }
 
 export interface ChatListData extends CampaignData {

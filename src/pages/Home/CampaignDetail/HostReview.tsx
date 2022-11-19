@@ -12,14 +12,15 @@ import Config from 'react-native-config';
 import { ReviewInfo, CampaignData } from '@src/@types';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EachReview from '@src/components/EachReview';
+import { parse } from 'date-fns/esm';
 
 const pageSize = 10;
 
 function HostReview({ navigation, route }) {
   const accessToken = useRecoilState(userAccessToken)[0];
-  const { campaignDetail }: CampaignData = route.params;
+  const { campaignDetail }: { campaignDetail: CampaignData } = route.params;
   const {
-    campaignId, title, hostId, hostNickName, itemPrice, campaignStatus, itemImageURLs,
+    title, hostId, hostNickName, hostProfileUrl,
   } = campaignDetail;
 
   const [reviewList, setReviewList] = useState<ReviewInfo[]>([]);
@@ -29,99 +30,77 @@ function HostReview({ navigation, route }) {
 
   const [loading, setLoading] = useState(false);
 
-  const [rating, setRating] = useState(4.3);
+  const [rating, setRating] = useState(0.0);
 
   const rateNum = [1, 2, 3, 4, 5];
 
-  // useEffect(() => {
-  //   loadData();
-  //   console.log(campaignData);
-  // }, [navigation, route]);
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  // const loadData = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const url = `${Config.API_URL}/campaign/detail/v2/${campaignId}?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
-  //     const response = await axios.get(
-  //       url,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       },
-  //     );
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/user/reviews/${hostId}?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
 
-  //     if (response.status === 200) {
-  //       const {
-  //         content, first, last, number, empty,
-  //       } = response.data.data.userInfos;
-  //       if (empty) return;
-  //       if (first) {
-  //         setUserList([...content]);
-  //       } else {
-  //         setUserList((prev) => [...prev, ...content]);
-  //       }
-  //       setCurrentPage(number + 1);
-  //       if (last) {
-  //         setNoMoreData(true);
-  //       } else {
-  //         setNoMoreData(false);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+      if (response.status === 200) {
+        const { avgPoint, campaignComments } = response.data.data;
+        const {
+          content, first, last, number, empty,
+        } = campaignComments;
+        if (first) {
+          setReviewList([...content]);
+          setRating(avgPoint);
+        } else {
+          setReviewList((prev) => [...prev, ...content]);
+        }
+        setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // const onEndReached = () => {
-  //   if (!noMoreData || !loading) {
-  //     loadData();
-  //   }
-  // };
+  const onEndReached = () => {
+    if (!noMoreData || !loading) {
+      loadData();
+    }
+  };
 
-  // const onChangeStatus = async (status: string) => {
-  //   try {
-  //     console.log(status);
-  //     const response = await axios.post(
-  //       `${Config.API_URL}/campaign/changeStatus/${campaignId}/${status}`,
-  //       {},
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       },
-  //     );
-  //     if (response.status === 200) {
-  //       Alert.alert('알림', '캠페인 상태 변경이 완료되었습니다.');
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  //   return false;
-  // };
-
-  // const renderItem = ({ item }: { item: ReviewInfo }) => (
-  //   <EachUser item={item} campaignData={campaignDetail} />
-  // );
+  const renderItem = ({ item }: { item: ReviewInfo }) => (
+    <EachReview item={item} />
+  );
 
   return <View style={styles.container}>
 
     <View style={styles.hostInfoZone}>
       <View style={styles.hostProfileZone}>
-        <Image style={styles.hostProfile} source={{ uri: itemImageURLs[0] }} />
+        <Image style={styles.hostProfile} source={{ uri: hostProfileUrl }} />
 
         <View style={styles.hostTextZone}>
 
           <Text style={styles.hostNameText}>{hostNickName}</Text>
-          <Text style={styles.hostNameText}>{title}</Text>
 
         </View>
       </View>
 
       <View style={styles.hostRateZone}>
-        <Text style={styles.rateNum}>4.3</Text>
+        <Text style={styles.rateNum}>{rating}</Text>
         <View style={styles.starZone}>
           {rateNum.map((item) => (
             <View
@@ -140,16 +119,14 @@ function HostReview({ navigation, route }) {
       <Text style={styles.titleText}>후기</Text>
 
       {/* 후기 리스트 */}
-      {/* {reviewList.length > 0 && <FlatList
+      {reviewList.length > 0 && <FlatList
         data={reviewList}
-        keyExtractor={(item) => `joinedUser_${item.userId.toString()}`}
+        keyExtractor={(item) => `userReview_${item.campaignCommentId.toString()}`}
         renderItem={renderItem}
         onEndReached={onEndReached}
         onEndReachedThreshold={1}
         ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
-      />} */}
-      <EachReview />
-      <EachReview />
+      />}
     </View>
     <View style={styles.buttonZone}>
       <TouchableOpacity
