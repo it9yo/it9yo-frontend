@@ -27,7 +27,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import Logo from '@assets/images/logo.png';
-import LogoTitle from '@assets/images/logoTitle.png';
+
 import NaverBtn from '@assets/images/naverBtn.png';
 import KakaoBtn from '@assets/images/kakaoBtn.png';
 import GoogleBtn from '@assets/images/googleBtn.png';
@@ -132,14 +132,15 @@ function SignIn({ navigation }: SignInScreenProps) {
       }
     } catch (error) {
       // 회원가입이 되어있지 않은 경우
-      console.error(error);
-      if ((error as AxiosError).response?.status === 404) {
+      if ((error as AxiosError).response.data.code === 'userNotFound') {
         setSignupInfo({
           ...signupInfo,
           providerUserId: id,
           providerType,
         });
         navigation.push('SignUp');
+      } else {
+        console.error(error);
       }
     }
   }, []);

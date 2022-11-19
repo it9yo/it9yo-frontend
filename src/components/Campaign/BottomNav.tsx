@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert, Image, StyleSheet, TouchableOpacity, View,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
 import Config from 'react-native-config';
@@ -20,12 +20,17 @@ import ReceiveButton from './ReceiveButton';
 import ManageButton from './ManageButton';
 import ReviewButton from './ReviewButton';
 
-interface BottomNavProps {
+interface ButtonProps {
   campaignDetail: CampaignData;
   setRefresh: any;
+  isHost: boolean;
+  inCampaign: boolean;
+  received: boolean;
 }
 
-function BottomNav({ campaignDetail, setRefresh }: BottomNavProps) {
+function BottomNav({
+  campaignDetail, setRefresh, isHost, inCampaign, received,
+}: ButtonProps) {
   const navigation = useNavigation();
 
   const {
@@ -34,30 +39,7 @@ function BottomNav({ campaignDetail, setRefresh }: BottomNavProps) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
 
-  const [isHost, setHost] = useState(false);
-  const [inCampaign, setInCampaign] = useState(false);
-
   const [isWish, setWish] = useState(false);
-
-  useEffect(() => {
-    const setInfo = async () => {
-      if (userInfo.userId === hostId) {
-        setHost(true);
-      } else {
-        const isInCampaign = await axios.get(
-          `${Config.API_URL}/campaign/join/in/${campaignId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        setInCampaign(isInCampaign.data.data);
-      }
-    };
-
-    setInfo();
-  }, []);
 
   useEffect(() => {
     const checkInWish = async () => {
@@ -136,7 +118,7 @@ function BottomNav({ campaignDetail, setRefresh }: BottomNavProps) {
       </View>
     }
 
-{isHost
+    {isHost
       && <ManageButton campaignDetail={campaignDetail} />}
 
     {!isHost && !inCampaign

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView, View, Dimensions, Text, StyleSheet, Image,
+  SafeAreaView, View, Dimensions, Text, StyleSheet, Image, ImageBackground,
 } from 'react-native';
 
 import NaverMapView, { Marker } from 'react-native-nmap';
 import { Coord } from '@src/@types';
 
-import RedDot from '@assets/images/red-dot.png';
+import ChatBubble from '@assets/images/chatBubble.png';
 import axios, { AxiosResponse } from 'axios';
 import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -65,21 +65,26 @@ function ViewLocation({ navigation, route }) {
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
             zoomControl={false}
-            center={{
-              zoom: 13,
-              latitude: coord.latitude,
-              longitude: coord.longitude,
-            }}>
+            center={{ ...coord, zoom: 13 }}>
             <Marker
-              coordinate={{
-                latitude: coord.latitude,
-                longitude: coord.longitude,
-              }}
-              width={15}
-              height={15}
-              anchor={{ x: 0.5, y: 0.5 }}
-              image={RedDot}
-            />
+              coordinate={coord}
+              width={500}
+              height={75}>
+              <View style={{
+                flex: 1, alignItems: 'center',
+              }}>
+                <View style={{ padding: 5 }}>
+                  <ImageBackground
+                    source={ChatBubble}
+                    style={{ paddingHorizontal: 40, paddingTop: 10, paddingBottom: 20 }}>
+                    <Text style={styles.bubbleText}>{doro}</Text>
+                  </ImageBackground>
+                </View>
+                <View style={styles.behindEllipse}>
+                  <View style={styles.frontEllipse} />
+                </View>
+              </View>
+            </Marker>
           </NaverMapView>
         )}
       </View>
@@ -160,6 +165,31 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     color: '#828282',
     marginLeft: 5,
+  },
+  behindEllipse: {
+    position: 'absolute',
+    bottom: 0,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  frontEllipse: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+    zIndex: 1,
+  },
+  bubbleText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 13,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
   },
 });
 

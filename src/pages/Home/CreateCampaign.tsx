@@ -19,7 +19,6 @@ import Config from 'react-native-config';
 
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
-import { CommonActions } from '@react-navigation/native';
 
 import categoryName from '@src/constants/category';
 
@@ -60,7 +59,7 @@ function CreateCampaign({ navigation, route }) {
   const [detailAddress, setDetailAddress] = useState('');
   const [deadLine, setDeadLine] = useState<Date | null>(null);
   const [maxQuantityPerPerson, setMaxQuantity] = useState('');
-  const [campaignCategory, setCategory] = useState('FOOD');
+  const [campaignCategory, setCategory] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tag, setTag] = useState('');
   const [description, setDescription] = useState('');
@@ -127,36 +126,13 @@ function CreateCampaign({ navigation, route }) {
 
         if (response.status === 200) {
           Alert.alert('알림', '캠페인 등록이 완료되었습니다.');
-          const { campaignId } = response.data.data;
-          const text = `'${title}' 캠페인이 생성되었습니다.`;
-          sendMessage(text, campaignId);
-          navigation.dispatch(CommonActions.goBack());
+          navigation.goBack();
         }
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
-    }
-  };
-
-  const sendMessage = async (text: string, campaignId: number) => {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/chat/publish/${campaignId}`,
-        {
-          content: text,
-          userChat: false,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      console.log(response);
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -185,32 +161,34 @@ function CreateCampaign({ navigation, route }) {
         compressImageMaxWidth: 300,
         compressImageMaxHeight: 300,
       });
-
-      if (response.length > 0) {
-        console.log(response);
-        response.map(async (item) => {
-          const priviewUri = `data:${item.mime};base64,${item.data}`;
-          const isImageExist = previews.filter((preview) => preview.uri === priviewUri);
-          if (!isImageExist.length) {
-            setPreviews((prev) => [...prev, { key: item.localIdentifier, uri: priviewUri }]);
-            const resizedImage = await ImageResizer.createResizedImage(
-              item.path,
-              300,
-              300,
-              item.mime.includes('jpeg') ? 'JPEG' : 'PNG',
-              100,
-            );
-            console.log(item);
-            console.log(resizedImage);
-            setImages((prev) => [...prev, {
-              key: priviewUri,
-              name: resizedImage.name,
-              type: item.mime,
-              uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
-            }]);
-          }
-        });
+      if (response.length > 5 - previews.length) {
+        Alert.alert('알림', '사진은 최대 5개까지 선택 가능합니다.');
+        return;
       }
+
+      console.log(response);
+      response.map(async (item) => {
+        const priviewUri = `data:${item.mime};base64,${item.data}`;
+        const isImageExist = previews.filter((preview) => preview.uri === priviewUri);
+        if (!isImageExist.length) {
+          setPreviews((prev) => [...prev, { key: item.localIdentifier, uri: priviewUri }]);
+          const resizedImage = await ImageResizer.createResizedImage(
+            item.path,
+            300,
+            300,
+            item.mime.includes('jpeg') ? 'JPEG' : 'PNG',
+            100,
+          );
+          console.log(item);
+          console.log(resizedImage);
+          setImages((prev) => [...prev, {
+            key: priviewUri,
+            name: resizedImage.name,
+            type: item.mime,
+            uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
+          }]);
+        }
+      });
     } catch (error) {
       console.error(error);
     }
@@ -249,7 +227,7 @@ function CreateCampaign({ navigation, route }) {
 
         <View style={styles.inputWrapper}>
           <Text style={{ ...styles.label, marginBottom: 0 }}>대표사진</Text>
-          <ScrollView style={styles.imageScroll} horizontal={true}>
+          <ScrollView style={styles.imageScroll} horizontal={true} persistentScrollbar={true}>
             {previews && previews.map((preview) => {
               const { uri } = preview;
               return <View key={uri} style={{ marginRight: 20, marginTop: 15 }} >
@@ -377,12 +355,13 @@ function CreateCampaign({ navigation, route }) {
               selectedValue={campaignCategory}
               onValueChange={(itemValue) => setCategory(itemValue)}
             >
+              <Picker.Item label="카테고리를 선택해주세요" value="" />
               <Picker.Item label="식품" value="FOOD" />
-              {/* <Picker.Item label="의류" value="clothes" />
-              <Picker.Item label="전자기기" value="electronic" />
-              <Picker.Item label="아동용품" value="baby" />
-              <Picker.Item label="도서" value="book" />
-              <Picker.Item label="기타" value="etc" /> */}
+              <Picker.Item label="의류" value="CLOTHES" />
+              <Picker.Item label="전자기기" value="ELECTRONIC" />
+              <Picker.Item label="아동용품" value="BABY" />
+              <Picker.Item label="도서" value="BOOK" />
+              <Picker.Item label="기타" value="ETC" />
             </Picker>
           </View>
         </View>

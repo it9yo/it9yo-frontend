@@ -6,14 +6,11 @@ import {
 
 import CheckIcon from '@assets/images/check.png';
 
-function CompleteModal({ modalVisible, setModalVisible }) {
+function CompleteModal({ modalVisible, setModalVisible, setRefresh }) {
   return <Modal
     animationType="fade"
     transparent={true}
-    visible={modalVisible}
-    onRequestClose={() => {
-      setModalVisible(!modalVisible);
-    }}>
+    visible={modalVisible}>
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
         <View style={styles.checkCircle}>
@@ -24,7 +21,10 @@ function CompleteModal({ modalVisible, setModalVisible }) {
         <Text style={styles.subTitle}>공동구매 참여가 완료되었습니다</Text>
         <TouchableOpacity
           style={styles.modalButton}
-          onPress={() => setModalVisible(!modalVisible)}>
+          onPress={() => {
+            setModalVisible(!modalVisible);
+            setRefresh(true);
+          }}>
           <Text style={styles.buttonText}>확인</Text>
         </TouchableOpacity>
 

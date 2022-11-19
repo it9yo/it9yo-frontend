@@ -105,12 +105,14 @@ function Mypage({ navigation }) {
               : <View style={styles.profileThumbnail}>
               <Icon style={{ paddingTop: 7 }} name='ios-person' size={60} color='white' />
             </View>}
-            
+
           </View>
           <Pressable onPress={onChangeProfilePhoto} style={styles.changeProfilePhotoContainer}>
             <Icon name='camera-outline' size={15} color='gray' />
           </Pressable>
-          <Text style={{ color: 'black', fontSize: 18, position: 'relative', left: -70}}>
+          <Text style={{
+            color: 'black', fontSize: 18, position: 'relative', left: -70,
+          }}>
             {userInfo.nickName}
           </Text>
 
@@ -128,18 +130,17 @@ function Mypage({ navigation }) {
           </View>
         </View>
 
-        
       </View>
 
       <View style={styles.mainContent}>
         <View style={styles.menuBlock}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <Image style={styles.icon} source={Pay}/>
             <Text style={styles.menuText}>
               잇구요 페이
             </Text>
           </View>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
             <Text style={styles.payPoint}>
             {`${numberWithCommas(userInfo.point)} P`}
             </Text>
@@ -148,11 +149,9 @@ function Mypage({ navigation }) {
         </View>
         <View style={styles.horizenLine} />
 
-        
-
         {/* 후기 남기기 */}
         <View style={styles.menuBlock}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
           <Image style={styles.icon} source={Review}/>
             <Text style={styles.menuText}>
               후기 남기기
@@ -165,7 +164,7 @@ function Mypage({ navigation }) {
 
         {/* 완료한 공동구매 내역 */}
         <View style={styles.menuBlock}>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{ flexDirection: 'row' }}>
         <Image style={styles.icon} source={DoneCampaign}/>
           <Text style={styles.menuText}>
             완료한 공동구매 내역
@@ -179,7 +178,7 @@ function Mypage({ navigation }) {
         {/* 찜한 공동구매 목록 */}
         <Pressable onPress={() => navigation.navigate('WishList')}>
           <View style={styles.menuBlock}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
           <Image style={styles.icon} source={OnHeart}/>
             <Text style={styles.menuText}>
               찜한 공동구매 목록
@@ -191,16 +190,18 @@ function Mypage({ navigation }) {
 
         <View style={styles.horizenLine} />
 
-        {/* 문의하기 */}
-        <View style={styles.menuBlock}>
-        <View style={{flexDirection: 'row'}}>
-        <Image style={styles.icon} source={Survey}/>
-          <Text style={styles.menuText}>
-            문의하기
-          </Text>
-        </View>
-          <Icon name='ios-chevron-forward' size={24} color='black' />
-        </View>
+        {/* 신고하기 */}
+        <Pressable onPress={() => navigation.navigate('Report')}>
+          <View style={styles.menuBlock}>
+            <View style={{ flexDirection: 'row' }}>
+            <Image style={styles.icon} source={Survey}/>
+              <Text style={styles.menuText}>
+                신고하기
+              </Text>
+            </View>
+              <Icon name='ios-chevron-forward' size={24} color='black' />
+          </View>
+        </Pressable>
 
       </View>
       </ScrollView>
@@ -278,11 +279,11 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
   },
-  payPoint:{
+  payPoint: {
     color: '#ff9e3e',
     fontSize: 14,
     marginRight: 20,
-  }
+  },
 });
 
 export default Mypage;

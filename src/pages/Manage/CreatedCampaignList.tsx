@@ -9,6 +9,7 @@ import { useRecoilState } from 'recoil';
 
 import EachCampaign from '@components/Campaign/EachCampaign';
 import { CampaignData } from '@src/@types';
+import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
@@ -23,20 +24,27 @@ function CreatedCampaignList() {
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
 
-  useLayoutEffect(() => {
-    loadData();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      loadData();
+      setInitLoading(false);
+    }
+
     return () => {
       setCampaignList([]);
       setCurrentPage(0);
       setNoMoreData(false);
     };
-  }, []);
+  }, [isFocused]);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -50,7 +58,6 @@ function CreatedCampaignList() {
         const {
           content, first, last, number, empty,
         } = response.data.data;
-        if (empty) return;
         if (first) {
           setCampaignList([...content]);
         } else {
@@ -73,7 +80,7 @@ function CreatedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -85,7 +92,7 @@ function CreatedCampaignList() {
       if (response.status === 200) {
         console.log(response.data.data);
         const {
-          content, first, last, number, empty,
+          content, first, last,
         } = response.data.data;
         setCampaignList([...content]);
         if (first) {
@@ -117,11 +124,12 @@ function CreatedCampaignList() {
   };
 
   const renderItem = ({ item }: { item: CampaignData }) => (
-    <EachCampaign item={item}/>
+    <EachCampaign item={item} />
   );
 
   return <View>
-    {campaignList.length > 0 ? <FlatList
+    {initLoading && <ActivityIndicator />}
+    <FlatList
       data={campaignList}
       keyExtractor={(item) => `createdCampaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -130,7 +138,7 @@ function CreatedCampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    /> : <Text>no data</Text>}
+    />
   </View>;
 }
 

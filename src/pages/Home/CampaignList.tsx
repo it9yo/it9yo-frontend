@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator, FlatList, StyleSheet, Text, View,
 } from 'react-native';
@@ -14,7 +14,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 20;
 
-export function CampaignList() {
+export function CampaignList({ title }:{ title?: string }) {
   const accessToken = useRecoilState(userAccessToken)[0];
   const currentLocation = useRecoilValue(locationState);
   const { siDo, siGunGu } = currentLocation;
@@ -29,22 +29,26 @@ export function CampaignList() {
   const [refreshing, setRefreshing] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
 
-  useLayoutEffect(() => {
-    loadCampaignData();
-    setInitLoading(false);
+  useEffect(() => {
+    if (isFocused) {
+      loadCampaignData();
+      setInitLoading(false);
+    }
     return () => {
       setCampaignList([]);
       setCurrentPage(0);
       setNoMoreData(false);
     };
-  }, [currentLocation, isFocused]);
+  }, [currentLocation, isFocused, title]);
 
   const loadCampaignData = async () => {
     if (!siDo && !siGunGu) return;
     if (noMoreData) return;
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&siDo=${siDo}&siGunGu=${siGunGu}`;
+      const url = title
+        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
+        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
       const response = await axios.get(
         url,
         {
@@ -56,9 +60,8 @@ export function CampaignList() {
       console.log('currentLocation', currentLocation, 'response', response.data.data);
       if (response.status === 200) {
         const {
-          content, first, last, number, empty,
+          content, first, last, number,
         } = response.data.data;
-        if (empty) return;
         if (first) {
           setCampaignList([...content]);
         } else {
@@ -82,7 +85,9 @@ export function CampaignList() {
     if (!siDo && !siGunGu) return;
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=DESC&campaignStatus=RECRUITING&siDo=${siDo}&siGunGu=${siGunGu}`;
+      const url = title
+        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
+        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
 
       const response = await axios.get(
         url,
@@ -93,9 +98,8 @@ export function CampaignList() {
         },
       );
       if (response.status === 200) {
-        console.log(response.data.data);
         const {
-          content, first, last, number, empty,
+          content, first, last,
         } = response.data.data;
         setCampaignList([...content]);
         if (first) {
@@ -132,7 +136,11 @@ export function CampaignList() {
 
   return <View style={styles.container}>
     {initLoading && <ActivityIndicator />}
-    {campaignList.length > 0 && <FlatList
+    {title && !initLoading && campaignList.length === 0
+      && <View style={styles.noResult}>
+        <Text>검색 결과가 없습니다.</Text>
+      </View>}
+    <FlatList
       data={campaignList}
       keyExtractor={(item) => `campaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -141,13 +149,17 @@ export function CampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    />}
+    />
   </View>;
 }
 
 const styles = StyleSheet.create({
   container: {
     marginBottom: 60,
+  },
+  noResult: {
+    alignItems: 'center',
+    padding: 20,
   },
 });
 

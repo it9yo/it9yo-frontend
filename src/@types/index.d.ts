@@ -102,8 +102,8 @@ export interface CampaignData {
   siDo: string;
   siGunGu: string;
   eupMyeonDong: string;
-  doro: string;
   detailAddress: string;
+  doro: string;
   deadLine: string;
   campaignStatus: string;
   participatedPersonCnt: number;
@@ -113,34 +113,10 @@ export interface CampaignData {
   minQuantityPerPerson: number;
   hostId: number;
   hostNickName: string;
+  hostProfileUrl: string;
   campaignCategory: string;
   chatRoomName: string;
   chatRoomParticipatedPersonCnt: number;
-}
-
-export interface ChatRoomData {
-  campaignCategory: string;
-  campaignId: number;
-  campaignStatus: string;
-  chatRoomName: string;
-  chatRoomParticipatedPersonCnt: number;
-  deadLine: string;
-  description: string;
-  detailAddress: string;
-  eupMyeonDong: string;
-  hostId: string;
-  hostNickName: string;
-  itemImageURLs: string[];
-  itemPrice: number;
-  maxQuantityPerPerson: number;
-  minQuantityPerPerson: number;
-  pageLinkUrl: string;
-  participatedPersonCnt: number;
-  siDo: string;
-  siGunGu: string;
-  tags: string[];
-  title: string;
-  totalOrderedItemCnt: number;
 }
 
 export interface ReceivedMessageData {
@@ -152,4 +128,35 @@ export interface ReceivedMessageData {
   content: string;
   userChat: boolean;
   profileImageUrl: string;
+  hostId: number;
+  chatRoomName: string;
+  campaignTitle: string;
+}
+
+export interface JoinUserInfo {
+  userId: number;
+  nickName: string;
+  quantity: number;
+  receiveStatus: string;
+  deposit: boolean;
+  profileImage: string;
+}
+
+export interface ReviewInfo {
+  campaignCommentId : number;
+  writerId : number;
+  campaignId : number;
+  content : string;
+  point : number;
+  parentCommentId : number | null;
+  writerProfileUrl: string;
+  writerNickName: string;
+  campaignTitle: string;
+  createdDate: string;
+}
+
+export interface ChatListData extends CampaignData {
+  lastTime?: Date;
+  lastChat?: string;
+  unread?: number;
 }

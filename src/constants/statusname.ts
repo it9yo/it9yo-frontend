@@ -10,7 +10,6 @@ const StatusNameList: ObjType = {
   DISTRIBUTING: '배분중',
   COMPLETED: '배분완료',
   CANCELED: '취소',
-  UNDER_DELIBERATION: '심의중',
 };
 
 export default StatusNameList;

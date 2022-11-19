@@ -8,6 +8,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
+import { useNavigation } from '@react-navigation/native';
 
 interface ButtonParams {
   campaignDetail: CampaignData;
@@ -15,37 +16,14 @@ interface ButtonParams {
 }
 
 function ReviewButton({ campaignDetail, type }: ButtonParams) {
+  const navigation = useNavigation();
   const { campaignId, campaignStatus } = campaignDetail;
   const accessToken = useRecoilState(userAccessToken)[0];
   const buttonActive = campaignStatus === 'DISTRIBUTING';
 
-  const onCancelCampaign = async () => {
-    try {
-      // const response = await axios.post(
-      //   `${Config.API_URL}/campaign/join/cancel/${campaignId}`,
-      //   {},
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   },
-      // );
-      // if (response.status === 200) {
-      //   Alert.alert('알림', '캠페인 취소가 완료되었습니다.');
-      // TODO: 새로고침 되도록
-      // navigation.navigate('CampaignDetail', {
-      //   screen: 'DetailHome',
-      //   params: { campaignId },
-      // });
-      // }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return <TouchableOpacity
     style={type === 'middle' ? styles.middleButton : styles.button}
-    onPress={onCancelCampaign}>
+    onPress={() => navigation.navigate('CreateReview', { ...campaignDetail })}>
     <Text style={styles.buttonText}>후기작성</Text>
   </TouchableOpacity>;
 }

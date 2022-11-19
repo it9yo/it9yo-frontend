@@ -36,7 +36,6 @@ function Terms({ navigation }: Props) {
             tintColors={{
               true: '#ff9e3e',
             }}
-            disabled={false}
             value={firstTerm && secondTerm}
             onValueChange={(newValue) => {
               setFirstTerm(newValue);
@@ -59,7 +58,6 @@ function Terms({ navigation }: Props) {
             tintColors={{
               true: '#ff9e3e',
             }}
-            disabled={false}
             value={firstTerm}
             onValueChange={(newValue) => setFirstTerm(newValue)}
           />
@@ -76,7 +74,6 @@ function Terms({ navigation }: Props) {
             tintColors={{
               true: '#ff9e3e',
             }}
-            disabled={false}
             value={secondTerm}
             onValueChange={(newValue) => setSecondTerm(newValue)}
           />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios, { AxiosResponse } from 'axios';
 import {
   Alert,
+  Dimensions,
   SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 
@@ -17,114 +18,132 @@ function EditProfile({ navigation }) {
   const [changedNickName, setNickName] = useState(nickName);
   const [changedIntroduction, setIntroduction] = useState(introduction);
 
+  const canGoNext = changedNickName.length > 1;
+
   const onChangeProfile = async () => {
-    if (!changedNickName) {
-      Alert.alert('알림', '닉네임은 필수입니다.');
-    } else if (changedNickName.length < 2) {
-      Alert.alert('알림', '닉네임은 2자 이상 입니다.');
-    } else {
-      try {
-        const response: AxiosResponse = await axios.patch(
-          `${Config.API_URL}/user/edit`,
-          {
-            nickName: changedNickName,
-            introduction: changedIntroduction,
+    if (!canGoNext) return;
+    try {
+      const response: AxiosResponse = await axios.patch(
+        `${Config.API_URL}/user/edit`,
+        {
+          nickName: changedNickName,
+          introduction: changedIntroduction,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        if (response.status === 200) {
-          setUserInfo({
-            ...userInfo,
-            nickName: changedNickName,
-            introduction: changedIntroduction,
-          });
-          Alert.alert('알림', '프로필 수정이 완료되었습니다.');
-          navigation.goBack();
-        }
-      } catch (error) {
-        console.error(error);
+        },
+      );
+      if (response.status === 200) {
+        setUserInfo({
+          ...userInfo,
+          nickName: changedNickName,
+          introduction: changedIntroduction,
+        });
+        Alert.alert('알림', '프로필 수정이 완료되었습니다.');
+        navigation.goBack();
       }
+    } catch (error) {
+      console.error(error);
     }
   };
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>프로필 수정</Text>
 
-  return (<SafeAreaView style={styles.container}>
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>닉네임</Text>
         <TextInput
           style={styles.textInput}
           onChangeText={(text) => setNickName(text.trim())}
-          placeholder="닉네임을 입력해주세요"
-          placeholderTextColor="#666"
+          placeholder="닉네임 입력"
+          placeholderTextColor="#c2c2c2"
           value={changedNickName}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
       </View>
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>자기소개</Text>
         <TextInput
           style={styles.textInput}
           onChangeText={setIntroduction}
-          placeholder="자기소개를 입력해주세요(선택)"
-          placeholderTextColor="#666"
+          placeholder="자기소개 입력"
+          placeholderTextColor="#c2c2c2"
           value={changedIntroduction}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
       </View>
-      <View style={styles.buttonZone}>
-        <TouchableOpacity style={styles.button} onPress={onChangeProfile}>
-          <Text style={styles.buttonText}>변경하기</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.pop()}>
-          <Text style={{ fontSize: 16 }}>취소</Text>
-        </TouchableOpacity>
-      </View>
-  </SafeAreaView>);
+
+      <TouchableOpacity
+        style={
+          canGoNext
+            ? StyleSheet.compose(styles.button, styles.buttonActive)
+            : styles.button
+        }
+        disabled={!canGoNext}
+        onPress={onChangeProfile}>
+        <Text style={styles.buttonText}>수정하기</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  title: {
+    alignSelf: 'flex-start',
+    marginLeft: 20,
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 24,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'left',
+    color: '#282828',
+    marginTop: 20,
+    marginBottom: 40,
   },
   inputWrapper: {
-    padding: 20,
-  },
-  label: {
-    marginVertical: 5,
-    fontSize: 16,
+    flexDirection: 'row',
+    width: Dimensions.get('window').width - 40,
+    justifyContent: 'space-between',
   },
   textInput: {
-    width: 300,
-    padding: 5,
-    marginTop: 5,
-    marginRight: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  buttonZone: {
-    marginTop: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flex: 1,
+    paddingLeft: 20,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: '#d3d3d3',
+    marginBottom: 10,
   },
   button: {
-    height: 40,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    margin: 10,
+    backgroundColor: '#ababab',
+  },
+  buttonActive: {
+    backgroundColor: '#ff9e3e',
   },
   buttonText: {
-    color: 'white',
+    fontFamily: 'SpoqaHanSansNeo',
     fontSize: 16,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
   },
 });
 export default EditProfile;

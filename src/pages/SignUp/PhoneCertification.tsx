@@ -43,17 +43,12 @@ function PhoneCertification({ navigation }: Props) {
     }
     try {
       setLoading(true);
-      const phoneNumberCheck = await axios.post(
-        `${Config.API_URL}/auth/phoneExists`,
-        {
-          phoneNumber,
-        },
-      );
-
-      if (phoneNumberCheck.status !== 200) {
-        Alert.alert('알림', '이미 등록된 전화번호입니다.');
-        return;
-      }
+      // const phoneNumberCheck = await axios.post(
+      //   `${Config.API_URL}/auth/phoneExists`,
+      //   {
+      //     phoneNumber,
+      //   },
+      // );
 
       const response = await axios.post(
         `${Config.API_URL}/auth/phoneAuth`,
@@ -61,8 +56,15 @@ function PhoneCertification({ navigation }: Props) {
           tel: phoneNumber,
         },
       );
+      console.log(response);
       setCertNumber(response.data.data);
     } catch (error) {
+      // const { code, message } = error.response.data;
+      // if (code === 'phoneAlreadyExists') {
+      //   Alert.alert('알림', message);
+      // } else {
+      //   console.error(error);
+      // }
       console.error(error);
     } finally {
       setLoading(false);

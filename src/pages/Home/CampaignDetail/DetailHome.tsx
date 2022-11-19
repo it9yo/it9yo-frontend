@@ -1,10 +1,10 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, Pressable, Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
-import { userAccessToken } from '@src/states';
+import { userAccessToken, userState } from '@src/states';
 import Config from 'react-native-config';
 import axios from 'axios';
 
@@ -12,13 +12,13 @@ import { SliderBox } from 'react-native-image-slider-box';
 
 import { CampaignData } from '@src/@types';
 
-import StatusNameList from '@constants/statusname';
+import MiddleButton from '@components/Campaign/MiddleButton';
 import BottomNav from '@src/components/Campaign/BottomNav';
+
+import StatusNameList from '@constants/statusname';
 
 import GPSIcon from '@assets/images/gps.png';
 import HostIcon from '@assets/images/host.png';
-import JoinButton from '@src/components/Campaign/JoinButton';
-import MiddleButton from '../../../components/Campaign/MiddleButton';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -28,30 +28,21 @@ function DetailHome({ navigation, route }) {
   const { campaignId } = route.params;
 
   const accessToken = useRecoilState(userAccessToken)[0];
+  const userInfo = useRecoilState(userState)[0];
+
   const [campaignDetail, setCampaignDetail] = useState<CampaignData | undefined>();
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useLayoutEffect(() => {
-    const loadCampaignDetail = async () => {
-      try {
-        const response = await axios.get(
-          `${Config.API_URL}/campaign/detail/${campaignId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          },
-        );
-        if (response.status === 200) {
-          setCampaignDetail(response.data.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const [isHost, setIsHost] = useState(false);
+  const [inCampaign, setInCampaign] = useState(false);
 
+  const [received, setReceived] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
     loadCampaignDetail();
+    setLoading(false);
 
     return () => setCampaignDetail(undefined);
   }, []);
@@ -59,12 +50,13 @@ function DetailHome({ navigation, route }) {
   useEffect(() => {
     if (refresh) {
       setLoading(true);
-      refreshCampaign();
+      loadCampaignDetail();
+      setLoading(false);
       setRefresh(false);
     }
   }, [refresh]);
 
-  const refreshCampaign = async () => {
+  const loadCampaignDetail = async () => {
     if (loading) return;
     try {
       const response = await axios.get(
@@ -75,11 +67,36 @@ function DetailHome({ navigation, route }) {
           },
         },
       );
-      if (response.status === 200) {
-        setCampaignDetail(response.data.data);
-        setLoading(false);
+      if (response.status !== 200) return;
+
+      const campaignData: CampaignData = response.data.data;
+      setCampaignDetail(campaignData);
+      if (userInfo.userId === campaignData.hostId) {
+        setIsHost(true);
+        return;
       }
+
+      const isInCampaign = await axios.get(
+        `${Config.API_URL}/campaign/join/in/${campaignId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      setInCampaign(isInCampaign.data.data);
+
+      const isReceived = await axios.get(
+        `${Config.API_URL}/campaign/join/receive/${campaignId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      setReceived(isReceived.data.data);
     } catch (error) {
+      if (error.response.data.message === '캠페인에 참여중인 사용자가 아닙니다.') return;
       console.error(error);
     }
   };
@@ -123,8 +140,7 @@ function DetailHome({ navigation, route }) {
 
               <Pressable
                 style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
-                onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}
-              >
+                onPress={() => navigation.navigate('ViewLocation', { campaignDetail })}>
                 <Text style={StyleSheet.compose(styles.hostInfoText, { color: '#306fe1', marginRight: 2 })}>
                   지도보기
                 </Text>
@@ -133,11 +149,20 @@ function DetailHome({ navigation, route }) {
             </View>
 
             <View style={styles.hostInfoZone}>
-              <Image style={styles.infoIcon} source={HostIcon} />
+              <Image style={styles.infoIcon} source={{ uri: campaignDetail.hostProfileUrl }} />
 
               <Text style={styles.hostInfoText}>
                 {campaignDetail.hostNickName}
               </Text>
+
+              <Pressable
+                style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
+                onPress={() => navigation.navigate('HostReview', { campaignDetail })}>
+                <Text style={StyleSheet.compose(styles.hostInfoText, { color: '#306fe1', marginRight: 2 })}>
+                  프로필
+                </Text>
+                <Icon name='md-chevron-forward-sharp' size={20} color='#A7A7A8' />
+              </Pressable>
             </View>
           </View>
 
@@ -156,6 +181,9 @@ function DetailHome({ navigation, route }) {
               <MiddleButton
                 campaignDetail={campaignDetail}
                 setRefresh={setRefresh}
+                isHost={isHost}
+                inCampaign={inCampaign}
+                received={received}
               />
             </View>
           </View>
@@ -182,6 +210,9 @@ function DetailHome({ navigation, route }) {
         <BottomNav
           campaignDetail={campaignDetail}
           setRefresh={setRefresh}
+          isHost={isHost}
+          inCampaign={inCampaign}
+          received={received}
         />
 
       </SafeAreaView>);
@@ -238,8 +269,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   infoIcon: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
   },
   hostInfoText: {
     fontFamily: 'SpoqaHanSansNeo',

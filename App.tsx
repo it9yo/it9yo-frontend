@@ -28,7 +28,10 @@ import WishList from '@pages/Mypage/WishList';
 import { userState, userAccessToken } from '@src/states';
 
 import BackButton from '@components/Header/BackButton';
-import CloseButton from '@components/Header/CloseButton';
+import ManageCampaign from '@src/pages/Manage/ManageCampaign';
+import CreateReview from '@src/pages/Manage/CreateReview';
+import HostReview from '@src/pages/Home/CampaignDetail/HostReview';
+import Report from '@src/pages/Mypage/Report';
 
 const Stack = createNativeStackNavigator();
 
@@ -138,6 +141,10 @@ function App() {
               component={ChatRoom}
             />
             <Stack.Screen
+              name="ManageCampaign"
+              component={ManageCampaign}
+            />
+            <Stack.Screen
               name="ChangeLocationCert"
               component={ChangeLocationCert}
               options={{ title: '지역 인증' }}
@@ -146,8 +153,11 @@ function App() {
               name="SearchAddress"
               component={SearchAddress}
               options={{ title: '주소 검색' }}
+              />
+            <Stack.Screen name="Search"
+              component={Search}
+              options={{ headerShown: false }}
             />
-            <Stack.Screen name="Search" component={Search} />
             <Stack.Screen
               name="EditProfile"
               component={EditProfile}
@@ -167,6 +177,21 @@ function App() {
               name="WishList"
               component={WishList}
               options={{ title: '찜 목록' }}
+            />
+            <Stack.Screen
+              name="Report"
+              component={Report}
+              options={{ title: '신고하기' }}
+            />
+            <Stack.Screen
+              name="CreateReview"
+              component={CreateReview}
+              options={{ title: '슈퍼바이어 평가하기' }}
+            />
+            <Stack.Screen
+              name="HostReview"
+              component={HostReview}
+              options={{ title: '슈퍼바이어 프로필' }}
             />
           </Stack.Group>
         </Stack.Navigator>

@@ -50,7 +50,6 @@ function JoinButton({ campaignDetail, setRefresh, type }: ButtonParams) {
 
         const text = `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`;
         sendMessage(text);
-        setRefresh(true);
       }
     } catch (error) {
       console.error(error);
@@ -91,6 +90,7 @@ function JoinButton({ campaignDetail, setRefresh, type }: ButtonParams) {
     <CompleteModal
       modalVisible={completeModalVisible}
       setModalVisible={setCompleteModalVisible}
+      setRefresh={setRefresh}
     />
   </>;
 }

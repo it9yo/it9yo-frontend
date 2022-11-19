@@ -14,18 +14,26 @@ function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-function EachCampaign({ item }: { item: CampaignData }) {
+interface CampaignProps {
+  item: CampaignData;
+}
+
+function EachCampaign({ item }: CampaignProps) {
   const navigation = useNavigation();
   const {
-    campaignId, title, eupMyeonDong, itemImageURLs,
+    campaignId, title, eupMyeonDong, itemImageURLs, hostId,
     campaignStatus, hostNickName, participatedPersonCnt, itemPrice,
+    hostProfileUrl,
   } = item;
 
-  return <Pressable
-    onPress={() => navigation.navigate('CampaignDetail', {
+  const handlePress = () => {
+    navigation.navigate('CampaignDetail', {
       screen: 'DetailHome',
       params: { campaignId },
-    })}>
+    });
+  };
+
+  return <Pressable onPress={handlePress}>
     <View style={styles.campaignListZone}>
       <Image style={styles.campaignThumbnail}
         source={{ uri: itemImageURLs[0] }}
@@ -43,7 +51,7 @@ function EachCampaign({ item }: { item: CampaignData }) {
         <Text style={styles.campaignTitleText}>{title}</Text>
 
         <View style={styles.hostInfoZone}>
-          <Image style={styles.userIcon} source={UserIcon} />
+          <Image style={styles.userIcon} source={{ uri: hostProfileUrl }} />
           <Text style={styles.hostNameZone}>{hostNickName}</Text>
           <View style={styles.ellipse} />
           <Text style={styles.hostNameZone}>{eupMyeonDong}</Text>
@@ -111,9 +119,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   userIcon: {
-    width: 14,
-    height: 14,
-    opacity: 0.7,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 3,
   },
   hostNameZone: {
     fontFamily: 'SpoqaHanSansNeo',
@@ -122,12 +131,11 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#828282',
-    marginLeft: 3,
+    marginHorizontal: 3,
   },
   ellipse: {
     width: 3,
     height: 3,
-    marginHorizontal: 3,
     borderRadius: 1.5,
     backgroundColor: '#ababab',
   },

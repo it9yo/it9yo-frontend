@@ -1,10 +1,12 @@
 import React, {
-  useState, useCallback, useEffect, useLayoutEffect, useRef,
+  useState, useCallback, useEffect, useRef,
 } from 'react';
+import { DrawerLayoutAndroid, View } from 'react-native';
+
 import AsyncStorage from '@react-native-community/async-storage';
 
 import messaging from '@react-native-firebase/messaging';
-import { ReceivedMessageData } from '@src/@types';
+import { CampaignData, JoinUserInfo, ReceivedMessageData } from '@src/@types';
 
 import { GiftedChat, type IMessage } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -15,11 +17,10 @@ import Config from 'react-native-config';
 // test
 import Toast from 'react-native-toast-message';
 
-import {
-  Button, DrawerLayoutAndroid, StyleSheet, Text, View,
-} from 'react-native';
-
 import DrawerButton from '@components/Header/DrawerButton';
+import ChatRoomDrawer from './ChatRoomDrawer';
+
+const pageSize = 50;
 
 function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
@@ -29,19 +30,37 @@ function ChatRoom({ navigation, route }) {
   const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[]>([]);
 
+  const [userList, setUserList] = useState<JoinUserInfo[]>([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [noMoreData, setNoMoreData] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const [campaignData, setCampaignData] = useState<CampaignData | undefined>();
+
   const drawer = useRef(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerTitle: route.params.title,
       headerRight: () => <DrawerButton onPress={() => drawer.current.openDrawer()}/>,
     });
-  }, [navigation, route]);
+    const readMessages = async () => {
+      const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
+      const newUnreadMessages = Number(unreadMessages);
+      await AsyncStorage.setItem(`unreadMessages_${campaignId}`, '0');
 
-  useEffect(() => {
+      const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
+      const newUnreadAllMessages = Number(unreadAllMessages) - newUnreadMessages;
+      await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
+    };
+    readMessages();
     setChatRoomId(campaignId);
-    initData();
-    return () => {
+    initChatData();
+    loadCampaignDetail();
+    loadUserData();
+
+    return async () => {
       setChatRoomId(null);
     };
   }, []);
@@ -55,62 +74,90 @@ function ChatRoom({ navigation, route }) {
       const receivedMessage = JSON.parse(notification.body);
       if (receivedMessage.campaignId !== campaignId) return;
 
-      console.log('receivedMessage', receivedMessage);
-      const {
-        userId, nickName, content, profileImageUrl, userChat,
-      } = receivedMessage;
-
-      const messageData: ReceivedMessageData = {
-        messageId,
-        sentTime,
-        userId,
-        nickName,
-        content,
-        profileImageUrl,
-        userChat,
-      };
-
-      // test
-      Toast.show({
-        text1: nickName,
-        text2: content,
-        onPress: () => {
-          Toast.hide();
-          navigation.navigate('ChatRoom', { campaignId, title: '123' });
-        },
-      });
-
-      receiveMessage(messageData);
+      setReceivedMessage({ ...receivedMessage, messageId, sentTime });
     });
 
     return unsubscribe;
   }, []);
 
-  const initData = async () => {
+  const initChatData = async () => {
     try {
-      const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-      if (list !== null) {
-        setMessages(JSON.parse(list));
-      } else {
-        const initMsg: IMessage[] = [{
-          _id: 0,
-          text: `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`,
-          createdAt: new Date(),
-          user: {
-            _id: 0,
-            name: 'React Native',
-          },
-          system: true,
-        }];
-        AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(initMsg));
-        setMessages(initMsg);
-      }
+      const data = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+      if (data === null) return;
+      const chatList = JSON.parse(data);
+      console.log('initChatData', chatList);
+
+      setMessages(chatList);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const receiveMessage = async ({
+  const loadCampaignDetail = async () => {
+    if (loading) return;
+    try {
+      const response = await axios.get(
+        `${Config.API_URL}/campaign/detail/${campaignId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const campaignDetailData: CampaignData = response.data.data;
+        setCampaignData(campaignDetailData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadUserData = async () => {
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/campaign/detail/v2/${campaignId}?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      if (response.status === 200) {
+        const { userInfos } = response.data.data;
+        const {
+          content, first, last, number, empty,
+        } = userInfos;
+        if (empty) return;
+        if (first) {
+          setUserList([...content]);
+        } else {
+          setUserList((prev) => [...prev, ...content]);
+        }
+        setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onEndReached = () => {
+    if (!noMoreData || !loading) {
+      loadUserData();
+    }
+  };
+
+  const setReceivedMessage = async ({
     messageId,
     sentTime,
     userId,
@@ -132,12 +179,16 @@ function ChatRoom({ navigation, route }) {
       },
       system: !userChat,
     };
-    AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify([newMessage, ...messages]));
+    const newMessages = [newMessage, ...messages];
+    console.log('prevmessages', messages);
+    console.log('newMessages', newMessages);
     setMessages((prev) => [newMessage, ...prev]);
+    await AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessages));
   };
 
-  const sendMessage = async (text: string) => {
+  const sendMessage = async (message: IMessage[]) => {
     try {
+      const { text } = message[0];
       const response = await axios.post(
         `${Config.API_URL}/chat/publish/${campaignId}`,
         {
@@ -155,31 +206,22 @@ function ChatRoom({ navigation, route }) {
       console.error(error);
     }
   };
-  const onSend = useCallback((message: IMessage[]) => {
-    console.log(message);
-    sendMessage(message[0].text);
-  }, []);
-
-  const navigationView = () => (
-    <View style={[styles.container, styles.navigationContainer]}>
-      <Text style={styles.paragraph}>I'm in the Drawer!</Text>
-      <Button
-        title="Close drawer"
-        onPress={() => drawer.current.closeDrawer()}
-      />
-    </View>
-  );
 
   return (
     <DrawerLayoutAndroid
       ref={drawer}
       drawerWidth={300}
       drawerPosition="right"
-      renderNavigationView={navigationView}
-    >
+      renderNavigationView={() => (campaignData ? <ChatRoomDrawer
+        campaignData={campaignData}
+        userList={userList}
+        onEndReached={onEndReached}
+        noMoreData={noMoreData}
+        loading={loading}/> : <View />)
+      }>
       <GiftedChat
         messages={messages}
-        onSend={(message) => onSend(message)}
+        onSend={(message) => sendMessage(message)}
         user={{
           _id: userInfo.userId,
         }}
@@ -187,22 +229,5 @@ function ChatRoom({ navigation, route }) {
     </DrawerLayoutAndroid>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  navigationContainer: {
-    backgroundColor: '#ecf0f1',
-  },
-  paragraph: {
-    padding: 16,
-    fontSize: 15,
-    textAlign: 'center',
-  },
-});
 
 export default ChatRoom;
