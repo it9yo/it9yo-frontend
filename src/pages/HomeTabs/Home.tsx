@@ -11,11 +11,6 @@ import Plus from '@assets/images/plus.png';
 
 function Home() {
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    console.log('Focused on Home');
-  }, [isFocused]);
 
   return <SafeAreaView style={styles.container}>
     <HomeHeader />

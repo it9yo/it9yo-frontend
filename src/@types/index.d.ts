@@ -102,8 +102,8 @@ export interface CampaignData {
   siDo: string;
   siGunGu: string;
   eupMyeonDong: string;
-  doro: string;
   detailAddress: string;
+  doro: string;
   deadLine: string;
   campaignStatus: string;
   participatedPersonCnt: number;
@@ -116,31 +116,6 @@ export interface CampaignData {
   campaignCategory: string;
   chatRoomName: string;
   chatRoomParticipatedPersonCnt: number;
-}
-
-export interface ChatRoomData {
-  campaignCategory: string;
-  campaignId: number;
-  campaignStatus: string;
-  chatRoomName: string;
-  chatRoomParticipatedPersonCnt: number;
-  deadLine: string;
-  description: string;
-  detailAddress: string;
-  eupMyeonDong: string;
-  hostId: string;
-  hostNickName: string;
-  itemImageURLs: string[];
-  itemPrice: number;
-  maxQuantityPerPerson: number;
-  minQuantityPerPerson: number;
-  pageLinkUrl: string;
-  participatedPersonCnt: number;
-  siDo: string;
-  siGunGu: string;
-  tags: string[];
-  title: string;
-  totalOrderedItemCnt: number;
 }
 
 export interface ReceivedMessageData {
@@ -175,8 +150,8 @@ export interface ReviewInfo {
   parentCommentId : number | null;
 }
 
-export interface ChatListData extends ChatRoomData {
-  lastTime: Date;
-  lastChat: string;
-  unread: number;
+export interface ChatListData extends CampaignData {
+  lastTime?: Date;
+  lastChat?: string;
+  unread?: number;
 }

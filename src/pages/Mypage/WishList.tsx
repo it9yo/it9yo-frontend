@@ -17,7 +17,7 @@ const pageSize = 20;
 
 export function WishList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [wishList, setWishList] = useState<CampaignData[]>([]); // TODO
+  const [wishList, setWishList] = useState<CampaignData[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [noMoreData, setNoMoreData] = useState(false);
@@ -27,7 +27,9 @@ export function WishList({ navigation }) {
   const isFocused = useIsFocused();
 
   useLayoutEffect(() => {
-    loadWishList();
+    if (isFocused) {
+      loadWishList();
+    }
 
     return setWishList([]);
   }, [isFocused]);

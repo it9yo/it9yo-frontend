@@ -29,8 +29,11 @@ function CreatedCampaignList() {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    loadData();
-    setInitLoading(false);
+    if (isFocused) {
+      loadData();
+      setInitLoading(false);
+    }
+
     return () => {
       setCampaignList([]);
       setCurrentPage(0);
@@ -41,7 +44,7 @@ function CreatedCampaignList() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -55,7 +58,6 @@ function CreatedCampaignList() {
         const {
           content, first, last, number, empty,
         } = response.data.data;
-        if (empty) return;
         if (first) {
           setCampaignList([...content]);
         } else {
@@ -78,7 +80,7 @@ function CreatedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&campaignStatus=RECRUITING&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -90,7 +92,7 @@ function CreatedCampaignList() {
       if (response.status === 200) {
         console.log(response.data.data);
         const {
-          content, first, last, number, empty,
+          content, first, last,
         } = response.data.data;
         setCampaignList([...content]);
         if (first) {

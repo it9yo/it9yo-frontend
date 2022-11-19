@@ -152,8 +152,11 @@ function App() {
               name="SearchAddress"
               component={SearchAddress}
               options={{ title: '주소 검색' }}
+              />
+            <Stack.Screen name="Search"
+              component={Search}
+              options={{ headerShown: false }}
             />
-            <Stack.Screen name="Search" component={Search} />
             <Stack.Screen
               name="EditProfile"
               component={EditProfile}

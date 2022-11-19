@@ -26,10 +26,6 @@ function Chat({ navigation }) {
 
   const chatRoomId = useRecoilState(currentChatRoomId)[0];
 
-  useEffect(() => {
-    console.log('chatRoomId', chatRoomId);
-  }, [chatRoomId]);
-
   // 메시지 전송 받기
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
@@ -37,12 +33,15 @@ function Chat({ navigation }) {
       if (!notification || !notification.body) return;
 
       const receivedMessage = JSON.parse(notification.body);
-      if (chatRoomId && chatRoomId === receivedMessage.campaignId) return;
+      if (chatRoomId && chatRoomId === receivedMessage.campaignId) {
+        console.log('in Chat / chatroomId', chatRoomId);
+        return;
+      }
 
       setReceivedMessage({ ...receivedMessage, messageId, sentTime });
 
       const {
-        nickName, content, campaignId, campaignTitle,
+        content, campaignId, campaignTitle,
       } = receivedMessage;
 
       const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
@@ -54,7 +53,7 @@ function Chat({ navigation }) {
       await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
 
       Toast.show({
-        text1: nickName,
+        text1: campaignTitle,
         text2: content,
         onPress: () => {
           Toast.hide();
@@ -64,7 +63,7 @@ function Chat({ navigation }) {
     });
 
     return unsubscribe;
-  }, []);
+  }, [chatRoomId]);
 
   const setReceivedMessage = async ({
     campaignId,

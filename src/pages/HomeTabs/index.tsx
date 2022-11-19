@@ -34,7 +34,9 @@ function HomeTabs() {
       setUnreadMessages(unread);
     };
 
-    getUnreadMessages();
+    if (isFocused) {
+      getUnreadMessages();
+    }
   }, [isFocused]);
 
   return (
@@ -123,8 +125,8 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    top: 0,
-    right: 0,
+    top: -6,
+    right: -8,
     zIndex: 1,
     justifyContent: 'center',
     alignItems: 'center',

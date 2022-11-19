@@ -19,7 +19,6 @@ import Config from 'react-native-config';
 
 import { useRecoilState } from 'recoil';
 import { userAccessToken, userState } from '@src/states';
-import { CommonActions } from '@react-navigation/native';
 
 import categoryName from '@src/constants/category';
 

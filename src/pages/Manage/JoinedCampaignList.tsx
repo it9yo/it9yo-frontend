@@ -29,8 +29,11 @@ function JoinedCampaignList() {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    loadData();
-    setInitLoading(false);
+    if (isFocused) {
+      loadData();
+      setInitLoading(false);
+    }
+
     return () => {
       setCampaignList([]);
       setCurrentPage(0);
@@ -53,9 +56,8 @@ function JoinedCampaignList() {
 
       if (response.status === 200) {
         const {
-          content, first, last, number, empty,
+          content, first, last, number,
         } = response.data.data;
-        if (empty) return;
         if (first) {
           setCampaignList([...content]);
         } else {
@@ -78,7 +80,7 @@ function JoinedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&campaignStatus=RECRUITING`;
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC`;
 
       const response = await axios.get(
         url,
@@ -91,7 +93,7 @@ function JoinedCampaignList() {
       if (response.status === 200) {
         console.log(response.data.data);
         const {
-          content, first, last, number, empty,
+          content, first, last,
         } = response.data.data;
         setCampaignList([...content]);
         if (first) {

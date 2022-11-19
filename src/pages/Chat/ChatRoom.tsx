@@ -45,13 +45,6 @@ function ChatRoom({ navigation, route }) {
       headerTitle: route.params.title,
       headerRight: () => <DrawerButton onPress={() => drawer.current.openDrawer()}/>,
     });
-  }, [navigation, route]);
-
-  useEffect(() => {
-    console.log(drawer.current);
-  }, [drawer.current]);
-
-  useEffect(() => {
     const readMessages = async () => {
       const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
       const newUnreadMessages = Number(unreadMessages);
@@ -67,7 +60,7 @@ function ChatRoom({ navigation, route }) {
     loadCampaignDetail();
     loadUserData();
 
-    return () => {
+    return async () => {
       setChatRoomId(null);
     };
   }, []);
@@ -81,22 +74,24 @@ function ChatRoom({ navigation, route }) {
       const receivedMessage = JSON.parse(notification.body);
       if (receivedMessage.campaignId !== campaignId) return;
 
-      receiveMessage({ ...receivedMessage, messageId, sentTime });
-      const { nickName, content, campaignTitle } = receivedMessage;
-
-      // test
-      Toast.show({
-        text1: nickName,
-        text2: content,
-        onPress: () => {
-          Toast.hide();
-          navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
-        },
-      });
+      setReceivedMessage({ ...receivedMessage, messageId, sentTime });
     });
 
     return unsubscribe;
   }, []);
+
+  const initChatData = async () => {
+    try {
+      const data = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
+      if (data === null) return;
+      const chatList = JSON.parse(data);
+      console.log('initChatData', chatList);
+
+      setMessages(chatList);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const loadCampaignDetail = async () => {
     if (loading) return;
@@ -162,31 +157,7 @@ function ChatRoom({ navigation, route }) {
     }
   };
 
-  const initChatData = async () => {
-    try {
-      const list = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-      if (list !== null) {
-        setMessages(JSON.parse(list));
-      } else {
-        const initMsg: IMessage[] = [{
-          _id: 0,
-          text: `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`,
-          createdAt: new Date(),
-          user: {
-            _id: 0,
-            name: 'React Native',
-          },
-          system: true,
-        }];
-        AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(initMsg));
-        setMessages(initMsg);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const receiveMessage = async ({
+  const setReceivedMessage = async ({
     messageId,
     sentTime,
     userId,
@@ -208,12 +179,16 @@ function ChatRoom({ navigation, route }) {
       },
       system: !userChat,
     };
+    const newMessages = [newMessage, ...messages];
+    console.log('prevmessages', messages);
+    console.log('newMessages', newMessages);
     setMessages((prev) => [newMessage, ...prev]);
-    await AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify([newMessage, ...messages]));
+    await AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessages));
   };
 
-  const sendMessage = async (text: string) => {
+  const sendMessage = async (message: IMessage[]) => {
     try {
+      const { text } = message[0];
       const response = await axios.post(
         `${Config.API_URL}/chat/publish/${campaignId}`,
         {
@@ -231,10 +206,6 @@ function ChatRoom({ navigation, route }) {
       console.error(error);
     }
   };
-  const onSend = useCallback((message: IMessage[]) => {
-    console.log(message);
-    sendMessage(message[0].text);
-  }, []);
 
   return (
     <DrawerLayoutAndroid
@@ -250,7 +221,7 @@ function ChatRoom({ navigation, route }) {
       }>
       <GiftedChat
         messages={messages}
-        onSend={(message) => onSend(message)}
+        onSend={(message) => sendMessage(message)}
         user={{
           _id: userInfo.userId,
         }}

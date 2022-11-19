@@ -8,17 +8,18 @@ import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
-import { ChatListData, ChatRoomData } from '@src/@types';
+import { CampaignData, ChatListData } from '@src/@types';
 import EachChat from '@src/components/EachChat';
 import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
+import { createIconSetFromFontello } from 'react-native-vector-icons';
 
 const pageSize = 50;
 
 function CreatedChatList({ navigation }) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [chatList, setChatList] = useState<ChatRoomData[]>([]);
+  const [chatList, setChatList] = useState<CampaignData[]>([]);
   const [sortedChatList, setSortedChatList] = useState<ChatListData[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -30,33 +31,55 @@ function CreatedChatList({ navigation }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    loadData();
-    setInitLoading(false);
+    if (isFocused) {
+      loadData();
+    }
   }, [isFocused]);
 
   useEffect(() => {
     async function getLastMessages() {
       const result: ChatListData[] = [];
+      const restResult: ChatListData[] = [];
+      console.log('chatList', chatList);
       for (const chat of chatList) {
         const { campaignId } = chat;
         const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
         const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
-        if (prevMessages) {
-          const messageList: IMessage[] = JSON.parse(prevMessages);
-          const recentMessage = messageList[0];
-          const { text, createdAt } = recentMessage;
-          const lastTime = new Date(createdAt);
-          const unread = Number(unreadMessages);
-          result.push({
-            ...chat, lastTime, lastChat: text, unread,
+        if (prevMessages === null) {
+          restResult.push({
+            ...chat,
           });
+        } else {
+          const messageList: IMessage[] = JSON.parse(prevMessages);
+          console.log(`${campaignId} has ${messageList.length} messages`);
+          if (messageList.length > 0) {
+            const recentMessage = messageList[0];
+            const { text, createdAt } = recentMessage;
+            const lastTime = new Date(createdAt);
+            const unread = Number(unreadMessages);
+            result.push({
+              ...chat, lastTime, lastChat: text, unread,
+            });
+          } else {
+            restResult.push({
+              ...chat,
+            });
+          }
         }
       }
-      if (result.length === 0) return;
-      const sortedResult = result.sort((a, b) => b.lastTime.getTime() - a.lastTime.getTime());
-      setSortedChatList(sortedResult);
+      if (result.length === 0 && restResult.length === 0) return;
+
+      let sortedList: ChatListData[] = [];
+      if (result.length !== 0) {
+        const sortedResult = result.sort((a, b) => b.lastTime.getTime() - a.lastTime.getTime());
+        sortedList = [...sortedResult];
+      }
+      setSortedChatList([...sortedList, ...restResult]);
     }
+    setInitLoading(true);
     getLastMessages();
+    setInitLoading(false);
+
     return () => setSortedChatList([]);
   }, [chatList, isFocused]);
 
@@ -64,7 +87,7 @@ function CreatedChatList({ navigation }) {
     if (noMoreData || loading) return;
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?status=RECRUITING&size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?&size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -75,9 +98,9 @@ function CreatedChatList({ navigation }) {
       );
       if (response.status === 200) {
         const {
-          content, first, last, number, empty,
+          content, first, last, number,
         } = response.data.data;
-        if (empty) return;
+        console.log(content);
         if (first) {
           setChatList([...content]);
         } else {

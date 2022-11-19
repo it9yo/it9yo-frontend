@@ -30,11 +30,6 @@ function EachUser({ item, campaignData, type } : EachUserProps) {
 
   const [isDeposit, setDeposit] = useState(deposit);
 
-  useEffect(() => {
-    console.log('type', type);
-    console.log('campaignData', campaignData);
-  }, []);
-
   const handleDeposit = async () => {
     try {
       const response = await axios.post(
@@ -58,23 +53,22 @@ function EachUser({ item, campaignData, type } : EachUserProps) {
     <View style={styles.leftContainer}>
       <Image style={styles.image} source={{ uri: profileImage }} />
       <Text style={styles.infoText}>{nickName}</Text>
-      {isDeposit ? <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
+      {type !== 'drawer' && isDeposit
+      && <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
         <Text style={{ ...styles.depositStatusText, color: 'white' }}>입금완료</Text>
-      </View>
-        : <View style={styles.depositStatusBadge}>
+      </View>}
+      {type !== 'drawer' && !isDeposit
+      && <View style={styles.depositStatusBadge}>
         <Text style={styles.depositStatusText}>입금대기</Text>
-      </View>
-      }
+      </View>}
+
       {type !== 'drawer'
         && <Pressable onPress={handleDeposit}>
           <Icon name='swap' size={20} color="#adb7cb"/>
-        </Pressable>
-      }
+        </Pressable>}
     </View>
-    {type !== 'drawer' && itemPrice
-      ? <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>
-      : <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>}
-
+    {type !== 'drawer' && itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>}
+    {type !== 'drawer' && !itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{quantity}개</Text>}
   </View>;
 }
 const styles = StyleSheet.create({

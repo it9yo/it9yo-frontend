@@ -58,7 +58,7 @@ function EditProfile({ navigation }) {
           onChangeText={(text) => setNickName(text.trim())}
           placeholder="닉네임 입력"
           placeholderTextColor="#c2c2c2"
-          value={nickName}
+          value={changedNickName}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
@@ -69,7 +69,7 @@ function EditProfile({ navigation }) {
           onChangeText={setIntroduction}
           placeholder="자기소개 입력"
           placeholderTextColor="#c2c2c2"
-          value={introduction}
+          value={changedIntroduction}
           clearButtonMode="while-editing"
           blurOnSubmit={false}
         />
