@@ -31,6 +31,7 @@ import BackButton from '@components/Header/BackButton';
 import ManageCampaign from '@src/pages/Manage/ManageCampaign';
 import CreateReview from '@src/pages/Manage/CreateReview';
 import HostReview from '@src/pages/Home/CampaignDetail/HostReview';
+import Report from '@src/pages/Mypage/Report';
 
 const Stack = createNativeStackNavigator();
 
@@ -176,6 +177,11 @@ function App() {
               name="WishList"
               component={WishList}
               options={{ title: '찜 목록' }}
+            />
+            <Stack.Screen
+              name="Report"
+              component={Report}
+              options={{ title: '신고하기' }}
             />
             <Stack.Screen
               name="CreateReview"

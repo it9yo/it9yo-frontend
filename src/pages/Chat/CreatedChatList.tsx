@@ -32,10 +32,13 @@ function CreatedChatList({ navigation }) {
   useEffect(() => {
     if (isFocused) {
       loadData();
-      getLastMessages();
-      setInitLoading(false);
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    getLastMessages();
+    setInitLoading(false);
+  }, [chatList, isFocused]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
