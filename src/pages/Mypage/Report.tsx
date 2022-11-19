@@ -53,10 +53,11 @@ function Report({ navigation, route }) {
   const [images, setImages] = useState<ImageData[]>([]);
   const [previews, setPreviews] = useState<Preview[]>([]);
 
-  const [campaignCategory, setCategory] = useState();
+  const [campaign, setCampaign] = useState();
+  const [reason, setReason] = useState();
   const [description, setDescription] = useState('');
 
-  const canGoNext = campaignCategory && description.length > 0;
+  const canGoNext = reason && description.length > 0;
 
   useEffect(() => {
     if (isFocused) {
@@ -194,8 +195,8 @@ function Report({ navigation, route }) {
               style={{
                 fontSize: 8,
               }}
-              selectedValue={campaignCategory}
-              onValueChange={(itemValue) => setCategory(itemValue)}
+              selectedValue={campaign}
+              onValueChange={(itemValue) => setCampaign(itemValue)}
             >
               <Picker.Item label="신고할 캠페인을 선택해 주세요" value="" />
               {campaignList.length > 0
@@ -217,8 +218,8 @@ function Report({ navigation, route }) {
               style={{
                 fontSize: 8,
               }}
-              selectedValue={campaignCategory}
-              onValueChange={(itemValue) => setCategory(itemValue)}
+              selectedValue={reason}
+              onValueChange={(itemValue) => setReason(itemValue)}
             >
               <Picker.Item label="신고 사유를 선택해 주세요" value="" />
               <Picker.Item label="캠페인 지연" value="CAMPAIGN_DELAY" />
