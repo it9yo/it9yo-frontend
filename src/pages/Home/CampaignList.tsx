@@ -47,9 +47,10 @@ export function CampaignList({ title }:{ title?: string }) {
     if (noMoreData) return;
     try {
       setLoading(true);
-      const url = title
-        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
-        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
+      let url = `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate,desc`;
+      if (title) {
+        url += `&title=${title}`;
+      }
       const response = await axios.get(
         url,
         {
@@ -86,9 +87,10 @@ export function CampaignList({ title }:{ title?: string }) {
     if (!siDo && !siGunGu) return;
     try {
       setRefreshing(true);
-      const url = title
-        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
-        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
+      let url = `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate,desc`;
+      if (title) {
+        url += `&title=${title}`;
+      }
 
       const response = await axios.get(
         url,

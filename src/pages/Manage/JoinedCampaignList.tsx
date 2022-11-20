@@ -44,7 +44,7 @@ function JoinedCampaignList() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC`;
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${currentPage}&sort=createdDate,desc`;
       const response = await axios.get(
         url,
         {
@@ -80,7 +80,7 @@ function JoinedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC`;
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate,desc`;
 
       const response = await axios.get(
         url,

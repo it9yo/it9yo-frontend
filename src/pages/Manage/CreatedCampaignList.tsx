@@ -1,6 +1,6 @@
 import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator, FlatList, StyleSheet, Text, View,
 } from 'react-native';
@@ -45,7 +45,7 @@ function CreatedCampaignList() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate,desc&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -81,7 +81,7 @@ function CreatedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate,desc&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {

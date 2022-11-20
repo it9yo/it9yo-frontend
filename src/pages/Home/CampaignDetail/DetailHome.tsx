@@ -19,6 +19,7 @@ import StatusNameList from '@constants/statusname';
 
 import GPSIcon from '@assets/images/gps.png';
 import HostIcon from '@assets/images/host.png';
+import { useIsFocused } from '@react-navigation/native';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -38,14 +39,16 @@ function DetailHome({ navigation, route }) {
   const [inCampaign, setInCampaign] = useState(false);
 
   const [received, setReceived] = useState(false);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    setLoading(true);
-    loadCampaignDetail();
-    setLoading(false);
-
+    if (isFocused) {
+      setLoading(true);
+      loadCampaignDetail();
+      setLoading(false);
+    }
     return () => setCampaignDetail(undefined);
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     if (refresh) {
