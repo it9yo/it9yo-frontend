@@ -59,8 +59,8 @@ function EachUser({ item, campaignData, type } : EachUserProps) {
         <Image style={styles.image} source={{ uri: profileImage }} />
         <Text style={styles.infoText}>{nickName}</Text>
         {receiveStatus !== 'NOT_RECEIVED'
-        && <View style={styles.depositStatusBadge}>
-          <Text style={styles.depositStatusText}>수령완료</Text>
+        && <View style={{ ...styles.depositStatusBadge, backgroundColor: '#ff9e3e' }}>
+        <Text style={{ ...styles.depositStatusText, color: 'white' }}>수령완료</Text>
         </View>}
       </View>
       {type !== 'drawer' && itemPrice && <Text style={{ ...styles.infoText, alignContent: 'flex-end' }}>{numberWithCommas(itemPrice * quantity)}원 / {quantity}개</Text>}

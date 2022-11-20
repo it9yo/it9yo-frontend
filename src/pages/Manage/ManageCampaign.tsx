@@ -19,7 +19,7 @@ function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-const pageSize = 10;
+const pageSize = 20;
 
 function ManageCampaign({ navigation, route }) {
   const accessToken = useRecoilState(userAccessToken)[0];
@@ -64,7 +64,7 @@ function ManageCampaign({ navigation, route }) {
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/detail/v2/${campaignId}?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=DESC`;
+      const url = `${Config.API_URL}/campaign/detail/v2/${campaignId}?size=${pageSize}&page=${currentPage}&sort=createdDate,desc`;
       const response = await axios.get(
         url,
         {
