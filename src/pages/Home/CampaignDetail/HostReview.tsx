@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Image, Text, StyleSheet, Pressable, Platform, Dimensions, ActivityIndicator, FlatList, TouchableOpacity, Alert,
+  View, Image, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, SafeAreaView,
 } from 'react-native';
-
-import StatusNameList from '@constants/statusname';
 
 import { useRecoilState } from 'recoil';
 import { userAccessToken } from '@src/states';
@@ -12,16 +10,13 @@ import Config from 'react-native-config';
 import { ReviewInfo, CampaignData } from '@src/@types';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EachReview from '@src/components/EachReview';
-import { parse } from 'date-fns/esm';
 
 const pageSize = 10;
 
 function HostReview({ navigation, route }) {
   const accessToken = useRecoilState(userAccessToken)[0];
   const { campaignDetail }: { campaignDetail: CampaignData } = route.params;
-  const {
-    title, hostId, hostNickName, hostProfileUrl,
-  } = campaignDetail;
+  const { hostId, hostNickName, hostProfileUrl } = campaignDetail;
 
   const [reviewList, setReviewList] = useState<ReviewInfo[]>([]);
 
@@ -54,7 +49,7 @@ function HostReview({ navigation, route }) {
       if (response.status === 200) {
         const { avgPoint, campaignComments } = response.data.data;
         const {
-          content, first, last, number, empty,
+          content, first, last, number,
         } = campaignComments;
         if (first) {
           setReviewList([...content]);
@@ -70,7 +65,7 @@ function HostReview({ navigation, route }) {
         }
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     } finally {
       setLoading(false);
     }
@@ -86,7 +81,7 @@ function HostReview({ navigation, route }) {
     <EachReview item={item} />
   );
 
-  return <View style={styles.container}>
+  return <SafeAreaView style={styles.container}>
 
     <View style={styles.hostInfoZone}>
       <View style={styles.hostProfileZone}>
@@ -119,14 +114,18 @@ function HostReview({ navigation, route }) {
       <Text style={styles.titleText}>후기</Text>
 
       {/* 후기 리스트 */}
-      {reviewList.length > 0 && <FlatList
+      {reviewList.length > 0 ? <FlatList
         data={reviewList}
         keyExtractor={(item) => `userReview_${item.campaignCommentId.toString()}`}
         renderItem={renderItem}
         onEndReached={onEndReached}
         onEndReachedThreshold={1}
         ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
-      />}
+      /> : <View style={styles.noDataZone}>
+        <Text style={styles.noDataText}>아직 후기가 없어요</Text>
+        <Text style={styles.noDataSubText}>첫번째 후기를 남겨주세요!</Text>
+      </View>
+      }
     </View>
     <View style={styles.buttonZone}>
       <TouchableOpacity
@@ -135,7 +134,7 @@ function HostReview({ navigation, route }) {
         <Text style={styles.buttonText}>후기작성</Text>
       </TouchableOpacity>
     </View>
-  </View>;
+  </SafeAreaView>;
 }
 
 export default HostReview;
@@ -234,5 +233,27 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#ffffff',
+  },
+  noDataZone: {
+    alignItems: 'center',
+  },
+  noDataText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 19,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
+    opacity: 0.5,
+    marginBottom: 10,
+  },
+  noDataSubText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 17,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
+    opacity: 0.5,
   },
 });

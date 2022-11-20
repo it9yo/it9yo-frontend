@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, StyleSheet, Text, View,
+  ActivityIndicator, Button, FlatList, Pressable, StyleSheet, Text, View,
 } from 'react-native';
 
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -11,6 +11,7 @@ import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useIsFocused } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const pageSize = 20;
 
@@ -35,9 +36,10 @@ export function CampaignList({ title }:{ title?: string }) {
       setInitLoading(false);
     }
     return () => {
-      setCampaignList([]);
+      setLoading(true);
       setCurrentPage(0);
       setNoMoreData(false);
+      setCampaignList([]);
     };
   }, [currentLocation, isFocused, title]);
 
@@ -118,7 +120,7 @@ export function CampaignList({ title }:{ title?: string }) {
     }
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     if (!refreshing) {
       getRefreshData();
     }
@@ -138,9 +140,13 @@ export function CampaignList({ title }:{ title?: string }) {
     {initLoading && <ActivityIndicator />}
     {title && !initLoading && campaignList.length === 0
       && <View style={styles.noResult}>
-        <Text>검색 결과가 없습니다.</Text>
+        <Text>검색 결과가 없습니다</Text>
       </View>}
-    <FlatList
+    {!title && !loading && !initLoading && campaignList.length === 0
+      && <View style={styles.noResultMain}>
+      <Text style={styles.noDataText}>아직 이 지역에 등록된 캠페인이 없어요</Text>
+    </View>}
+    {campaignList.length > 0 && <FlatList
       data={campaignList}
       keyExtractor={(item) => `campaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -149,17 +155,44 @@ export function CampaignList({ title }:{ title?: string }) {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    />
+    />}
   </View>;
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 60,
+    flex: 1,
+    backgroundColor: '#fff',
   },
   noResult: {
+    paddingTop: 20,
     alignItems: 'center',
-    padding: 20,
+  },
+  noResultMain: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noDataText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 17,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
+    opacity: 0.3,
+    marginBottom: 10,
+  },
+  refreshButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#000000',
+    backgroundColor: '#FFFFFF',
   },
 });
 

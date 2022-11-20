@@ -88,9 +88,7 @@ export function WishList({ navigation }) {
       );
       if (response.status === 200) {
         console.log(response.data.data);
-        const {
-          content, first, last, number, empty,
-        } = response.data.data;
+        const { content, first, last } = response.data.data;
         setWishList([...content]);
         if (first) {
           setCurrentPage(1);
@@ -124,7 +122,7 @@ export function WishList({ navigation }) {
     <EachCampaign item={item}/>
   );
 
-  return <SafeAreaView>
+  return <SafeAreaView style={styles.container}>
     {wishList.length > 0 ? <FlatList
       data={wishList}
       keyExtractor={(item) => `wishList_${item.campaignId.toString()}`}
@@ -134,8 +132,31 @@ export function WishList({ navigation }) {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    /> : <Text>no data</Text>}
+    /> : <View style={styles.noDataZone}>
+    <Text style={styles.noDataText}>찜한 공동구매가 없어요</Text>
+    </View>}
   </SafeAreaView>;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  noDataZone: {
+    paddingTop: 20,
+    alignItems: 'center',
+  },
+  noDataText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 17,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
+    opacity: 0.3,
+    marginBottom: 10,
+  },
+});
 
 export default WishList;
