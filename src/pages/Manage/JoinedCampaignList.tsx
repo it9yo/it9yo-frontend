@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import {
-  ActivityIndicator, FlatList, Text, View,
+  ActivityIndicator, FlatList, StyleSheet, Text, View,
 } from 'react-native';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
@@ -14,7 +14,6 @@ import { useIsFocused } from '@react-navigation/native';
 const pageSize = 20;
 
 function JoinedCampaignList() {
-  const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
 
   const [campaignList, setCampaignList] = useState<CampaignData[]>([]);
@@ -35,6 +34,7 @@ function JoinedCampaignList() {
     }
 
     return () => {
+      setLoading(true);
       setCampaignList([]);
       setCurrentPage(0);
       setNoMoreData(false);
@@ -44,7 +44,7 @@ function JoinedCampaignList() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC`;
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${currentPage}&sort=createdDate,desc`;
       const response = await axios.get(
         url,
         {
@@ -80,7 +80,7 @@ function JoinedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC`;
+      const url = `${Config.API_URL}/campaign/joining?size=${pageSize}&page=${0}&sort=createdDate,desc`;
 
       const response = await axios.get(
         url,
@@ -128,9 +128,14 @@ function JoinedCampaignList() {
     <EachCampaign item={item}/>
   );
 
-  return <View>
+  return <View style={styles.container}>
     {initLoading && <ActivityIndicator />}
-    <FlatList
+    {!loading && !initLoading && campaignList.length === 0
+      && <View style={styles.noResultMain}>
+      <Text style={styles.noDataText}>아직 참가중인 캠페인이 없어요</Text>
+    </View>}
+    {campaignList.length > 0
+    && <FlatList
       data={campaignList}
       keyExtractor={(item) => `joinedCampaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -139,8 +144,34 @@ function JoinedCampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    />
+    />}
   </View>;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  noResult: {
+    paddingTop: 20,
+    alignItems: 'center',
+  },
+  noResultMain: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noDataText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 17,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
+    opacity: 0.3,
+    marginBottom: 10,
+  },
+});
 
 export default JoinedCampaignList;

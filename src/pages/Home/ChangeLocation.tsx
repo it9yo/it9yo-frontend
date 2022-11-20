@@ -34,6 +34,7 @@ function ChangeLocation({ navigation }) {
               </Text>
             </TouchableOpacity>
           ))}
+          <View style={{ height: 20 }} />
         </ScrollView>
 
         <View style={styles.verticalLine} />
@@ -48,6 +49,7 @@ function ChangeLocation({ navigation }) {
             </Text>
           </TouchableOpacity>
           ))}
+          <View style={{ height: 20 }} />
         </ScrollView>
 
       </View>
@@ -81,7 +83,7 @@ const styles = StyleSheet.create({
   textList: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 15,
+    paddingVertical: 15,
   },
   commonText: {
     fontFamily: 'SpoqaHanSansNeo',

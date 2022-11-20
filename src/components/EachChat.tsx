@@ -29,20 +29,24 @@ function EachChat({ item } : { item: ChatListData }) {
   const navigation = useNavigation();
   const [lastChatTime, setLastChatTime] = useState('');
   const [lastMessage, setLastMessage] = useState('');
+  const [unreadCnt, setUnreadCnt] = useState(0);
   const {
-    campaignId, title, itemImageURLs, lastTime, lastChat, unread,
+    campaignId, title, itemImageURLs, sentTime, content, unread,
   } = item;
 
   useEffect(() => {
-    if (lastTime) {
-      const lastTimeText = `${timeConversion(new Date().getTime() - lastTime.getTime())} 전`;
+    if (sentTime > 0) {
+      const lastTimeText = `${timeConversion(new Date().getTime() - new Date(sentTime).getTime())} 전`;
       setLastChatTime(lastTimeText);
+    } else {
+      setLastChatTime('');
     }
-    if (lastChat) {
-      const lastText = lastChat.length > 20 ? `${lastChat.substring(0, 20)}...` : lastChat;
+    if (content) {
+      const lastText = content.length > 20 ? `${content.substring(0, 20)}...` : content;
       setLastMessage(lastText);
     }
-  }, []);
+    setUnreadCnt(unread);
+  }, [item]);
 
   return <Pressable onPress={() => navigation.navigate('ChatRoom', { campaignId, title })}>
     <View style={styles.chatListView}>
@@ -54,14 +58,14 @@ function EachChat({ item } : { item: ChatListData }) {
         />
         <View style={styles.chatContainer}>
           <Text style={styles.chatTitle}>{title}</Text>
-          <Text style={styles.chatContent}>{lastMessage}</Text>
+          {lastChatTime && <Text style={styles.chatContent}>{lastMessage}</Text>}
         </View>
       </View>
       <View style={styles.rightContainer}>
-        <Text style={styles.chatTimeText}>{lastChatTime}</Text>
-        {unread > 0
+        {lastChatTime && <Text style={styles.chatTimeText}>{lastChatTime}</Text>}
+        {unreadCnt > 0
           && <View style={styles.badge}>
-            <Text style={styles.badgeNum}>{unread}</Text>
+            <Text style={styles.badgeNum}>{unreadCnt}</Text>
           </View>
         }
       </View>

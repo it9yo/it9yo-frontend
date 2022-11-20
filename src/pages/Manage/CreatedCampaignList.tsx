@@ -1,8 +1,8 @@
 import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, Text, View,
+  ActivityIndicator, FlatList, StyleSheet, Text, View,
 } from 'react-native';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
@@ -35,6 +35,7 @@ function CreatedCampaignList() {
     }
 
     return () => {
+      setLoading(true);
       setCampaignList([]);
       setCurrentPage(0);
       setNoMoreData(false);
@@ -44,7 +45,7 @@ function CreatedCampaignList() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${currentPage}&sort=createdDate,desc&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -80,7 +81,7 @@ function CreatedCampaignList() {
   const getRefreshData = async () => {
     try {
       setRefreshing(true);
-      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate&direction=ASC&hostId=${userInfo.userId}`;
+      const url = `${Config.API_URL}/campaign/campaigns?size=${pageSize}&page=${0}&sort=createdDate,desc&hostId=${userInfo.userId}`;
       const response = await axios.get(
         url,
         {
@@ -127,9 +128,14 @@ function CreatedCampaignList() {
     <EachCampaign item={item} />
   );
 
-  return <View>
+  return <View style={styles.container}>
     {initLoading && <ActivityIndicator />}
-    <FlatList
+    {!loading && !initLoading && campaignList.length === 0
+      && <View style={styles.noResultMain}>
+      <Text style={styles.noDataText}>아직 주최한 캠페인이 없어요</Text>
+    </View>}
+    {campaignList.length > 0
+    && <FlatList
       data={campaignList}
       keyExtractor={(item) => `createdCampaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -138,8 +144,34 @@ function CreatedCampaignList() {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    />
+    />}
   </View>;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  noResult: {
+    paddingTop: 20,
+    alignItems: 'center',
+  },
+  noResultMain: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noDataText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 17,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
+    opacity: 0.3,
+    marginBottom: 10,
+  },
+});
 
 export default CreatedCampaignList;

@@ -70,7 +70,6 @@ function SignIn({ navigation }: SignInScreenProps) {
   const [signupInfo, setSignupInfo] = useRecoilState(signupState);
   const setUserInfo = useSetRecoilState(userState);
   const setAccessToken = useSetRecoilState(userAccessToken);
-  // const [fcmToken, setFcmToken] = useRecoilState(userFcmToken);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -278,7 +277,6 @@ const styles = StyleSheet.create({
     width: 300,
   },
   logoText: {
-    // width: 79,
     height: 45,
     fontFamily: 'NEXONLv2Gothic',
     fontSize: 30,
@@ -306,7 +304,6 @@ const styles = StyleSheet.create({
     left: 20,
     width: 25,
     height: 25,
-    // marginRight: 5,
   },
   loginButtonText: {
     fontFamily: 'SpoqaHanSansNeo',

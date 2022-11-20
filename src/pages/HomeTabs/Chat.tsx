@@ -13,18 +13,21 @@ import JoinedChatList from '@pages/Chat/JoinedChatList';
 import CreatedChatList from '@pages/Chat/CreatedChatList';
 import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
-import { useRecoilState } from 'recoil';
-import { currentChatRoomId } from '@src/states';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { chatRefresh, currentChatRoomId, unreadAll } from '@src/states';
 
 function Chat({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
+  const [refresh, setRefresh] = useRecoilState(chatRefresh);
+
   const [routes] = useState([
     { key: 'joined', title: '참여중' },
     { key: 'created', title: '주최중' },
   ]);
 
   const chatRoomId = useRecoilState(currentChatRoomId)[0];
+  const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
 
   // 메시지 전송 받기
   useEffect(() => {
@@ -33,33 +36,50 @@ function Chat({ navigation }) {
       if (!notification || !notification.body) return;
 
       const receivedMessage = JSON.parse(notification.body);
-      if (chatRoomId && chatRoomId === receivedMessage.campaignId) {
-        console.log('in Chat / chatroomId', chatRoomId);
-        return;
-      }
+      if (!sentTime || !messageId) return;
 
       setReceivedMessage({ ...receivedMessage, messageId, sentTime });
 
       const {
-        content, campaignId, campaignTitle,
+        content, campaignId, campaignTitle, userChat,
       } = receivedMessage;
 
-      const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
-      const newUnreadMessages = Number(unreadMessages) + 1;
-      await AsyncStorage.setItem(`unreadMessages_${campaignId}`, String(newUnreadMessages));
+      if (userChat) {
+        let chatListData = {
+          content: '',
+          unread: 0,
+          sentTime: 0,
+        };
 
-      const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
-      const newUnreadAllMessages = Number(unreadAllMessages) + 1;
-      await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
-
-      Toast.show({
-        text1: campaignTitle,
-        text2: content,
-        onPress: () => {
-          Toast.hide();
-          navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
-        },
-      });
+        const data = await AsyncStorage.getItem(`lastChat_${campaignId}`);
+        if (data !== null) {
+          chatListData = JSON.parse(data);
+        }
+        chatListData.content = content;
+        chatListData.sentTime = sentTime;
+        console.log(chatListData);
+        console.log('chatRoomId', chatRoomId);
+        console.log('receivedMessage.campaignId', receivedMessage.campaignId);
+        if (chatRoomId && chatRoomId === receivedMessage.campaignId) {
+          await AsyncStorage.setItem(`lastChat_${campaignId}`, JSON.stringify(chatListData));
+        } else {
+          chatListData.unread += 1;
+          await AsyncStorage.multiSet([
+            [`lastChat_${campaignId}`, JSON.stringify(chatListData)],
+            ['unreadAll', String(Number(unreadMessages) + 1)],
+          ]);
+          setUnreadMessages((prev) => Number(prev) + 1);
+          Toast.show({
+            text1: campaignTitle,
+            text2: content,
+            onPress: () => {
+              Toast.hide();
+              navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
+            },
+          });
+        }
+        setRefresh(true);
+      }
     });
 
     return unsubscribe;
@@ -76,9 +96,6 @@ function Chat({ navigation }) {
     userChat,
   }: ReceivedMessageData) => {
     if (!sentTime || !messageId) return;
-    const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-    if (!prevMessages) return;
-    const messageList: IMessage[] = JSON.parse(prevMessages);
 
     const newMessage: IMessage = {
       _id: messageId,
@@ -92,8 +109,20 @@ function Chat({ navigation }) {
       system: !userChat,
     };
 
-    const newMessageList: IMessage[] = [newMessage, ...messageList];
-    await AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessageList));
+    const prevData = await AsyncStorage.getItem(`chat_${campaignId}`);
+    let newMessages;
+    if (prevData !== null) {
+      const prevMessages = JSON.parse(prevData);
+      newMessages = [newMessage, ...prevMessages];
+    } else {
+      newMessages = [newMessage];
+    }
+    console.log(newMessages);
+    await AsyncStorage.setItem(`chat_${campaignId}`, JSON.stringify(newMessages));
+    const savedMessage = await AsyncStorage.getItem(`chat_${campaignId}`);
+    if (savedMessage !== null) {
+      console.log(JSON.parse(savedMessage));
+    }
   };
 
   const renderScene = SceneMap({

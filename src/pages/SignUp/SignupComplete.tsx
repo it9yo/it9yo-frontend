@@ -8,6 +8,8 @@ import Config from 'react-native-config';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
+import messaging from '@react-native-firebase/messaging';
+
 import {
   signupState, userAccessToken, userFcmToken, userState,
 } from '@src/states';
@@ -16,12 +18,26 @@ import Congraturation from '@assets/images/congraturation.png';
 function SignupComplete() {
   const signupInfo = useRecoilState(signupState)[0];
   const setUserInfo = useSetRecoilState(userState);
-  const fcmToken = useRecoilState(userFcmToken)[0];
   const setAccessToken = useSetRecoilState(userAccessToken);
+
+  const getPushPermissions = async () => {
+    let authorized;
+    const enabled = await messaging().hasPermission();
+
+    if (!enabled) {
+      authorized = await messaging().requestPermission();
+    }
+
+    if (enabled || authorized) {
+      const token = await messaging().getToken();
+      return token;
+    }
+  };
 
   const onLogin = async () => {
     const { providerUserId, providerType } = signupInfo;
-    const mobileToken = fcmToken;
+
+    const mobileToken = await getPushPermissions();
 
     try {
       const response = await axios.post(
@@ -41,13 +57,14 @@ function SignupComplete() {
         );
 
         const userResponseData = await axios.get(
-          `${Config.API_URL}/user/info`,
+          `${Config.API_URL}/user/detail`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           },
         );
+        console.log('userResponseData', userResponseData);
         setUserInfo(userResponseData.data.data);
       }
     } catch (error) {

@@ -3,8 +3,8 @@ import {
   Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert, Platform,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { userAccessToken, userState } from '@src/states';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { locationState, userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -13,8 +13,10 @@ import Review from '@assets/images/review.png';
 import DoneCampaign from '@assets/images/done-campaign.png';
 import OnHeart from '@assets/images/on-heart.png';
 import Survey from '@assets/images/survey.png';
+import GPSIcon from '@assets/images/gps.png';
 
 import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
+import AsyncStorage from '@react-native-community/async-storage';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -23,6 +25,11 @@ function numberWithCommas(x: number) {
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+  const currentLocation = useRecoilValue(locationState);
+
+  useEffect(() => {
+    console.log(currentLocation);
+  }, []);
 
   const onChangeProfilePhoto = async () => {
     try {
@@ -92,6 +99,12 @@ function Mypage({ navigation }) {
       '',
     );
   };
+
+  const onReset = async () => {
+    await AsyncStorage.clear();
+    Alert.alert('async 초기화');
+  };
+
   return (
   <SafeAreaView style={styles.container}>
     <ScrollView scrollToOverflowEnabled={false} style={{ height: '100%' }}>
@@ -133,20 +146,34 @@ function Mypage({ navigation }) {
       </View>
 
       <View style={styles.mainContent}>
-        <View style={styles.menuBlock}>
+        {/* 찜한 공동구매 목록 */}
+        <Pressable onPress={() => navigation.navigate('WishList')}>
+          <View style={styles.menuBlock}>
           <View style={{ flexDirection: 'row' }}>
-            <Image style={styles.icon} source={Pay}/>
+          <Image style={styles.icon} source={OnHeart}/>
             <Text style={styles.menuText}>
-              잇구요 페이
+              찜한 공동구매 목록
             </Text>
           </View>
-            <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.payPoint}>
-            {`${numberWithCommas(userInfo.point)} P`}
-            </Text>
-            <Icon onPress={() => navigation.navigate('It9yoPay')} name='ios-chevron-forward' size={24} color='black' />
+            <Icon name='ios-chevron-forward' size={24} color='black' />
           </View>
-        </View>
+        </Pressable>
+
+        <View style={styles.horizenLine} />
+
+        {/* 지역 인증 하기 */}
+        <Pressable onPress={() => navigation.navigate('LocCert', { currentLocation })}>
+          <View style={styles.menuBlock}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image style={{ width: 25, height: 30 }} source={GPSIcon}/>
+            <Text style={styles.menuText}>
+              지역 인증 하기
+            </Text>
+          </View>
+            <Icon name='ios-chevron-forward' size={24} color='black' />
+          </View>
+        </Pressable>
+
         <View style={styles.horizenLine} />
 
         {/* 후기 남기기 */}
@@ -175,21 +202,6 @@ function Mypage({ navigation }) {
 
         <View style={styles.horizenLine} />
 
-        {/* 찜한 공동구매 목록 */}
-        <Pressable onPress={() => navigation.navigate('WishList')}>
-          <View style={styles.menuBlock}>
-          <View style={{ flexDirection: 'row' }}>
-          <Image style={styles.icon} source={OnHeart}/>
-            <Text style={styles.menuText}>
-              찜한 공동구매 목록
-            </Text>
-          </View>
-            <Icon name='ios-chevron-forward' size={24} color='black' />
-          </View>
-        </Pressable>
-
-        <View style={styles.horizenLine} />
-
         {/* 신고하기 */}
         <Pressable onPress={() => navigation.navigate('Report')}>
           <View style={styles.menuBlock}>
@@ -197,6 +209,19 @@ function Mypage({ navigation }) {
             <Image style={styles.icon} source={Survey}/>
               <Text style={styles.menuText}>
                 신고하기
+              </Text>
+            </View>
+              <Icon name='ios-chevron-forward' size={24} color='black' />
+          </View>
+        </Pressable>
+
+        {/* async storage 초기화 */}
+        <Pressable onPress={onReset}>
+          <View style={styles.menuBlock}>
+            <View style={{ flexDirection: 'row' }}>
+            <Image style={styles.icon} source={Survey}/>
+              <Text style={styles.menuText}>
+                async 초기화
               </Text>
             </View>
               <Icon name='ios-chevron-forward' size={24} color='black' />

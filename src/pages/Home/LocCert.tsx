@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import {
   Alert,
-  Dimensions, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
+  Dimensions, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import NaverMapView, { Marker } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
@@ -16,8 +16,8 @@ import { Coord } from '@src/@types';
 
 import ChatBubble from '@assets/images/chatBubble.png';
 
-function ChangeLocationCert({ navigation, route }) {
-  const changedLocation = route.params;
+function LocCert({ navigation, route }) {
+  const { currentLocation } = route.params;
   const accessToken = useRecoilState(userAccessToken)[0];
   const [userInfo, setUserInfo] = useRecoilState(userState);
 
@@ -65,8 +65,8 @@ function ChangeLocationCert({ navigation, route }) {
         const eupMyeonDong = region.area3.name;
         setDoro(`${sido} ${sigungu} ${eupMyeonDong}`);
 
-        if ((changedLocation.sido === sido || changedLocation.sido === sidoAlias)
-          && changedLocation.sigungu === sigungu) {
+        if ((currentLocation.siDo === sido || currentLocation.siDo === sidoAlias)
+          && currentLocation.siGunGu === sigungu) {
           setLocationAuth(true);
           Alert.alert('알림', '지역 인증이 완료되었습니다.');
         } else {
@@ -82,10 +82,10 @@ function ChangeLocationCert({ navigation, route }) {
     }
   }, [myPosition]);
 
-  const onChangeLocation = async () => {
+  const onLocationCert = async () => {
     try {
-      const siDo = changedLocation.sido;
-      const siGunGu = changedLocation.sigungu;
+      const siDo = currentLocation.sido;
+      const siGunGu = currentLocation.sigungu;
 
       const response = await axios.patch(
         `${Config.API_URL}/user/edit/address`,
@@ -108,7 +108,7 @@ function ChangeLocationCert({ navigation, route }) {
           locationAuth,
         });
         // TODO
-        Alert.alert('알림', '지역 변경이 완료되었습니다.');
+        Alert.alert('알림', '지역 인증이 완료되었습니다.');
         navigation.navigate('Home');
       }
     } catch (error) {
@@ -150,10 +150,13 @@ function ChangeLocationCert({ navigation, route }) {
       </View>
 
       <TouchableOpacity
-        style={StyleSheet.compose(styles.button, styles.buttonActive)}
-        onPress={onChangeLocation}
-        >
-        <Text style={styles.buttonText}>지역 변경 하기</Text>
+        style={
+          locationAuth
+            ? StyleSheet.compose(styles.button, styles.buttonActive)
+            : styles.button}
+        disabled={!locationAuth}
+        onPress={onLocationCert}>
+        <Text style={styles.buttonText}>지역 인증 완료</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -219,4 +222,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangeLocationCert;
+export default LocCert;

@@ -156,7 +156,7 @@ export interface ReviewInfo {
 }
 
 export interface ChatListData extends CampaignData {
-  lastTime?: Date;
-  lastChat?: string;
-  unread?: number;
+  content: string;
+  unread: number;
+  sentTime: number;
 }

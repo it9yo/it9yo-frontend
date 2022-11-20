@@ -76,7 +76,11 @@ function CreateCampaign({ navigation, route }) {
       const {
         sido, sigungu, bname, roadAddress, zonecode,
       } = route.params.data;
-      setSiDo(sido);
+      if (sido === '서울') {
+        setSiDo('서울특별시');
+      } else {
+        setSiDo(sido);
+      }
       setSiGunGu(sigungu);
       setEupMyeonDong(bname);
       setDoro(roadAddress);

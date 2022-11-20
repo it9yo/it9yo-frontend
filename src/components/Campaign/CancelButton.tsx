@@ -53,15 +53,15 @@ function CancelButton({ campaignDetail, setRefresh, type }: ButtonParams) {
       );
       if (response.status === 200) {
         Alert.alert('알림', '캠페인 취소가 완료되었습니다.');
-        await AsyncStorage.setItem(`chatMessages_${campaignId}`, '');
+        // await AsyncStorage.setItem(`chatMessages_${campaignId}`, '');
 
-        const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
-        const newUnreadMessages = Number(unreadMessages);
-        await AsyncStorage.setItem(`unreadMessages_${campaignId}`, '0');
+        // const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
+        // const newUnreadMessages = Number(unreadMessages);
+        // await AsyncStorage.setItem(`unreadMessages_${campaignId}`, '0');
 
-        const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
-        const newUnreadAllMessages = Number(unreadAllMessages) - newUnreadMessages;
-        await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
+        // const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
+        // const newUnreadAllMessages = Number(unreadAllMessages) - newUnreadMessages;
+        // await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
 
         setRefresh(true);
       }

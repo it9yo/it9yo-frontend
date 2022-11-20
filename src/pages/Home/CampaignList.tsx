@@ -35,9 +35,10 @@ export function CampaignList({ title }:{ title?: string }) {
       setInitLoading(false);
     }
     return () => {
-      setCampaignList([]);
+      setLoading(true);
       setCurrentPage(0);
       setNoMoreData(false);
+      setCampaignList([]);
     };
   }, [currentLocation, isFocused, title]);
 
@@ -46,9 +47,10 @@ export function CampaignList({ title }:{ title?: string }) {
     if (noMoreData) return;
     try {
       setLoading(true);
-      const url = title
-        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
-        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
+      let url = `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${currentPage}&campaignStatus=RECRUITING&sort=createdDate,desc`;
+      if (title) {
+        url += `&title=${title}`;
+      }
       const response = await axios.get(
         url,
         {
@@ -85,9 +87,10 @@ export function CampaignList({ title }:{ title?: string }) {
     if (!siDo && !siGunGu) return;
     try {
       setRefreshing(true);
-      const url = title
-        ? `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC&title=${title}`
-        : `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate&direction=ASC`;
+      let url = `${Config.API_URL}/campaign/campaigns?siDo=${siDo}&siGunGu=${siGunGu}&size=${pageSize}&page=${0}&campaignStatus=RECRUITING&sort=createdDate,desc`;
+      if (title) {
+        url += `&title=${title}`;
+      }
 
       const response = await axios.get(
         url,
@@ -118,7 +121,7 @@ export function CampaignList({ title }:{ title?: string }) {
     }
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     if (!refreshing) {
       getRefreshData();
     }
@@ -138,9 +141,13 @@ export function CampaignList({ title }:{ title?: string }) {
     {initLoading && <ActivityIndicator />}
     {title && !initLoading && campaignList.length === 0
       && <View style={styles.noResult}>
-        <Text>검색 결과가 없습니다.</Text>
+        <Text>검색 결과가 없습니다</Text>
       </View>}
-    <FlatList
+    {!title && !loading && !initLoading && campaignList.length === 0
+      && <View style={styles.noResultMain}>
+      <Text style={styles.noDataText}>아직 이 지역에 등록된 캠페인이 없어요</Text>
+    </View>}
+    {campaignList.length > 0 && <FlatList
       data={campaignList}
       keyExtractor={(item) => `campaign_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -149,17 +156,33 @@ export function CampaignList({ title }:{ title?: string }) {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    />
+    />}
   </View>;
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 60,
+    flex: 1,
+    backgroundColor: '#fff',
   },
   noResult: {
+    paddingTop: 20,
     alignItems: 'center',
-    padding: 20,
+  },
+  noResultMain: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noDataText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 17,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#000000',
+    opacity: 0.3,
+    marginBottom: 10,
   },
 });
 

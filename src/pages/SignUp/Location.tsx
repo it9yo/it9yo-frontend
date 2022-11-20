@@ -40,6 +40,7 @@ function Location({ navigation }: Props) {
               </Text>
             </TouchableOpacity>
           ))}
+          <View style={{ height: 20 }} />
         </ScrollView>
 
         <View style={styles.verticalLine} />
@@ -54,6 +55,7 @@ function Location({ navigation }: Props) {
             </Text>
           </TouchableOpacity>
           ))}
+          <View style={{ height: 20 }} />
         </ScrollView>
 
       </View>
