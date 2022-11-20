@@ -108,16 +108,15 @@ function LocationCertification({ navigation }: Props) {
       <View
         style={{
           width: Dimensions.get('window').width,
-          height: Dimensions.get('window').height - 70,
+          height: Dimensions.get('window').height - 140,
         }}>
         {myPosition && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
-            zoomControl={false}
             center={{ ...myPosition, zoom: 13 }}>
             <Marker
               coordinate={myPosition}
-              width={500}
+              width={300}
               height={80}>
               <View style={{
                 flex: 1, alignItems: 'center',
@@ -125,7 +124,7 @@ function LocationCertification({ navigation }: Props) {
                 <View>
                   <Image
                     source={ChatBubble}
-                    style={{ width: 100, height: 50 }}/>
+                    style={{ width: 165, height: 55 }}/>
                   <Text style={styles.bubbleText}>{doro}</Text>
                 </View>
                 <View style={styles.behindEllipse}>
@@ -194,11 +193,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bubbleText: {
+    position: 'absolute',
+    zIndex: 1,
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 13,
     fontWeight: 'bold',
     fontStyle: 'normal',
     letterSpacing: 0,
+    top: 12,
+    alignSelf: 'center',
     color: '#000000',
   },
 });

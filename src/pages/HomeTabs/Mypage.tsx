@@ -133,20 +133,19 @@ function Mypage({ navigation }) {
       </View>
 
       <View style={styles.mainContent}>
-        <View style={styles.menuBlock}>
+        {/* 찜한 공동구매 목록 */}
+        <Pressable onPress={() => navigation.navigate('WishList')}>
+          <View style={styles.menuBlock}>
           <View style={{ flexDirection: 'row' }}>
-            <Image style={styles.icon} source={Pay}/>
+          <Image style={styles.icon} source={OnHeart}/>
             <Text style={styles.menuText}>
-              잇구요 페이
+              찜한 공동구매 목록
             </Text>
           </View>
-            <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.payPoint}>
-            {`${numberWithCommas(userInfo.point)} P`}
-            </Text>
-            <Icon onPress={() => navigation.navigate('It9yoPay')} name='ios-chevron-forward' size={24} color='black' />
+            <Icon name='ios-chevron-forward' size={24} color='black' />
           </View>
-        </View>
+        </Pressable>
+
         <View style={styles.horizenLine} />
 
         {/* 후기 남기기 */}
@@ -172,21 +171,6 @@ function Mypage({ navigation }) {
         </View>
           <Icon name='ios-chevron-forward' size={24} color='black' />
         </View>
-
-        <View style={styles.horizenLine} />
-
-        {/* 찜한 공동구매 목록 */}
-        <Pressable onPress={() => navigation.navigate('WishList')}>
-          <View style={styles.menuBlock}>
-          <View style={{ flexDirection: 'row' }}>
-          <Image style={styles.icon} source={OnHeart}/>
-            <Text style={styles.menuText}>
-              찜한 공동구매 목록
-            </Text>
-          </View>
-            <Icon name='ios-chevron-forward' size={24} color='black' />
-          </View>
-        </Pressable>
 
         <View style={styles.horizenLine} />
 

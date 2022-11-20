@@ -64,21 +64,19 @@ function ViewLocation({ navigation, route }) {
         {coord && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
-            zoomControl={false}
             center={{ ...coord, zoom: 13 }}>
             <Marker
               coordinate={coord}
-              width={500}
-              height={75}>
+              width={300}
+              height={80}>
               <View style={{
                 flex: 1, alignItems: 'center',
               }}>
-                <View style={{ padding: 5 }}>
-                  <ImageBackground
+                <View>
+                  <Image
                     source={ChatBubble}
-                    style={{ paddingHorizontal: 40, paddingTop: 10, paddingBottom: 20 }}>
-                    <Text style={styles.bubbleText}>{doro}</Text>
-                  </ImageBackground>
+                    style={{ width: 165, height: 55 }}/>
+                  <Text style={styles.bubbleText}>{doro}</Text>
                 </View>
                 <View style={styles.behindEllipse}>
                   <View style={styles.frontEllipse} />
@@ -129,7 +127,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     // elevation: 5,
     alignItems: 'center',
-    paddingLeft: 20,
+    paddingHorizontal: 20,
   },
   campaignThumbnail: {
     width: 100,
@@ -184,11 +182,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bubbleText: {
+    position: 'absolute',
+    zIndex: 1,
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 13,
     fontWeight: 'bold',
     fontStyle: 'normal',
     letterSpacing: 0,
+    top: 12,
+    alignSelf: 'center',
     color: '#000000',
   },
 });

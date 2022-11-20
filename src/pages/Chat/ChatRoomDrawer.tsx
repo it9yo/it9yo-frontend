@@ -17,6 +17,10 @@ interface DrawerData {
   loading: boolean;
 }
 
+function numberWithCommas(x: number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 const ChatRoomDrawer = ({
   campaignData, userList, onEndReached, noMoreData, loading,
 }: DrawerData) => {
@@ -34,7 +38,7 @@ const ChatRoomDrawer = ({
 
         <Text style={styles.campaignInfoText}>{campaignData.title}</Text>
 
-        {/* <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text> */}
+        <Text style={styles.campaignInfoText}>{`${numberWithCommas(campaignData.itemPrice)} 원`}</Text>
       </View>
 
     </View>

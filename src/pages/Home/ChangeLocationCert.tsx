@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import {
   Alert,
-  Dimensions, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
+  Dimensions, Image, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import NaverMapView, { Marker } from 'react-native-nmap';
 import Geolocation from '@react-native-community/geolocation';
@@ -121,30 +121,24 @@ function ChangeLocationCert({ navigation, route }) {
       <View
         style={{
           width: Dimensions.get('window').width,
-          height: Dimensions.get('window').height - 100,
+          height: Dimensions.get('window').height - 140,
         }}>
         {myPosition && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
-            zoomControl={false}
-            center={{
-              zoom: 13,
-              latitude: myPosition.latitude,
-              longitude: myPosition.longitude,
-            }}>
+            center={{ ...myPosition, zoom: 13 }}>
             <Marker
               coordinate={myPosition}
-              width={500}
-              height={75}>
+              width={300}
+              height={80}>
               <View style={{
                 flex: 1, alignItems: 'center',
               }}>
-                <View style={{ padding: 5 }}>
-                  <ImageBackground
+                <View>
+                  <Image
                     source={ChatBubble}
-                    style={{ paddingHorizontal: 40, paddingTop: 10, paddingBottom: 20 }}>
-                    <Text style={styles.bubbleText}>{doro}</Text>
-                  </ImageBackground>
+                    style={{ width: 165, height: 55 }}/>
+                  <Text style={styles.bubbleText}>{doro}</Text>
                 </View>
                 <View style={styles.behindEllipse}>
                   <View style={styles.frontEllipse} />
@@ -212,11 +206,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   bubbleText: {
+    position: 'absolute',
+    zIndex: 1,
     fontFamily: 'SpoqaHanSansNeo',
     fontSize: 13,
     fontWeight: 'bold',
     fontStyle: 'normal',
     letterSpacing: 0,
+    top: 12,
+    alignSelf: 'center',
     color: '#000000',
   },
 });
