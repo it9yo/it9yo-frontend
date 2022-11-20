@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator, Button, FlatList, Pressable, StyleSheet, Text, View,
+  ActivityIndicator, FlatList, StyleSheet, Text, View,
 } from 'react-native';
 
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -11,7 +11,6 @@ import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useIsFocused } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 const pageSize = 20;
 
@@ -182,17 +181,6 @@ const styles = StyleSheet.create({
     color: '#000000',
     opacity: 0.3,
     marginBottom: 10,
-  },
-  refreshButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#000000',
-    backgroundColor: '#FFFFFF',
   },
 });
 

@@ -1,7 +1,6 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  FlatList, Image, Pressable, SafeAreaView,
-  StyleSheet, Text, TouchableOpacity, View, ActivityIndicator,
+  FlatList, SafeAreaView, StyleSheet, Text, View, ActivityIndicator,
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
@@ -15,7 +14,7 @@ import { CampaignData } from '../../@types/index.d';
 
 const pageSize = 20;
 
-export function WishList({ navigation }) {
+export function WishList() {
   const accessToken = useRecoilState(userAccessToken)[0];
   const [wishList, setWishList] = useState<CampaignData[]>([]);
 
@@ -26,12 +25,18 @@ export function WishList({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const isFocused = useIsFocused();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (isFocused) {
+      console.log('im focuesd');
       loadWishList();
     }
 
-    return setWishList([]);
+    return () => {
+      setLoading(true);
+      setWishList([]);
+      setCurrentPage(0);
+      setNoMoreData(false);
+    };
   }, [isFocused]);
 
   const loadWishList = async () => {
@@ -123,7 +128,10 @@ export function WishList({ navigation }) {
   );
 
   return <SafeAreaView style={styles.container}>
-    {wishList.length > 0 ? <FlatList
+    {wishList.length === 0 && !loading && <View style={styles.noDataZone}>
+    <Text style={styles.noDataText}>찜한 공동구매가 없어요</Text>
+    </View>}
+    {wishList.length > 0 && <FlatList
       data={wishList}
       keyExtractor={(item) => `wishList_${item.campaignId.toString()}`}
       renderItem={renderItem}
@@ -132,9 +140,7 @@ export function WishList({ navigation }) {
       ListFooterComponent={!noMoreData && loading && <ActivityIndicator />}
       onRefresh={onRefresh}
       refreshing={refreshing}
-    /> : <View style={styles.noDataZone}>
-    <Text style={styles.noDataText}>찜한 공동구매가 없어요</Text>
-    </View>}
+    />}
   </SafeAreaView>;
 }
 
