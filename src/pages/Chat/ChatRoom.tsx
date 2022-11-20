@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { CampaignData, JoinUserInfo, ReceivedMessageData } from '@src/@types';
 
-import { GiftedChat, type IMessage } from 'react-native-gifted-chat';
+import { GiftedChat, type IMessage, Bubble } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
   chatRefresh,
@@ -168,6 +168,22 @@ function ChatRoom({ navigation, route }) {
     }
   };
 
+  function renderBubble(props: any) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#FF9E3E',
+          },
+          left: {
+            backgroundColor: '#E3E3E3',
+          },
+        }}
+      />
+    );
+  }
+
   const onEndReached = () => {
     if (!noMoreData || !loading) {
       loadUserData();
@@ -218,6 +234,7 @@ function ChatRoom({ navigation, route }) {
       console.error(error);
     }
   };
+  
 
   return (
     <DrawerLayoutAndroid
@@ -237,6 +254,9 @@ function ChatRoom({ navigation, route }) {
         user={{
           _id: userInfo.userId,
         }}
+        renderBubble={renderBubble}
+        renderUsernameOnMessage={true}
+        renderAvatarOnTop={true}
       />
     </DrawerLayoutAndroid>
   );
