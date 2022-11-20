@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView, StyleSheet, Text, useWindowDimensions,
+  Image,
+  SafeAreaView, StyleSheet, Text, useWindowDimensions, View,
 } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
@@ -15,6 +16,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { chatRefresh, currentChatRoomId, unreadAll } from '@src/states';
+import ChatMasterCrown from '@assets/images/chat_master.png';
 
 function Chat({ navigation }) {
   const layout = useWindowDimensions();
@@ -36,6 +38,7 @@ function Chat({ navigation }) {
       if (!notification || !notification.body) return;
 
       const receivedMessage = JSON.parse(notification.body);
+      console.log('received message', receivedMessage);
       if (!sentTime || !messageId) return;
 
       setReceivedMessage({ ...receivedMessage, messageId, sentTime });
@@ -57,9 +60,9 @@ function Chat({ navigation }) {
         }
         chatListData.content = content;
         chatListData.sentTime = sentTime;
-        console.log(chatListData);
-        console.log('chatRoomId', chatRoomId);
-        console.log('receivedMessage.campaignId', receivedMessage.campaignId);
+        // console.log(chatListData);
+        // console.log('chatRoomId', chatRoomId);
+        // console.log('receivedMessage.campaignId', receivedMessage.campaignId);
         if (chatRoomId && chatRoomId === receivedMessage.campaignId) {
           await AsyncStorage.setItem(`lastChat_${campaignId}`, JSON.stringify(chatListData));
         } else {
@@ -69,17 +72,19 @@ function Chat({ navigation }) {
             ['unreadAll', String(Number(unreadMessages) + 1)],
           ]);
           setUnreadMessages((prev) => Number(prev) + 1);
-          Toast.show({
-            text1: campaignTitle,
-            text2: content,
-            onPress: () => {
-              Toast.hide();
-              navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
-            },
-          });
         }
-        setRefresh(true);
       }
+      if (!chatRoomId || chatRoomId !== receivedMessage.campaignId) {
+        Toast.show({
+          text1: campaignTitle,
+          text2: content,
+          onPress: () => {
+            Toast.hide();
+            navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
+          },
+        });
+      }
+      setRefresh(true);
     });
 
     return unsubscribe;
@@ -94,6 +99,7 @@ function Chat({ navigation }) {
     content,
     profileImageUrl,
     userChat,
+    hostId,
   }: ReceivedMessageData) => {
     if (!sentTime || !messageId) return;
 
@@ -101,7 +107,17 @@ function Chat({ navigation }) {
       _id: messageId,
       text: content,
       createdAt: new Date(sentTime),
-      user: {
+      user: hostId === userId ? {
+        _id: userId,
+        name: nickName,
+        avatar: (props) => {
+          const styleProps = props[0];
+          return <View>
+            <Image style={styleProps} source={{ uri: profileImageUrl }} />
+            <Image style={styles.crown} source={ChatMasterCrown} />
+          </View>;
+        },
+      } : {
         _id: userId,
         name: nickName,
         avatar: profileImageUrl,
@@ -117,12 +133,12 @@ function Chat({ navigation }) {
     } else {
       newMessages = [newMessage];
     }
-    console.log(newMessages);
+    // console.log(newMessages);
     await AsyncStorage.setItem(`chat_${campaignId}`, JSON.stringify(newMessages));
-    const savedMessage = await AsyncStorage.getItem(`chat_${campaignId}`);
-    if (savedMessage !== null) {
-      console.log(JSON.parse(savedMessage));
-    }
+    // const savedMessage = await AsyncStorage.getItem(`chat_${campaignId}`);
+    // if (savedMessage !== null) {
+    //   console.log(JSON.parse(savedMessage));
+    // }
   };
 
   const renderScene = SceneMap({
@@ -164,6 +180,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  crown: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 18,
+    height: 16,
   },
 });
 

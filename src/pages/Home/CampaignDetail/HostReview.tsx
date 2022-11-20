@@ -10,6 +10,7 @@ import Config from 'react-native-config';
 import { ReviewInfo, CampaignData } from '@src/@types';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EachReview from '@src/components/EachReview';
+import { useIsFocused } from '@react-navigation/native';
 
 const pageSize = 10;
 
@@ -29,9 +30,13 @@ function HostReview({ navigation, route }) {
 
   const rateNum = [1, 2, 3, 4, 5];
 
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    loadData();
-  }, []);
+    if (isFocused) {
+      loadData();
+    }
+  }, [isFocused]);
 
   const loadData = async () => {
     try {

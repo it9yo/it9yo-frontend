@@ -103,7 +103,6 @@ function JoinedChatList({ navigation }) {
         ...JSON.parse(value),
       };
     });
-    console.log('sortedList', sortedList);
     setSortedChatList(sortedList);
   }
 

@@ -124,7 +124,7 @@ function Mypage({ navigation }) {
             <Icon name='camera-outline' size={15} color='gray' />
           </Pressable>
           <Text style={{
-            color: 'black', fontSize: 18, position: 'relative', left: -70,
+            color: 'black', fontSize: 18, position: 'relative', left: -60,
           }}>
             {userInfo.nickName}
           </Text>
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   changeProfilePhotoContainer: {
     backgroundColor: 'white',
     position: 'relative',
-    left: -60,
+    left: -50,
     top: 25,
     zIndex: 0,
     borderRadius: 20,

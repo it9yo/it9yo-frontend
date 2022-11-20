@@ -277,7 +277,7 @@ function CreateCampaign({ navigation, route }) {
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>주소</Text>
+          <Text style={styles.label}>수령장소</Text>
           <View style={{ justifyContent: 'center', marginBottom: 10 }}>
             <TextInput
               style={{ ...styles.textInput, marginBottom: 0 }}
