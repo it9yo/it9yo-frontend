@@ -32,6 +32,7 @@ import ManageCampaign from '@src/pages/Manage/ManageCampaign';
 import CreateReview from '@src/pages/Manage/CreateReview';
 import HostReview from '@src/pages/Home/CampaignDetail/HostReview';
 import Report from '@src/pages/Mypage/Report';
+import LocCert from '@src/pages/Home/LocCert';
 
 const Stack = createNativeStackNavigator();
 
@@ -192,6 +193,11 @@ function App() {
               name="HostReview"
               component={HostReview}
               options={{ title: '슈퍼바이어 프로필' }}
+            />
+            <Stack.Screen
+              name="LocCert"
+              component={LocCert}
+              options={{ title: '지역 인증 하기' }}
             />
           </Stack.Group>
         </Stack.Navigator>

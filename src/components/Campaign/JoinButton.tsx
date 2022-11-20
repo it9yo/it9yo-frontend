@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Alert, StyleSheet, Text, TouchableOpacity,
+} from 'react-native';
 
 import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
-import { useRecoilState } from 'recoil';
-import { userAccessToken, userState } from '@src/states';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  userAccessToken, userState, locationState,
+} from '@src/states';
+import { useNavigation } from '@react-navigation/native';
 import BottomSheet from './BottomSheet';
 import CompleteModal from './CompleteModal';
 
@@ -16,11 +21,17 @@ interface ButtonParams {
 }
 
 function JoinButton({ campaignDetail, setRefresh, type }: ButtonParams) {
+  const navigation = useNavigation();
   const { campaignId } = campaignDetail;
   const [userInfo, setUserInfo] = useRecoilState(userState);
+  const currentLocation = useRecoilValue(locationState);
   const accessToken = useRecoilState(userAccessToken)[0];
   const [modalVisible, setModalVisible] = useState(false);
   const [completeModalVisible, setCompleteModalVisible] = useState(false);
+
+  useEffect(() => {
+    console.log('in join button userInfo', userInfo);
+  }, []);
 
   const onJoinCampaign = async (quantity: number) => {
     try {
@@ -76,8 +87,30 @@ function JoinButton({ campaignDetail, setRefresh, type }: ButtonParams) {
     }
   };
 
+  const handleJoin = () => {
+    if (userInfo.locationAuth) {
+      setModalVisible(true);
+    } else {
+      Alert.alert(
+        '알림',
+        '캠페인에 참여하시려면 지역 인증을 진행해 주세요',
+        [
+          {
+            text: '네',
+            onPress: () => navigation.navigate('LocCert', { currentLocation }),
+          },
+          {
+            text: '아니요',
+            style: 'cancel',
+          },
+        ],
+        { cancelable: false },
+      );
+    }
+  };
+
   return <>
-    <TouchableOpacity style={type === 'middle' ? styles.middleButton : styles.button} onPress={() => setModalVisible(true)}>
+    <TouchableOpacity style={type === 'middle' ? styles.middleButton : styles.button} onPress={handleJoin}>
       <Text style={styles.buttonText}>참가하기</Text>
     </TouchableOpacity>
 

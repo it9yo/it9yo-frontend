@@ -3,8 +3,8 @@ import {
   Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert, Platform,
 } from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { userAccessToken, userState } from '@src/states';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { locationState, userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -13,6 +13,7 @@ import Review from '@assets/images/review.png';
 import DoneCampaign from '@assets/images/done-campaign.png';
 import OnHeart from '@assets/images/on-heart.png';
 import Survey from '@assets/images/survey.png';
+import GPSIcon from '@assets/images/gps.png';
 
 import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 
@@ -23,6 +24,11 @@ function numberWithCommas(x: number) {
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(userAccessToken);
+  const currentLocation = useRecoilValue(locationState);
+
+  useEffect(() => {
+    console.log(currentLocation);
+  }, []);
 
   const onChangeProfilePhoto = async () => {
     try {
@@ -140,6 +146,21 @@ function Mypage({ navigation }) {
           <Image style={styles.icon} source={OnHeart}/>
             <Text style={styles.menuText}>
               찜한 공동구매 목록
+            </Text>
+          </View>
+            <Icon name='ios-chevron-forward' size={24} color='black' />
+          </View>
+        </Pressable>
+
+        <View style={styles.horizenLine} />
+
+        {/* 지역 인증 하기 */}
+        <Pressable onPress={() => navigation.navigate('LocCert', { currentLocation })}>
+          <View style={styles.menuBlock}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image style={{ width: 25, height: 30 }} source={GPSIcon}/>
+            <Text style={styles.menuText}>
+              지역 인증 하기
             </Text>
           </View>
             <Icon name='ios-chevron-forward' size={24} color='black' />
