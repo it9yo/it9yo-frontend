@@ -31,8 +31,7 @@ function EachUser({ item, campaignData, type } : EachUserProps) {
   const [isDeposit, setDeposit] = useState(deposit);
 
   useEffect(() => {
-    console.log(item);
-    console.log(campaignData);
+
   }, [item, campaignData]);
 
   const handleDeposit = async () => {

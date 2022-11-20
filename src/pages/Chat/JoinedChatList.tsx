@@ -1,10 +1,8 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-import { userAccessToken } from '@src/states';
+import { userAccessToken, chatRefresh } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
@@ -17,6 +15,7 @@ const pageSize = 50;
 
 function JoinedChatList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
+  const [refresh, setRefresh] = useRecoilState(chatRefresh);
   const [chatList, setChatList] = useState<CampaignData[]>([]);
   const [sortedChatList, setSortedChatList] = useState<ChatListData[]>([]);
 
@@ -29,15 +28,18 @@ function JoinedChatList({ navigation }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused || refresh) {
       loadData();
     }
-  }, [isFocused]);
+  }, [isFocused, refresh]);
 
   useEffect(() => {
-    getLastMessages();
-    setInitLoading(false);
-  }, [chatList, isFocused]);
+    if (chatList && (isFocused || refresh)) {
+      getLastMessages();
+      setInitLoading(false);
+      setRefresh(false);
+    }
+  }, [chatList, isFocused, refresh]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
@@ -70,48 +72,39 @@ function JoinedChatList({ navigation }) {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   async function getLastMessages() {
     if (chatList.length === 0) return;
+    const chatListDict = {};
+    const chatKeys = chatList.map((chat) => {
+      chatListDict[chat.campaignId] = chat;
+      return `lastChat_${chat.campaignId}`;
+    });
+    const datas: [key: string, value: string][] = await AsyncStorage.multiGet(chatKeys);
 
-    const result: ChatListData[] = [];
-    const restResult: ChatListData[] = [];
-    for (const chat of chatList) {
-      const { campaignId } = chat;
-      const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-      const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
-      if (prevMessages === null) {
-        restResult.push({
-          ...chat,
-        });
-      } else {
-        const messageList: IMessage[] = JSON.parse(prevMessages);
-        console.log(`${campaignId} has ${messageList.length} messages`);
-        if (messageList.length > 0) {
-          const recentMessage = messageList[0];
-          const { text, createdAt } = recentMessage;
-          const lastTime = new Date(createdAt);
-          const unread = Number(unreadMessages);
-          result.push({
-            ...chat, lastTime, lastChat: text, unread,
-          });
-        } else {
-          restResult.push({
-            ...chat,
-          });
-        }
-      }
-    }
-    if (result.length === 0 && restResult.length === 0) return;
+    const sortedDatas = datas.sort((a, b) => {
+      const [a_key, a_value] = a;
+      const [b_key, b_value] = b;
+      if (a_value && b_value) return JSON.parse(b_value).sentTime - JSON.parse(a_value).sentTime;
+      if (a_value) return -1;
+      if (b_value) return 1;
+      return 0;
+    });
+    const sortedList = sortedDatas.map((data) => {
+      const [key, value] = data;
 
-    let sortedList: ChatListData[] = [];
-    if (result.length !== 0) {
-      const sortedResult = result.sort((a, b) => b.lastTime.getTime() - a.lastTime.getTime());
-      sortedList = [...sortedResult];
-    }
-    setSortedChatList([...sortedList, ...restResult]);
+      const campaignId = Number(key.split('_')[1]);
+      return {
+        ...chatListDict[campaignId],
+        ...JSON.parse(value),
+      };
+    });
+    console.log('sortedList', sortedList);
+    setSortedChatList(sortedList);
   }
 
   const onEndReached = () => {
@@ -126,7 +119,7 @@ function JoinedChatList({ navigation }) {
 
   return <View>
     {initLoading && <ActivityIndicator />}
-    {sortedChatList.length > 0 && <FlatList
+    {sortedChatList.length > 0 && !refresh && <FlatList
       data={sortedChatList}
       keyExtractor={(item) => `joinedChat_${item.campaignId.toString()}`}
       renderItem={renderItem}

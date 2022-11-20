@@ -16,6 +16,7 @@ import Survey from '@assets/images/survey.png';
 import GPSIcon from '@assets/images/gps.png';
 
 import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
+import AsyncStorage from '@react-native-community/async-storage';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -98,6 +99,12 @@ function Mypage({ navigation }) {
       '',
     );
   };
+
+  const onReset = async () => {
+    await AsyncStorage.clear();
+    Alert.alert('async 초기화');
+  };
+
   return (
   <SafeAreaView style={styles.container}>
     <ScrollView scrollToOverflowEnabled={false} style={{ height: '100%' }}>
@@ -202,6 +209,19 @@ function Mypage({ navigation }) {
             <Image style={styles.icon} source={Survey}/>
               <Text style={styles.menuText}>
                 신고하기
+              </Text>
+            </View>
+              <Icon name='ios-chevron-forward' size={24} color='black' />
+          </View>
+        </Pressable>
+
+        {/* async storage 초기화 */}
+        <Pressable onPress={onReset}>
+          <View style={styles.menuBlock}>
+            <View style={{ flexDirection: 'row' }}>
+            <Image style={styles.icon} source={Survey}/>
+              <Text style={styles.menuText}>
+                async 초기화
               </Text>
             </View>
               <Icon name='ios-chevron-forward' size={24} color='black' />

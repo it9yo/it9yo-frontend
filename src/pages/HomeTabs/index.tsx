@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
+import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // import Home from './Home';
-import CampaignList from '@pages/Home/CampaignList';
 import { useRecoilState } from 'recoil';
-import { location } from '@src/states';
+import { unreadAll } from '@src/states';
 
 import HomeIcon from '@assets/images/home.png';
 import PeopleIcon from '@assets/images/people.png';
@@ -24,20 +22,17 @@ import Manage from './Manage';
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
-  const [unreadMessages, setUnreadMessages] = useState(0);
-  const isFocused = useIsFocused();
+  const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
 
   useEffect(() => {
     const getUnreadMessages = async () => {
-      const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
-      const unread = Number(unreadAllMessages);
-      setUnreadMessages(unread);
+      const unread = await AsyncStorage.getItem('unreadAll');
+      const unreadCnt = Number(unread);
+      setUnreadMessages(unreadCnt);
     };
 
-    if (isFocused) {
-      getUnreadMessages();
-    }
-  }, [isFocused]);
+    getUnreadMessages();
+  }, []);
 
   return (
     <Tab.Navigator
@@ -50,7 +45,7 @@ function HomeTabs() {
         tabBarLabelStyle: {
           fontSize: 14,
         },
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarIcon: ({ focused }) => {
           if (route.name === 'Home') {
             return <Image
               style={focused ? styles.tabIcon : { ...styles.tabIcon, opacity: 0.4 }}
