@@ -13,7 +13,7 @@ import {
 } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
-  currentChatRoomId, unreadAll, userAccessToken, userState,
+  currentChatRoomId, userAccessToken, userState,
 } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
@@ -28,7 +28,6 @@ function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
   const setChatRoomId = useSetRecoilState(currentChatRoomId);
-  const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
 
   const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -44,25 +43,6 @@ function ChatRoom({ navigation, route }) {
   const drawer = useRef(null);
 
   useEffect(() => {
-    const readMessages = async () => {
-      const data = await AsyncStorage.getItem(`lastChat_${campaignId}`);
-      console.log(data);
-      if (data === null) return;
-      const chatListData = JSON.parse(data);
-      const { unread } = chatListData;
-      if (unread === 0) return;
-
-      const newData = {
-        ...chatListData,
-        unread: 0,
-      };
-      await AsyncStorage.multiSet([
-        ['unreadAll', String(Number(unreadMessages) - unread)],
-        [`lastChat_${campaignId}`, JSON.stringify(newData)],
-      ]);
-      setUnreadMessages((prev) => Number(prev) - unread);
-    };
-
     navigation.setOptions({
       headerTitle: route.params.title,
       headerRight: () => <DrawerButton onPress={() => drawer.current.openDrawer()}/>,
@@ -111,6 +91,27 @@ function ChatRoom({ navigation, route }) {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const readMessages = async () => {
+    const data = await AsyncStorage.getItem(`lastChat_${campaignId}`);
+    console.log(data);
+    if (data === null) return;
+    const chatListData = JSON.parse(data);
+    const { unread } = chatListData;
+    if (unread === 0) return;
+
+    const newData = {
+      ...chatListData,
+      unread: 0,
+    };
+    const unreadData = await AsyncStorage.getItem('unreadAll');
+    const unreadAll = Number(unreadData);
+
+    await AsyncStorage.multiSet([
+      [`lastChat_${campaignId}`, JSON.stringify(newData)],
+      ['unreadAll', String(unreadAll - unread)],
+    ]);
   };
 
   const loadCampaignDetail = async () => {

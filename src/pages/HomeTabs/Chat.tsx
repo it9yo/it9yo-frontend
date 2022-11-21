@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
-  currentChatRoomId, unreadAll, createdChatRefresh, joinedChatRefresh,
+  currentChatRoomId, createdChatRefresh, joinedChatRefresh, unreadRefresh,
 } from '@src/states';
 
 function Chat({ navigation }) {
@@ -24,6 +24,7 @@ function Chat({ navigation }) {
   const [index, setIndex] = useState(0);
   const setJoinedRefresh = useSetRecoilState(joinedChatRefresh);
   const setCreatedRefresh = useSetRecoilState(createdChatRefresh);
+  const setUnreadRefresh = useSetRecoilState(unreadRefresh);
 
   const [routes] = useState([
     { key: 'joined', title: '참여중' },
@@ -31,7 +32,6 @@ function Chat({ navigation }) {
   ]);
 
   const chatRoomId = useRecoilState(currentChatRoomId)[0];
-  const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
 
   // 메시지 전송 받기
   useEffect(() => {
@@ -66,11 +66,19 @@ function Chat({ navigation }) {
           await AsyncStorage.setItem(`lastChat_${campaignId}`, JSON.stringify(chatListData));
         } else {
           chatListData.unread += 1;
+
+          const unreadData = await AsyncStorage.getItem('unreadAll');
+          let unreadAll;
+          if (unreadData === null) {
+            unreadAll = 0;
+          } else {
+            unreadAll = Number(unreadData);
+          }
           await AsyncStorage.multiSet([
             [`lastChat_${campaignId}`, JSON.stringify(chatListData)],
-            ['unreadAll', String(Number(unreadMessages) + 1)],
+            ['unreadAll', String(unreadAll + 1)],
           ]);
-          setUnreadMessages((prev) => Number(prev) + 1);
+          setUnreadRefresh(true);
         }
       }
 
