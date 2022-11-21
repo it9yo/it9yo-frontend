@@ -6,6 +6,7 @@ import {
 import StatusNameList from '@constants/statusname';
 
 import { JoinUserInfo } from '@src/@types';
+import ChatMasterCrown from '@assets/images/chat_master.png';
 import EachUser from '../../components/EachUser';
 import { CampaignData } from '../../@types/index.d';
 
@@ -28,17 +29,31 @@ const ChatRoomDrawer = ({
      <EachUser item={item} campaignData={campaignData} type='drawer' />
   );
   return (<View style={styles.container}>
-    <View style={styles.campaignInfoZone}>
-      <Image style={styles.campaignThumbnail} source={{ uri: campaignData.itemImageURLs[0] }} />
+    <View style={styles.subContainer}>
 
-      <View>
-        <View style={styles.statusBadge}>
-          <Text style={styles.statusText}>{StatusNameList[campaignData.campaignStatus]}</Text>
+      <View style={styles.campaignInfoZone}>
+        <Image style={styles.campaignThumbnail} source={{ uri: campaignData.itemImageURLs[0] }} />
+
+        <View>
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}>{StatusNameList[campaignData.campaignStatus]}</Text>
+          </View>
+
+          <Text style={styles.campaignInfoText}>{campaignData.title}</Text>
+
+          <Text style={styles.campaignInfoText}>{`${numberWithCommas(campaignData.itemPrice)} 원`}</Text>
         </View>
 
-        <Text style={styles.campaignInfoText}>{campaignData.title}</Text>
+      </View>
 
-        <Text style={styles.campaignInfoText}>{`${numberWithCommas(campaignData.itemPrice)} 원`}</Text>
+      <View style={styles.hostContainer}>
+        <View style={styles.leftContainer}>
+          <View>
+            <Image style={styles.image} source={{ uri: campaignData.hostProfileUrl }} />
+            <Image style={styles.crown} source={ChatMasterCrown} />
+          </View>
+          <Text style={styles.infoText}>{campaignData.hostNickName}</Text>
+        </View>
       </View>
 
     </View>
@@ -70,14 +85,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
   },
-  campaignInfoZone: {
-    height: 140,
-    flexDirection: 'row',
-    backgroundColor: '#fff',
+  subContainer: {
     paddingHorizontal: 30,
     paddingVertical: 20,
     borderBottomWidth: 1,
     borderColor: '#eeeeee',
+  },
+  campaignInfoZone: {
+    flexDirection: 'row',
+    marginBottom: 20,
   },
   campaignThumbnail: {
     width: 100,
@@ -114,6 +130,7 @@ const styles = StyleSheet.create({
   },
   userListContainer: {
     padding: 20,
+    paddingBottom: 250,
   },
   userCntZone: {
     flexDirection: 'row',
@@ -126,6 +143,36 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#3b3b3b',
+  },
+  hostContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  leftContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  image: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  infoText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 15,
+    fontWeight: '700',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#121212',
+    marginLeft: 10,
+  },
+  crown: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 18,
+    height: 16,
   },
 });
 

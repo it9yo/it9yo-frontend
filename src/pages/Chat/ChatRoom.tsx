@@ -1,21 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DrawerLayoutAndroid, View } from 'react-native';
+import {
+  DrawerLayoutAndroid, Image, StyleSheet, Text, View,
+} from 'react-native';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
 import messaging from '@react-native-firebase/messaging';
 import { CampaignData, JoinUserInfo, ReceivedMessageData } from '@src/@types';
 
-import { GiftedChat, type IMessage, Bubble } from 'react-native-gifted-chat';
+import {
+  GiftedChat, type IMessage, Bubble, BubbleProps, Avatar,
+} from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
-  chatRefresh,
-  currentChatRoomId, unreadAll, userAccessToken, userState,
+  currentChatRoomId, userAccessToken, userState,
 } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 
 import DrawerButton from '@components/Header/DrawerButton';
+import ChatMasterCrown from '@assets/images/chat_master.png';
 import ChatRoomDrawer from './ChatRoomDrawer';
 
 const pageSize = 50;
@@ -24,8 +28,6 @@ function ChatRoom({ navigation, route }) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
   const setChatRoomId = useSetRecoilState(currentChatRoomId);
-  const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
-  const [refresh, setRefresh] = useRecoilState(chatRefresh);
 
   const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -41,26 +43,6 @@ function ChatRoom({ navigation, route }) {
   const drawer = useRef(null);
 
   useEffect(() => {
-    const readMessages = async () => {
-      const data = await AsyncStorage.getItem(`lastChat_${campaignId}`);
-      console.log(data);
-      if (data === null) return;
-      const chatListData = JSON.parse(data);
-      const { unread } = chatListData;
-      if (unread === 0) return;
-
-      const newData = {
-        ...chatListData,
-        unread: 0,
-      };
-      await AsyncStorage.multiSet([
-        ['unreadAll', String(Number(unreadMessages) - unread)],
-        [`lastChat_${campaignId}`, JSON.stringify(newData)],
-      ]);
-      setUnreadMessages((prev) => Number(prev) - unread);
-      setRefresh(true);
-    };
-
     navigation.setOptions({
       headerTitle: route.params.title,
       headerRight: () => <DrawerButton onPress={() => drawer.current.openDrawer()}/>,
@@ -74,14 +56,15 @@ function ChatRoom({ navigation, route }) {
 
     return () => {
       setChatRoomId(null);
+      setCampaignData(undefined);
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (userList) {
-  //     const userWithoutHost = userList.filter((item) => item.userId !== campaignData?.campaignId);
-  //   }
-  // }, [userList]);
+  useEffect(() => {
+    if (campaignData) {
+      console.log('campaignData', campaignData);
+    }
+  }, [campaignData]);
 
   // 메시지 전송 받기
   useEffect(() => {
@@ -96,7 +79,7 @@ function ChatRoom({ navigation, route }) {
     });
 
     return unsubscribe;
-  }, []);
+  }, [campaignData]);
 
   const initChatData = async () => {
     try {
@@ -108,6 +91,27 @@ function ChatRoom({ navigation, route }) {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const readMessages = async () => {
+    const data = await AsyncStorage.getItem(`lastChat_${campaignId}`);
+    console.log(data);
+    if (data === null) return;
+    const chatListData = JSON.parse(data);
+    const { unread } = chatListData;
+    if (unread === 0) return;
+
+    const newData = {
+      ...chatListData,
+      unread: 0,
+    };
+    const unreadData = await AsyncStorage.getItem('unreadAll');
+    const unreadAll = Number(unreadData);
+
+    await AsyncStorage.multiSet([
+      [`lastChat_${campaignId}`, JSON.stringify(newData)],
+      ['unreadAll', String(unreadAll - unread)],
+    ]);
   };
 
   const loadCampaignDetail = async () => {
@@ -168,20 +172,57 @@ function ChatRoom({ navigation, route }) {
     }
   };
 
-  function renderBubble(props: any) {
-    return (
-      <Bubble
+  function renderBubble(props: BubbleProps<IMessage>) {
+    const { currentMessage, previousMessage } = props;
+    if (!previousMessage || !previousMessage.user
+      || currentMessage.user._id !== previousMessage.user._id) {
+      if (props.position === 'left') {
+        return <View>
+          <Text style={styles.nameText}>{currentMessage.user.name}</Text>
+          <Bubble
+          {...props}
+          wrapperStyle={{
+            right: {
+              backgroundColor: '#FF9E3E',
+            },
+            left: {
+              backgroundColor: '#E3E3E3',
+            },
+          }}
+        />
+        </View>;
+      }
+    }
+    return <Bubble
+      {...props}
+      wrapperStyle={{
+        right: {
+          backgroundColor: '#FF9E3E',
+        },
+        left: {
+          backgroundColor: '#E3E3E3',
+        },
+      }}
+    />;
+  }
+
+  function renderSystemMessage(props: any) {
+    return <View style={styles.systemMsgContainer}>
+      <Text style={styles.systemMsgText}>{props.currentMessage.text}</Text>
+    </View>;
+  }
+
+  function renderAvatar(props: any) {
+    const { currentMessage } = props;
+
+    return <View>
+      <Avatar
         {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: '#FF9E3E',
-          },
-          left: {
-            backgroundColor: '#E3E3E3',
-          },
-        }}
-      />
-    );
+        containerStyle={{ left: { marginRight: 0 } }}
+        />
+      {campaignData?.hostId === currentMessage.user._id
+        && <Image style={styles.crown} source={ChatMasterCrown} />}
+    </View>;
   }
 
   const onEndReached = () => {
@@ -234,7 +275,6 @@ function ChatRoom({ navigation, route }) {
       console.error(error);
     }
   };
-  
 
   return (
     <DrawerLayoutAndroid
@@ -255,11 +295,49 @@ function ChatRoom({ navigation, route }) {
           _id: userInfo.userId,
         }}
         renderBubble={renderBubble}
-        renderUsernameOnMessage={true}
+        renderSystemMessage={renderSystemMessage}
         renderAvatarOnTop={true}
+        timeFormat='HH:mm'
+        dateFormat='YYYY년 MM월 DD일'
+        renderAvatar={renderAvatar}
       />
     </DrawerLayoutAndroid>
   );
 }
+
+const styles = StyleSheet.create({
+  systemMsgContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 44,
+    backgroundColor: '#fff7ef',
+    alignSelf: 'center',
+    marginBottom: 15,
+  },
+  systemMsgText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 14,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: -0.33,
+    color: '#ff9e3e',
+  },
+  nameText: {
+    fontFamily: 'NotoSansKR',
+    fontSize: 14,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    letterSpacing: -0.3,
+    color: '#404040',
+    marginBottom: 5,
+  },
+  crown: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 16,
+    height: 14,
+  },
+});
 
 export default ChatRoom;

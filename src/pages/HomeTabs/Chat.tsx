@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView, StyleSheet, Text, useWindowDimensions,
+  Image,
+  SafeAreaView, StyleSheet, Text, useWindowDimensions, View,
 } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
@@ -14,12 +15,16 @@ import CreatedChatList from '@pages/Chat/CreatedChatList';
 import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { chatRefresh, currentChatRoomId, unreadAll } from '@src/states';
+import {
+  currentChatRoomId, createdChatRefresh, joinedChatRefresh, unreadRefresh,
+} from '@src/states';
 
 function Chat({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
-  const [refresh, setRefresh] = useRecoilState(chatRefresh);
+  const setJoinedRefresh = useSetRecoilState(joinedChatRefresh);
+  const setCreatedRefresh = useSetRecoilState(createdChatRefresh);
+  const setUnreadRefresh = useSetRecoilState(unreadRefresh);
 
   const [routes] = useState([
     { key: 'joined', title: '참여중' },
@@ -27,7 +32,6 @@ function Chat({ navigation }) {
   ]);
 
   const chatRoomId = useRecoilState(currentChatRoomId)[0];
-  const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
 
   // 메시지 전송 받기
   useEffect(() => {
@@ -57,28 +61,38 @@ function Chat({ navigation }) {
         }
         chatListData.content = content;
         chatListData.sentTime = sentTime;
-        console.log(chatListData);
-        console.log('chatRoomId', chatRoomId);
-        console.log('receivedMessage.campaignId', receivedMessage.campaignId);
+
         if (chatRoomId && chatRoomId === receivedMessage.campaignId) {
           await AsyncStorage.setItem(`lastChat_${campaignId}`, JSON.stringify(chatListData));
         } else {
           chatListData.unread += 1;
+
+          const unreadData = await AsyncStorage.getItem('unreadAll');
+          let unreadAll;
+          if (unreadData === null) {
+            unreadAll = 0;
+          } else {
+            unreadAll = Number(unreadData);
+          }
           await AsyncStorage.multiSet([
             [`lastChat_${campaignId}`, JSON.stringify(chatListData)],
-            ['unreadAll', String(Number(unreadMessages) + 1)],
+            ['unreadAll', String(unreadAll + 1)],
           ]);
-          setUnreadMessages((prev) => Number(prev) + 1);
-          Toast.show({
-            text1: campaignTitle,
-            text2: content,
-            onPress: () => {
-              Toast.hide();
-              navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
-            },
-          });
+          setUnreadRefresh(true);
         }
-        setRefresh(true);
+      }
+
+      if (!chatRoomId || chatRoomId !== receivedMessage.campaignId) {
+        Toast.show({
+          text1: campaignTitle,
+          text2: content,
+          onPress: () => {
+            Toast.hide();
+            navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
+          },
+        });
+        setJoinedRefresh(true);
+        setCreatedRefresh(true);
       }
     });
 
@@ -117,12 +131,8 @@ function Chat({ navigation }) {
     } else {
       newMessages = [newMessage];
     }
-    console.log(newMessages);
+
     await AsyncStorage.setItem(`chat_${campaignId}`, JSON.stringify(newMessages));
-    const savedMessage = await AsyncStorage.getItem(`chat_${campaignId}`);
-    if (savedMessage !== null) {
-      console.log(JSON.parse(savedMessage));
-    }
   };
 
   const renderScene = SceneMap({
@@ -164,6 +174,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  crown: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 18,
+    height: 16,
   },
 });
 

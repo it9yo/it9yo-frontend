@@ -5,12 +5,17 @@ export const currentChatRoomId = atom<number | null>({
   default: null,
 });
 
-export const unreadAll = atom<number>({
-  key: 'unreadAll',
-  default: 0,
+export const unreadRefresh = atom<boolean>({
+  key: 'unreadRefresh',
+  default: false,
 });
 
-export const chatRefresh = atom<boolean>({
-  key: 'chatRefresh',
+export const joinedChatRefresh = atom<boolean>({
+  key: 'joinedChatRefresh',
+  default: false,
+});
+
+export const createdChatRefresh = atom<boolean>({
+  key: 'createdChatRefresh',
   default: false,
 });

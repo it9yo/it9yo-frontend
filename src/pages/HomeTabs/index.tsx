@@ -1,8 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import Home from './Home';
-import { useRecoilState } from 'recoil';
-import { unreadAll } from '@src/states';
 
 import HomeIcon from '@assets/images/home.png';
 import PeopleIcon from '@assets/images/people.png';
@@ -13,6 +10,8 @@ import {
   Image, StyleSheet, Text, View,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useRecoilState } from 'recoil';
+import { unreadRefresh } from '@src/states';
 import { useIsFocused } from '@react-navigation/native';
 import Home from './Home';
 import Mypage from './Mypage';
@@ -22,17 +21,31 @@ import Manage from './Manage';
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
-  const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
+  const [refresh, setRefresh] = useRecoilState(unreadRefresh);
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    const getUnreadMessages = async () => {
-      const unread = await AsyncStorage.getItem('unreadAll');
-      const unreadCnt = Number(unread);
-      setUnreadMessages(unreadCnt);
-    };
+    console.log('isFocused in home tab', refresh);
 
-    getUnreadMessages();
-  }, []);
+    if (isFocused) {
+      getUnreadMessages();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    console.log('refresh in home tab', refresh);
+    if (refresh) {
+      getUnreadMessages();
+      setRefresh(false);
+    }
+  }, [refresh]);
+
+  const getUnreadMessages = async () => {
+    const unread = await AsyncStorage.getItem('unreadAll');
+    const unreadCnt = Number(unread);
+    setUnreadMessages(unreadCnt);
+  };
 
   return (
     <Tab.Navigator

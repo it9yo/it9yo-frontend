@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import CampaignList from '@pages/Home/CampaignList';
 import {
   Image, SafeAreaView, StyleSheet, TouchableOpacity,
 } from 'react-native';
 import HomeHeader from '@src/components/Header/HomeHeader';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import Plus from '@assets/images/plus.png';
 

@@ -58,30 +58,7 @@ function JoinButton({ campaignDetail, setRefresh, type }: ButtonParams) {
         setUserInfo(changedUserInfo.data.data);
         setModalVisible(false);
         setCompleteModalVisible(true);
-
-        const text = `${userInfo.nickName}님이 캠페인에 참여하셨습니다.`;
-        sendMessage(text);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const sendMessage = async (text: string) => {
-    try {
-      const response = await axios.post(
-        `${Config.API_URL}/chat/publish/${campaignId}`,
-        {
-          content: text,
-          userChat: false,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      console.log(response);
     } catch (error) {
       console.error(error);
     }

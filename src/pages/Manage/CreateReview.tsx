@@ -10,14 +10,17 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { CampaignData } from '@src/@types';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { userState } from '../../states/user';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function CreateReview({ navigation, route }) {
+  const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
   const campaignDetail: CampaignData = route.params;
+
   const {
     campaignId, itemPrice, itemImageURLs, title,
   } = campaignDetail;
@@ -66,6 +69,14 @@ function CreateReview({ navigation, route }) {
         <Text style={styles.campaignInfoText}>{title}</Text>
 
         <Text style={styles.campaignInfoText}>{`${numberWithCommas(itemPrice)} 원`}</Text>
+        <View style={styles.hostInfoZone}>
+
+          <Image style={styles.infoIcon} source={{ uri: campaignDetail.hostProfileUrl }} />
+
+          <Text style={styles.hostInfoText}>
+            {campaignDetail.hostNickName}
+          </Text>
+        </View>
       </View>
 
     </View>
@@ -181,5 +192,25 @@ const styles = StyleSheet.create({
     fontStyle: 'normal',
     letterSpacing: 0,
     color: '#ffffff',
+  },
+  hostInfoZone: {
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  infoIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+  },
+  hostInfoText: {
+    fontFamily: 'SpoqaHanSansNeo',
+    fontSize: 16,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
+    letterSpacing: 0,
+    color: '#1f1f1f',
+    marginLeft: 6,
   },
 });

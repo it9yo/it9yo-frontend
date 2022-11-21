@@ -1,10 +1,8 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-import { chatRefresh, userAccessToken, userState } from '@src/states';
+import { createdChatRefresh, userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
@@ -17,7 +15,7 @@ const pageSize = 50;
 function CreatedChatList({ navigation }) {
   const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [refresh, setRefresh] = useRecoilState(chatRefresh);
+  const [refresh, setRefresh] = useRecoilState(createdChatRefresh);
   const [chatList, setChatList] = useState<CampaignData[]>([]);
   const [sortedChatList, setSortedChatList] = useState<ChatListData[]>([]);
 
@@ -30,18 +28,49 @@ function CreatedChatList({ navigation }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused || refresh) {
+    if (isFocused) {
       loadData();
+      setInitLoading(true);
     }
-  }, [isFocused, refresh]);
+    return () => {
+      setNoMoreData(false);
+      setCurrentPage(0);
+      setChatList([]);
+    };
+  }, [isFocused]);
 
   useEffect(() => {
-    if (chatList && (isFocused || refresh)) {
+    if (chatList.length > 0 && isFocused && initLoading) {
       getLastMessages();
       setInitLoading(false);
-      setRefresh(false);
     }
-  }, [chatList, isFocused, refresh]);
+    return () => {
+      setSortedChatList([]);
+    };
+  }, [chatList, isFocused, initLoading]);
+
+  useEffect(() => {
+    if (refresh) {
+      loadData();
+      setInitLoading(true);
+    }
+    return () => {
+      setNoMoreData(false);
+      setCurrentPage(0);
+      setChatList([]);
+    };
+  }, [refresh]);
+
+  useEffect(() => {
+    if (chatList.length > 0 && refresh && initLoading) {
+      getLastMessages();
+      setRefresh(false);
+      setInitLoading(false);
+    }
+    return () => {
+      setSortedChatList([]);
+    };
+  }, [chatList, refresh, initLoading]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
@@ -82,7 +111,6 @@ function CreatedChatList({ navigation }) {
 
   async function getLastMessages() {
     if (chatList.length === 0) return;
-    console.log(chatList);
     const chatListDict = {};
     const chatKeys = chatList.map((chat) => {
       chatListDict[chat.campaignId] = chat;
@@ -107,8 +135,9 @@ function CreatedChatList({ navigation }) {
         ...JSON.parse(value),
       };
     });
-    setSortedChatList(sortedList);
     console.log('sortedList', sortedList);
+
+    setSortedChatList(sortedList);
   }
 
   const onEndReached = () => {

@@ -7,7 +7,7 @@ import { CampaignData } from '@src/@types';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
-import { userAccessToken, userState } from '@src/states';
+import { userAccessToken } from '@src/states';
 import AsyncStorage from '@react-native-community/async-storage';
 
 interface ButtonParams {
@@ -53,21 +53,32 @@ function CancelButton({ campaignDetail, setRefresh, type }: ButtonParams) {
       );
       if (response.status === 200) {
         Alert.alert('알림', '캠페인 취소가 완료되었습니다.');
-        // await AsyncStorage.setItem(`chatMessages_${campaignId}`, '');
 
-        // const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
-        // const newUnreadMessages = Number(unreadMessages);
-        // await AsyncStorage.setItem(`unreadMessages_${campaignId}`, '0');
-
-        // const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
-        // const newUnreadAllMessages = Number(unreadAllMessages) - newUnreadMessages;
-        // await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
+        deleteMessage();
 
         setRefresh(true);
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const deleteMessage = async () => {
+    const data = await AsyncStorage.getItem(`lastChat_${campaignId}`);
+    if (data !== null) {
+      const chatListData = JSON.parse(data);
+      const { unread } = chatListData;
+      if (unread !== 0) {
+        const unreadData = await AsyncStorage.getItem('unreadAll');
+        if (unreadData !== null) {
+          const unreadAll = Number(unreadData);
+          await AsyncStorage.setItem('unreadAll', String(unreadAll - unread));
+        }
+      }
+    }
+
+    const deleteKeys = [`chat_${campaignId}`, `lastChat_${campaignId}`];
+    await AsyncStorage.multiRemove(deleteKeys);
   };
 
   return <TouchableOpacity
