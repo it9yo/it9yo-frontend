@@ -30,30 +30,47 @@ function CreatedChatList({ navigation }) {
   useEffect(() => {
     if (isFocused) {
       loadData();
+      setInitLoading(true);
     }
+    return () => {
+      setNoMoreData(false);
+      setCurrentPage(0);
+      setChatList([]);
+    };
   }, [isFocused]);
 
   useEffect(() => {
-    if (chatList.length > 0 && isFocused) {
+    if (chatList.length > 0 && isFocused && initLoading) {
       getLastMessages();
       setInitLoading(false);
     }
-  }, [chatList, isFocused]);
+    return () => {
+      setSortedChatList([]);
+    };
+  }, [chatList, isFocused, initLoading]);
 
   useEffect(() => {
     if (refresh) {
       loadData();
+      setInitLoading(true);
     }
+    return () => {
+      setNoMoreData(false);
+      setCurrentPage(0);
+      setChatList([]);
+    };
   }, [refresh]);
 
   useEffect(() => {
-    console.log('refresh in create chat list', refresh);
-    if (chatList.length > 0 && refresh) {
+    if (chatList.length > 0 && refresh && initLoading) {
       getLastMessages();
-      setInitLoading(false);
       setRefresh(false);
+      setInitLoading(false);
     }
-  }, [chatList, refresh]);
+    return () => {
+      setSortedChatList([]);
+    };
+  }, [chatList, refresh, initLoading]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;

@@ -23,37 +23,54 @@ function JoinedChatList({ navigation }) {
   const [noMoreData, setNoMoreData] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [initLoading, setInitLoading] = useState(true);
+  const [initLoading, setInitLoading] = useState(false);
 
   const isFocused = useIsFocused();
 
   useEffect(() => {
     if (isFocused) {
       loadData();
+      setInitLoading(true);
     }
+    return () => {
+      setNoMoreData(false);
+      setCurrentPage(0);
+      setChatList([]);
+    };
   }, [isFocused]);
 
   useEffect(() => {
-    if (chatList.length > 0 && isFocused) {
+    if (chatList.length > 0 && isFocused && initLoading) {
       getLastMessages();
       setInitLoading(false);
     }
-  }, [chatList, isFocused]);
+    return () => {
+      setSortedChatList([]);
+    };
+  }, [chatList, isFocused, initLoading]);
 
   useEffect(() => {
     if (refresh) {
       loadData();
+      setInitLoading(true);
     }
+    return () => {
+      setNoMoreData(false);
+      setCurrentPage(0);
+      setChatList([]);
+    };
   }, [refresh]);
 
   useEffect(() => {
-    console.log('refresh in join chat list', refresh);
-    if (chatList.length > 0 && refresh) {
+    if (chatList.length > 0 && refresh && initLoading) {
       getLastMessages();
-      setInitLoading(false);
       setRefresh(false);
+      setInitLoading(false);
     }
-  }, [chatList, refresh]);
+    return () => {
+      setSortedChatList([]);
+    };
+  }, [chatList, refresh, initLoading]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
@@ -72,6 +89,7 @@ function JoinedChatList({ navigation }) {
         const {
           content, first, last, number,
         } = response.data.data;
+        console.log('load data content', content);
         if (first) {
           setChatList([...content]);
         } else {
@@ -118,7 +136,6 @@ function JoinedChatList({ navigation }) {
         ...JSON.parse(value),
       };
     });
-    console.log('sortedList', sortedList);
 
     setSortedChatList(sortedList);
   }
