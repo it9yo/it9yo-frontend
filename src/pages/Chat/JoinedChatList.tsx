@@ -2,20 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
-import { userAccessToken, chatRefresh } from '@src/states';
+import { userAccessToken } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { useRecoilState } from 'recoil';
 import { CampaignData, ChatListData } from '@src/@types';
 import EachChat from '@src/components/EachChat';
 import AsyncStorage from '@react-native-community/async-storage';
-import { IMessage } from 'react-native-gifted-chat';
+import { joinedChatRefresh } from '../../states/chat';
 
 const pageSize = 50;
 
 function JoinedChatList({ navigation }) {
   const accessToken = useRecoilState(userAccessToken)[0];
-  const [refresh, setRefresh] = useRecoilState(chatRefresh);
+  const [refresh, setRefresh] = useRecoilState(joinedChatRefresh);
   const [chatList, setChatList] = useState<CampaignData[]>([]);
   const [sortedChatList, setSortedChatList] = useState<ChatListData[]>([]);
 
@@ -28,18 +28,32 @@ function JoinedChatList({ navigation }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused || refresh) {
+    if (isFocused) {
       loadData();
     }
-  }, [isFocused, refresh]);
+  }, [isFocused]);
 
   useEffect(() => {
-    if (chatList && (isFocused || refresh)) {
+    if (chatList.length > 0 && isFocused) {
+      getLastMessages();
+      setInitLoading(false);
+    }
+  }, [chatList, isFocused]);
+
+  useEffect(() => {
+    if (refresh) {
+      loadData();
+    }
+  }, [refresh]);
+
+  useEffect(() => {
+    console.log('refresh in join chat list', refresh);
+    if (chatList.length > 0 && refresh) {
       getLastMessages();
       setInitLoading(false);
       setRefresh(false);
     }
-  }, [chatList, isFocused, refresh]);
+  }, [chatList, refresh]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
@@ -78,6 +92,7 @@ function JoinedChatList({ navigation }) {
   };
 
   async function getLastMessages() {
+    console.log('in getLastMessages chatList', chatList);
     if (chatList.length === 0) return;
     const chatListDict = {};
     const chatKeys = chatList.map((chat) => {
@@ -103,6 +118,8 @@ function JoinedChatList({ navigation }) {
         ...JSON.parse(value),
       };
     });
+    console.log('sortedList', sortedList);
+
     setSortedChatList(sortedList);
   }
 

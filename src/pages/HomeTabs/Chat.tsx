@@ -15,13 +15,15 @@ import CreatedChatList from '@pages/Chat/CreatedChatList';
 import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { chatRefresh, currentChatRoomId, unreadAll } from '@src/states';
-import ChatMasterCrown from '@assets/images/chat_master.png';
+import {
+  currentChatRoomId, unreadAll, createdChatRefresh, joinedChatRefresh,
+} from '@src/states';
 
 function Chat({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
-  const [refresh, setRefresh] = useRecoilState(chatRefresh);
+  const setJoinedRefresh = useSetRecoilState(joinedChatRefresh);
+  const setCreatedRefresh = useSetRecoilState(createdChatRefresh);
 
   const [routes] = useState([
     { key: 'joined', title: '참여중' },
@@ -38,7 +40,6 @@ function Chat({ navigation }) {
       if (!notification || !notification.body) return;
 
       const receivedMessage = JSON.parse(notification.body);
-      console.log('received message', receivedMessage);
       if (!sentTime || !messageId) return;
 
       setReceivedMessage({ ...receivedMessage, messageId, sentTime });
@@ -72,6 +73,7 @@ function Chat({ navigation }) {
           setUnreadMessages((prev) => Number(prev) + 1);
         }
       }
+
       if (!chatRoomId || chatRoomId !== receivedMessage.campaignId) {
         Toast.show({
           text1: campaignTitle,
@@ -81,8 +83,9 @@ function Chat({ navigation }) {
             navigation.navigate('ChatRoom', { campaignId, title: campaignTitle });
           },
         });
+        setJoinedRefresh(true);
+        setCreatedRefresh(true);
       }
-      setRefresh(true);
     });
 
     return unsubscribe;
@@ -97,7 +100,6 @@ function Chat({ navigation }) {
     content,
     profileImageUrl,
     userChat,
-    hostId,
   }: ReceivedMessageData) => {
     if (!sentTime || !messageId) return;
 

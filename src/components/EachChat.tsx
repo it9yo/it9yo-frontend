@@ -22,7 +22,7 @@ function timeConversion(millisec: number) {
   } if (Number(seconds) >= 60) {
     return `${minutes}분`;
   }
-  return `${seconds}초`;
+  return '방금';
 }
 
 function EachChat({ item } : { item: ChatListData }) {

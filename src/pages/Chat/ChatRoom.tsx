@@ -13,7 +13,6 @@ import {
 } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
-  chatRefresh,
   currentChatRoomId, unreadAll, userAccessToken, userState,
 } from '@src/states';
 import axios from 'axios';
@@ -30,7 +29,6 @@ function ChatRoom({ navigation, route }) {
   const accessToken = useRecoilState(userAccessToken)[0];
   const setChatRoomId = useSetRecoilState(currentChatRoomId);
   const [unreadMessages, setUnreadMessages] = useRecoilState(unreadAll);
-  const [refresh, setRefresh] = useRecoilState(chatRefresh);
 
   const { campaignId } = route.params;
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -63,7 +61,6 @@ function ChatRoom({ navigation, route }) {
         [`lastChat_${campaignId}`, JSON.stringify(newData)],
       ]);
       setUnreadMessages((prev) => Number(prev) - unread);
-      setRefresh(true);
     };
 
     navigation.setOptions({
@@ -82,6 +79,12 @@ function ChatRoom({ navigation, route }) {
       setCampaignData(undefined);
     };
   }, []);
+
+  useEffect(() => {
+    if (campaignData) {
+      console.log('campaignData', campaignData);
+    }
+  }, [campaignData]);
 
   // 메시지 전송 받기
   useEffect(() => {
