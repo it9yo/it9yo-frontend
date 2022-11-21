@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 
 import { useRecoilState } from 'recoil';
-import { userAccessToken } from '@src/states';
+import { userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { ReviewInfo, CampaignData } from '@src/@types';
@@ -15,6 +15,8 @@ import { useIsFocused } from '@react-navigation/native';
 const pageSize = 10;
 
 function HostReview({ navigation, route }) {
+  const userInfo = useRecoilState(userState)[0];
+
   const accessToken = useRecoilState(userAccessToken)[0];
   const { campaignDetail }: { campaignDetail: CampaignData } = route.params;
   const { hostId, hostNickName, hostProfileUrl } = campaignDetail;
@@ -134,9 +136,14 @@ function HostReview({ navigation, route }) {
     </View>
     <View style={styles.buttonZone}>
       <TouchableOpacity
-        style={StyleSheet.compose(styles.button, styles.buttonActive)}
-        onPress={() => navigation.navigate('CreateReview', { ...campaignDetail })}>
-        <Text style={styles.buttonText}>후기작성</Text>
+        style={
+          hostId !== userInfo.userId
+            ? StyleSheet.compose(styles.button, styles.buttonActive)
+            : styles.button
+        }
+        onPress={() => navigation.navigate('CreateReview', { ...campaignDetail })}
+        disabled={hostId === userInfo.userId}>
+        <Text style={styles.buttonText}>후기 작성</Text>
       </TouchableOpacity>
     </View>
   </SafeAreaView>;

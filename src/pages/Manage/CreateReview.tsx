@@ -10,14 +10,17 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import { CampaignData } from '@src/@types';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { userState } from '../../states/user';
 
 function numberWithCommas(x: number) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function CreateReview({ navigation, route }) {
+  const userInfo = useRecoilState(userState)[0];
   const accessToken = useRecoilState(userAccessToken)[0];
   const campaignDetail: CampaignData = route.params;
+
   const {
     campaignId, itemPrice, itemImageURLs, title,
   } = campaignDetail;
