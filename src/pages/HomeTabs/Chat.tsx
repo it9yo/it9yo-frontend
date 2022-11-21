@@ -60,9 +60,7 @@ function Chat({ navigation }) {
         }
         chatListData.content = content;
         chatListData.sentTime = sentTime;
-        // console.log(chatListData);
-        // console.log('chatRoomId', chatRoomId);
-        // console.log('receivedMessage.campaignId', receivedMessage.campaignId);
+
         if (chatRoomId && chatRoomId === receivedMessage.campaignId) {
           await AsyncStorage.setItem(`lastChat_${campaignId}`, JSON.stringify(chatListData));
         } else {
@@ -107,17 +105,7 @@ function Chat({ navigation }) {
       _id: messageId,
       text: content,
       createdAt: new Date(sentTime),
-      user: hostId === userId ? {
-        _id: userId,
-        name: nickName,
-        avatar: (props) => {
-          const styleProps = props[0];
-          return <View>
-            <Image style={styleProps} source={{ uri: profileImageUrl }} />
-            <Image style={styles.crown} source={ChatMasterCrown} />
-          </View>;
-        },
-      } : {
+      user: {
         _id: userId,
         name: nickName,
         avatar: profileImageUrl,
@@ -133,12 +121,8 @@ function Chat({ navigation }) {
     } else {
       newMessages = [newMessage];
     }
-    // console.log(newMessages);
+
     await AsyncStorage.setItem(`chat_${campaignId}`, JSON.stringify(newMessages));
-    // const savedMessage = await AsyncStorage.getItem(`chat_${campaignId}`);
-    // if (savedMessage !== null) {
-    //   console.log(JSON.parse(savedMessage));
-    // }
   };
 
   const renderScene = SceneMap({
@@ -180,6 +164,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   crown: {
     position: 'absolute',

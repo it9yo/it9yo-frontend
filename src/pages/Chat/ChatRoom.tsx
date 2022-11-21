@@ -9,7 +9,7 @@ import messaging from '@react-native-firebase/messaging';
 import { CampaignData, JoinUserInfo, ReceivedMessageData } from '@src/@types';
 
 import {
-  GiftedChat, type IMessage, Bubble, Avatar, BubbleProps,
+  GiftedChat, type IMessage, Bubble, BubbleProps, Avatar,
 } from 'react-native-gifted-chat';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import {
@@ -79,6 +79,7 @@ function ChatRoom({ navigation, route }) {
 
     return () => {
       setChatRoomId(null);
+      setCampaignData(undefined);
     };
   }, []);
 
@@ -95,7 +96,7 @@ function ChatRoom({ navigation, route }) {
     });
 
     return unsubscribe;
-  }, []);
+  }, [campaignData]);
 
   const initChatData = async () => {
     try {
@@ -207,6 +208,19 @@ function ChatRoom({ navigation, route }) {
     </View>;
   }
 
+  function renderAvatar(props: any) {
+    const { currentMessage } = props;
+
+    return <View>
+      <Avatar
+        {...props}
+        containerStyle={{ left: { marginRight: 0 } }}
+        />
+      {campaignData?.hostId === currentMessage.user._id
+        && <Image style={styles.crown} source={ChatMasterCrown} />}
+    </View>;
+  }
+
   const onEndReached = () => {
     if (!noMoreData || !loading) {
       loadUserData();
@@ -228,17 +242,7 @@ function ChatRoom({ navigation, route }) {
       _id: messageId,
       text: content,
       createdAt: new Date(sentTime),
-      user: campaignData.hostId === userId ? {
-        _id: userId,
-        name: nickName,
-        avatar: (props) => {
-          const styleProps = props[0];
-          return <View>
-            <Image style={styleProps} source={{ uri: profileImageUrl }} />
-            <Image style={styles.crown} source={ChatMasterCrown} />
-          </View>;
-        },
-      } : {
+      user: {
         _id: userId,
         name: nickName,
         avatar: profileImageUrl,
@@ -291,7 +295,7 @@ function ChatRoom({ navigation, route }) {
         renderAvatarOnTop={true}
         timeFormat='HH:mm'
         dateFormat='YYYY년 MM월 DD일'
-        isCustomViewBottom={false}
+        renderAvatar={renderAvatar}
       />
     </DrawerLayoutAndroid>
   );
@@ -327,8 +331,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 18,
-    height: 16,
+    width: 16,
+    height: 14,
   },
 });
 
