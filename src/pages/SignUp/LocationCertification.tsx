@@ -113,7 +113,7 @@ function LocationCertification({ navigation }: Props) {
         {myPosition && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
-            center={{ ...myPosition, zoom: 13 }}>
+            center={{ ...myPosition, zoom: 15 }}>
             <Marker
               coordinate={myPosition}
               width={300}

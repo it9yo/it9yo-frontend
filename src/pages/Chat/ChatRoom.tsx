@@ -308,11 +308,11 @@ function ChatRoom({ navigation, route }) {
 const styles = StyleSheet.create({
   systemMsgContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 8,
+    paddingVertical: 6,
     borderRadius: 44,
     backgroundColor: '#fff7ef',
     alignSelf: 'center',
-    marginBottom: 15,
+    marginVertical: 10,
   },
   systemMsgText: {
     fontFamily: 'NotoSansKR',
