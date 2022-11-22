@@ -34,7 +34,6 @@ function HomeTabs() {
   }, [isFocused]);
 
   useEffect(() => {
-    console.log('refresh in home tab', refresh);
     if (refresh) {
       getUnreadMessages();
       setRefresh(false);

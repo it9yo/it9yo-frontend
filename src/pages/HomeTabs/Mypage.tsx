@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert, Platform,
 } from 'react-native';
@@ -8,19 +8,16 @@ import { locationState, userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Pay from '@assets/images/pay.png';
 import Review from '@assets/images/review.png';
 import DoneCampaign from '@assets/images/done-campaign.png';
 import OnHeart from '@assets/images/on-heart.png';
 import Survey from '@assets/images/survey.png';
-import GPSIcon from '@assets/images/gps.png';
+import GPSIcon from '@assets/images/location-tick.png';
 
-import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+import ImageResizer from 'react-native-image-resizer';
+
 import AsyncStorage from '@react-native-community/async-storage';
-
-function numberWithCommas(x: number) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
 
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
@@ -33,21 +30,29 @@ function Mypage({ navigation }) {
 
   const onChangeProfilePhoto = async () => {
     try {
-      const result: ImagePickerResponse = await launchImageLibrary({
+      const image = await ImagePicker.openPicker({
         mediaType: 'photo',
-        maxWidth: 300,
-        maxHeight: 300,
-        includeBase64: Platform.OS === 'android',
+        cropping: true,
+        includeExif: true,
+        includeBase64: true,
+        compressImageMaxWidth: 300,
+        compressImageMaxHeight: 300,
       });
-      if (result.didCancel || !result.assets) {
-        return;
-      }
-      const { uri, type, fileName } = result.assets[0];
+      console.log(image);
+      const resizedImage = await ImageResizer.createResizedImage(
+        image.path,
+        300,
+        300,
+        image.mime.includes('jpeg') ? 'JPEG' : 'PNG',
+        100,
+      );
+
       const formData = new FormData();
+
       formData.append('files', {
-        name: fileName,
-        type,
-        uri,
+        name: resizedImage.name,
+        type: image.mime,
+        uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
       });
 
       const response = await axios.post(
@@ -165,7 +170,7 @@ function Mypage({ navigation }) {
         <Pressable onPress={() => navigation.navigate('LocCert', { currentLocation })}>
           <View style={styles.menuBlock}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image style={{ width: 25, height: 30 }} source={GPSIcon}/>
+          <Image style={styles.icon} source={GPSIcon}/>
             <Text style={styles.menuText}>
               지역 인증 하기
             </Text>
@@ -216,7 +221,7 @@ function Mypage({ navigation }) {
         </Pressable>
 
         {/* async storage 초기화 */}
-        <Pressable onPress={onReset}>
+        {/* <Pressable onPress={onReset}>
           <View style={styles.menuBlock}>
             <View style={{ flexDirection: 'row' }}>
             <Image style={styles.icon} source={Survey}/>
@@ -226,7 +231,7 @@ function Mypage({ navigation }) {
             </View>
               <Icon name='ios-chevron-forward' size={24} color='black' />
           </View>
-        </Pressable>
+        </Pressable> */}
 
       </View>
       </ScrollView>

@@ -7,7 +7,7 @@ import messaging from '@react-native-firebase/messaging';
 import { RecoilRoot } from 'recoil';
 import Toast from 'react-native-toast-message';
 
-import { AsyncStorage } from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 import { IMessage } from 'react-native-gifted-chat';
 import { ReceivedMessageData } from './src/@types';
 import { name as appName } from './app.json';
@@ -24,9 +24,6 @@ const setReceivedMessage = async ({
   userChat,
 }: ReceivedMessageData) => {
   if (!sentTime || !messageId) return;
-  const prevMessages = await AsyncStorage.getItem(`chatMessages_${campaignId}`);
-  if (!prevMessages) return;
-  const messageList: IMessage[] = JSON.parse(prevMessages);
 
   const newMessage: IMessage = {
     _id: messageId,
@@ -40,8 +37,16 @@ const setReceivedMessage = async ({
     system: !userChat,
   };
 
-  const newMessageList: IMessage[] = [newMessage, ...messageList];
-  await AsyncStorage.setItem(`chatMessages_${campaignId}`, JSON.stringify(newMessageList));
+  const prevData = await AsyncStorage.getItem(`chat_${campaignId}`);
+  let newMessages;
+  if (prevData !== null) {
+    const prevMessages = JSON.parse(prevData);
+    newMessages = [newMessage, ...prevMessages];
+  } else {
+    newMessages = [newMessage];
+  }
+
+  await AsyncStorage.setItem(`chat_${campaignId}`, JSON.stringify(newMessages));
 };
 
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
@@ -49,18 +54,43 @@ messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   if (!notification || !notification.body) return;
 
   const receivedMessage = JSON.parse(notification.body);
+  console.log('background message received', receivedMessage);
+  if (!sentTime || !messageId) return;
 
   setReceivedMessage({ ...receivedMessage, messageId, sentTime });
 
-  const { campaignId } = receivedMessage;
+  const {
+    content, campaignId, userChat,
+  } = receivedMessage;
 
-  const unreadMessages = await AsyncStorage.getItem(`unreadMessages_${campaignId}`);
-  const newUnreadMessages = Number(unreadMessages) + 1;
-  await AsyncStorage.setItem(`unreadMessages_${campaignId}`, String(newUnreadMessages));
+  if (userChat) {
+    let chatListData = {
+      content: '',
+      unread: 0,
+      sentTime: 0,
+    };
 
-  const unreadAllMessages = await AsyncStorage.getItem('unreadAllMessages');
-  const newUnreadAllMessages = Number(unreadAllMessages) + 1;
-  await AsyncStorage.setItem('unreadAllMessages', String(newUnreadAllMessages));
+    const data = await AsyncStorage.getItem(`lastChat_${campaignId}`);
+    if (data !== null) {
+      chatListData = JSON.parse(data);
+    }
+    chatListData.content = content;
+    chatListData.sentTime = sentTime;
+
+    chatListData.unread += 1;
+
+    const unreadData = await AsyncStorage.getItem('unreadAll');
+    let unreadAll;
+    if (unreadData === null) {
+      unreadAll = 0;
+    } else {
+      unreadAll = Number(unreadData);
+    }
+    await AsyncStorage.multiSet([
+      [`lastChat_${campaignId}`, JSON.stringify(chatListData)],
+      ['unreadAll', String(unreadAll + 1)],
+    ]);
+  }
 });
 
 function HeadlessCheck({ isHeadless }) {

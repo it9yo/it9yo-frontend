@@ -9,7 +9,7 @@ import { useRecoilState } from 'recoil';
 import { CampaignData, ChatListData } from '@src/@types';
 import EachChat from '@src/components/EachChat';
 import AsyncStorage from '@react-native-community/async-storage';
-import { joinedChatRefresh } from '../../states/chat';
+import { joinedChatRefresh } from '@states/chat';
 
 const pageSize = 50;
 
@@ -28,49 +28,32 @@ function JoinedChatList({ navigation }) {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (isFocused) {
-      loadData();
+    if (isFocused && !initLoading) {
       setInitLoading(true);
-    }
-    return () => {
-      setNoMoreData(false);
-      setCurrentPage(0);
-      setChatList([]);
-    };
-  }, [isFocused]);
-
-  useEffect(() => {
-    if (chatList.length > 0 && isFocused && initLoading) {
-      getLastMessages();
+      loadData();
       setInitLoading(false);
     }
     return () => {
-      setSortedChatList([]);
-    };
-  }, [chatList, isFocused, initLoading]);
-
-  useEffect(() => {
-    if (refresh) {
-      loadData();
-      setInitLoading(true);
-    }
-    return () => {
       setNoMoreData(false);
       setCurrentPage(0);
       setChatList([]);
     };
-  }, [refresh]);
+  }, [isFocused, initLoading]);
 
   useEffect(() => {
-    if (chatList.length > 0 && refresh && initLoading) {
-      getLastMessages();
+    if (refresh && !initLoading) {
+      console.log('join chatlist refresh', refresh, initLoading);
+      setInitLoading(true);
+      refreshData();
+      setInitLoading(false);
       setRefresh(false);
-      setInitLoading(false);
     }
     return () => {
-      setSortedChatList([]);
+      setNoMoreData(false);
+      setCurrentPage(0);
+      setChatList([]);
     };
-  }, [chatList, refresh, initLoading]);
+  }, [refresh, initLoading]);
 
   const loadData = async () => {
     if (noMoreData || loading) return;
@@ -90,17 +73,21 @@ function JoinedChatList({ navigation }) {
           content, first, last, number,
         } = response.data.data;
         console.log('load data content', content);
+        let listData;
         if (first) {
-          setChatList([...content]);
+          listData = content;
         } else {
-          setChatList((prev) => [...prev, ...content]);
+          listData = [...chatList, ...content];
         }
+        setChatList(listData);
         setCurrentPage(number + 1);
         if (last) {
           setNoMoreData(true);
         } else {
           setNoMoreData(false);
         }
+
+        getLastMessages(listData);
       }
     } catch (error) {
       console.error(error);
@@ -109,11 +96,47 @@ function JoinedChatList({ navigation }) {
     }
   };
 
-  async function getLastMessages() {
-    console.log('in getLastMessages chatList', chatList);
-    if (chatList.length === 0) return;
+  const refreshData = async () => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/chat/joining?size=${pageSize}&page=${0}`;
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const {
+          content, last,
+        } = response.data.data;
+        console.log('load data content', content);
+        const listData = content;
+        setCurrentPage(1);
+        setChatList(listData);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+
+        getLastMessages(listData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  async function getLastMessages(listData) {
+    console.log('chatList in getMessages', listData);
+    if (listData.length === 0) return;
     const chatListDict = {};
-    const chatKeys = chatList.map((chat) => {
+    const chatKeys = listData.map((chat) => {
       chatListDict[chat.campaignId] = chat;
       return `lastChat_${chat.campaignId}`;
     });
@@ -152,7 +175,7 @@ function JoinedChatList({ navigation }) {
 
   return <View>
     {initLoading && <ActivityIndicator />}
-    {sortedChatList.length > 0 && !refresh && <FlatList
+    {!initLoading && sortedChatList.length > 0 && <FlatList
       data={sortedChatList}
       keyExtractor={(item) => `joinedChat_${item.campaignId.toString()}`}
       renderItem={renderItem}

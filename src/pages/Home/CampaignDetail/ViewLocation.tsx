@@ -64,7 +64,7 @@ function ViewLocation({ navigation, route }) {
         {coord && (
           <NaverMapView
             style={{ width: '100%', height: '100%' }}
-            center={{ ...coord, zoom: 13 }}>
+            center={{ ...coord, zoom: 15 }}>
             <Marker
               coordinate={coord}
               width={300}
