@@ -12,7 +12,7 @@ import Review from '@assets/images/review.png';
 import DoneCampaign from '@assets/images/done-campaign.png';
 import OnHeart from '@assets/images/on-heart.png';
 import Survey from '@assets/images/survey.png';
-import GPSIcon from '@assets/images/gps.png';
+import GPSIcon from '@assets/images/location-tick.png';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import ImageResizer from 'react-native-image-resizer';
@@ -170,7 +170,7 @@ function Mypage({ navigation }) {
         <Pressable onPress={() => navigation.navigate('LocCert', { currentLocation })}>
           <View style={styles.menuBlock}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Image style={{ width: 25, height: 30 }} source={GPSIcon}/>
+          <Image style={styles.icon} source={GPSIcon}/>
             <Text style={styles.menuText}>
               지역 인증 하기
             </Text>
