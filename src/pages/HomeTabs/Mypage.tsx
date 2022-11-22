@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Dimensions, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert, Platform,
 } from 'react-native';
@@ -8,7 +8,6 @@ import { locationState, userAccessToken, userState } from '@src/states';
 import axios from 'axios';
 import Config from 'react-native-config';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Pay from '@assets/images/pay.png';
 import Review from '@assets/images/review.png';
 import DoneCampaign from '@assets/images/done-campaign.png';
 import OnHeart from '@assets/images/on-heart.png';
@@ -17,10 +16,6 @@ import GPSIcon from '@assets/images/gps.png';
 
 import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 import AsyncStorage from '@react-native-community/async-storage';
-
-function numberWithCommas(x: number) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
 
 function Mypage({ navigation }) {
   const [userInfo, setUserInfo] = useRecoilState(userState);
@@ -216,7 +211,7 @@ function Mypage({ navigation }) {
         </Pressable>
 
         {/* async storage 초기화 */}
-        <Pressable onPress={onReset}>
+        {/* <Pressable onPress={onReset}>
           <View style={styles.menuBlock}>
             <View style={{ flexDirection: 'row' }}>
             <Image style={styles.icon} source={Survey}/>
@@ -226,7 +221,7 @@ function Mypage({ navigation }) {
             </View>
               <Icon name='ios-chevron-forward' size={24} color='black' />
           </View>
-        </Pressable>
+        </Pressable> */}
 
       </View>
       </ScrollView>

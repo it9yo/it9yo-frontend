@@ -9,7 +9,7 @@ import { useRecoilState } from 'recoil';
 import { CampaignData, ChatListData } from '@src/@types';
 import EachChat from '@src/components/EachChat';
 import AsyncStorage from '@react-native-community/async-storage';
-import { joinedChatRefresh } from '../../states/chat';
+import { joinedChatRefresh } from '@states/chat';
 
 const pageSize = 50;
 
@@ -42,8 +42,9 @@ function JoinedChatList({ navigation }) {
 
   useEffect(() => {
     if (refresh && !initLoading) {
+      console.log('join chatlist refresh', refresh, initLoading);
       setInitLoading(true);
-      loadData();
+      refreshData();
       setInitLoading(false);
       setRefresh(false);
     }
@@ -75,13 +76,47 @@ function JoinedChatList({ navigation }) {
         let listData;
         if (first) {
           listData = content;
-          // setChatList([...content]);
         } else {
           listData = [...chatList, ...content];
-          // setChatList((prev) => [...prev, ...content]);
         }
         setChatList(listData);
         setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+
+        getLastMessages(listData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshData = async () => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/chat/joining?size=${pageSize}&page=${0}`;
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const {
+          content, last,
+        } = response.data.data;
+        console.log('load data content', content);
+        const listData = content;
+        setCurrentPage(1);
+        setChatList(listData);
         if (last) {
           setNoMoreData(true);
         } else {

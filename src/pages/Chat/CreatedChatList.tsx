@@ -45,7 +45,7 @@ function CreatedChatList({ navigation }) {
   useEffect(() => {
     if (refresh && !initLoading) {
       setInitLoading(true);
-      loadData();
+      refreshData();
       setInitLoading(false);
       setRefresh(false);
     }
@@ -83,6 +83,43 @@ function CreatedChatList({ navigation }) {
         }
         setChatList(listData);
         setCurrentPage(number + 1);
+        if (last) {
+          setNoMoreData(true);
+        } else {
+          setNoMoreData(false);
+        }
+
+        getLastMessages(listData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshData = async () => {
+    if (loading) return;
+    try {
+      setLoading(true);
+      const url = `${Config.API_URL}/campaign/campaigns?&size=${pageSize}&page=${0}&hostId=${userInfo.userId}`;
+
+      const response = await axios.get(
+        url,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        const {
+          content, last,
+        } = response.data.data;
+        console.log('load data content', content);
+        const listData = content;
+        setCurrentPage(1);
+        setChatList(listData);
         if (last) {
           setNoMoreData(true);
         } else {
