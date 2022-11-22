@@ -14,7 +14,9 @@ import OnHeart from '@assets/images/on-heart.png';
 import Survey from '@assets/images/survey.png';
 import GPSIcon from '@assets/images/gps.png';
 
-import { ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+import ImageResizer from 'react-native-image-resizer';
+
 import AsyncStorage from '@react-native-community/async-storage';
 
 function Mypage({ navigation }) {
@@ -28,21 +30,29 @@ function Mypage({ navigation }) {
 
   const onChangeProfilePhoto = async () => {
     try {
-      const result: ImagePickerResponse = await launchImageLibrary({
+      const image = await ImagePicker.openPicker({
         mediaType: 'photo',
-        maxWidth: 300,
-        maxHeight: 300,
-        includeBase64: Platform.OS === 'android',
+        cropping: true,
+        includeExif: true,
+        includeBase64: true,
+        compressImageMaxWidth: 300,
+        compressImageMaxHeight: 300,
       });
-      if (result.didCancel || !result.assets) {
-        return;
-      }
-      const { uri, type, fileName } = result.assets[0];
+      console.log(image);
+      const resizedImage = await ImageResizer.createResizedImage(
+        image.path,
+        300,
+        300,
+        image.mime.includes('jpeg') ? 'JPEG' : 'PNG',
+        100,
+      );
+
       const formData = new FormData();
+
       formData.append('files', {
-        name: fileName,
-        type,
-        uri,
+        name: resizedImage.name,
+        type: image.mime,
+        uri: Platform.OS === 'android' ? resizedImage.uri : resizedImage.uri.replace('file://', ''),
       });
 
       const response = await axios.post(
